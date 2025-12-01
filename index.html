@@ -13,16 +13,12 @@
     <link rel="icon" type="image/png" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
     <link id="manifest-placeholder" rel="manifest">
 
-    <!-- 1. Dependencias React & Recharts (UMD) -->
+    <!-- Dependencies -->
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-    
-    <!-- 2. Compilador Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- 3. Estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
@@ -32,23 +28,35 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
         .glass-panel {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.1); /* Borde sutil celeste */
+            border: 1px solid rgba(56, 189, 248, 0.1);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
-        
         .animate-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Color Picker input styling */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- 4. SCRIPT DE INICIALIZACIÓN DE FIREBASE (Módulo) -->
+    <!-- FIREBASE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -71,15 +79,12 @@
         window.firebaseDB = db;
         window.firebaseAuth = auth;
         window.signInAnonymously = signInAnonymously;
-        
-        window.fb = {
-            collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs
-        };
+        window.fb = { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs };
         
         window.dispatchEvent(new Event('firebase-modules-ready'));
     </script>
 
-    <!-- 5. SCRIPT DE LA APLICACIÓN (React/Babel) -->
+    <!-- REACT APP -->
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
         const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer } = Recharts;
@@ -103,6 +108,7 @@
         const Icons = {
             Wallet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
             TrendingDown: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
+            TrendingUp: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
             Calendar: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
             CreditCard: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
             Plus: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
@@ -127,7 +133,8 @@
             Pencil: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>,
             Trash2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
             Download: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-            UploadCloud: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>
+            UploadCloud: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>,
+            Palette: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
         };
 
         const ICON_GALLERY = [
@@ -141,17 +148,8 @@
             { name: 'other', icon: <Icons.PieChart /> },
         ];
 
-        // NUEVA PALETA: Azul, Celeste, Negro (y grises oscuros para soporte)
-        const COLOR_PALETTE = [
-            '#0ea5e9', // Sky Blue
-            '#3b82f6', // Blue
-            '#2563eb', // Royal Blue
-            '#06b6d4', // Cyan
-            '#60a5fa', // Light Blue
-            '#1e293b', // Slate 800 (Dark)
-            '#0f172a', // Slate 900 (Darker)
-            '#000000', // Black
-        ];
+        // Default Palette
+        const COLOR_PALETTE = ['#0ea5e9', '#3b82f6', '#2563eb', '#06b6d4', '#60a5fa', '#1e293b', '#0f172a', '#000000'];
 
         // --- COMPONENTS ---
         const GlassCard = ({ children, className = '', onClick, style }) => (
@@ -164,15 +162,65 @@
             </div>
         );
 
-        const GroupedList = ({ transactions, monthIndex, year, onSelect, groupMeta, onEditGroup }) => {
+        // Receipt Modal
+        const ReceiptModal = ({ tx, onClose }) => {
+            if (!tx) return null;
+            const currentQuota = tx.installments > 1 ? tx.quotaInfo?.current || 1 : 1;
+            const totalQuota = tx.installments || 1;
+            const percentage = (currentQuota / totalQuota) * 100;
+            const amountStr = (tx.amount / totalQuota).toLocaleString('es-AR');
+
+            return (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in">
+                    <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative">
+                        {/* Header Image/Color */}
+                        <div className="h-32 w-full relative" style={{ backgroundColor: tx.color }}>
+                            {tx.image && <img src={tx.image} className="w-full h-full object-cover opacity-50" />}
+                            <button onClick={onClose} className="absolute top-4 right-4 bg-black/20 p-2 rounded-full text-white hover:bg-black/40"><Icons.X size={20}/></button>
+                        </div>
+                        {/* Content */}
+                        <div className="p-6 -mt-10 relative">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 text-center border border-slate-100">
+                                <div className="w-16 h-16 rounded-full mx-auto -mt-14 mb-4 flex items-center justify-center text-white text-2xl shadow-md border-4 border-white" style={{backgroundColor: tx.color}}>
+                                    {ICON_GALLERY.find(i=>i.name===tx.icon)?.icon || <Icons.Receipt/>}
+                                </div>
+                                <h2 className="text-xl font-bold text-slate-800 mb-1">{tx.description}</h2>
+                                <p className="text-sm text-slate-500 uppercase font-bold tracking-wide">{tx.groupName}</p>
+                                <div className="my-6 border-t border-dashed border-slate-300"></div>
+                                
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="text-slate-400 text-xs font-bold uppercase">Monto Cuota</span>
+                                    <span className="text-3xl font-bold text-slate-900">${amountStr}</span>
+                                </div>
+                                
+                                {tx.installments > 1 && (
+                                    <div className="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                        <div className="flex justify-between text-xs font-bold text-slate-500 mb-2">
+                                            <span>Cuota {currentQuota} de {totalQuota}</span>
+                                            <span>{percentage.toFixed(0)}%</span>
+                                        </div>
+                                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                            <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${percentage}%`, backgroundColor: tx.color }}></div>
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 mt-2 text-left">Total Original: ${tx.amount.toLocaleString('es-AR')}</p>
+                                    </div>
+                                )}
+                                
+                                <button onClick={() => window.print()} className="mt-6 w-full py-3 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition"><Icons.Printer size={18}/> Imprimir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const GroupedList = ({ transactions, monthIndex, year, onSelect, onEdit, groupMeta, onEditGroup }) => {
             const getAmount = (tx) => {
                 const txDate = new Date(tx.date);
                 if (tx.installments > 1) {
                     const startMonthIndex = txDate.getFullYear() * 12 + txDate.getMonth();
                     const targetMonthIndex = year * 12 + monthIndex;
-                    if (targetMonthIndex >= startMonthIndex && targetMonthIndex < startMonthIndex + tx.installments) {
-                        return tx.amount / tx.installments;
-                    }
+                    if (targetMonthIndex >= startMonthIndex && targetMonthIndex < startMonthIndex + tx.installments) return tx.amount / tx.installments;
                     return 0;
                 }
                 if (tx.subtype === 'fixed') return tx.amount;
@@ -196,11 +244,9 @@
                     if (amt > 0) {
                         const gName = t.groupName || 'Varios';
                         const meta = groupMeta.find(g => g.name === gName); 
-                        // Default Blue/Celeste theme
                         let color = meta ? meta.color : 'from-blue-600 to-cyan-500';
                         if (!meta) {
                             const lower = gName.toLowerCase();
-                            // Mapping legacy groups to new Blue/Cyan palette
                             if (lower.includes('naranja')) color = 'from-sky-600 to-sky-400';
                             else if (lower.includes('galicia')) color = 'from-blue-700 to-blue-500';
                             else if (lower.includes('icbc')) color = 'from-cyan-700 to-cyan-500';
@@ -215,14 +261,7 @@
                 return grps;
             }, [transactions, monthIndex, year, groupMeta]);
 
-            if (Object.keys(groups).length === 0) {
-                return (
-                    <div className="flex flex-col items-center justify-center py-10 text-white/40 gap-4">
-                        <Icons.PieChart size={48} className="opacity-20" />
-                        <p>No hay gastos para este periodo.</p>
-                    </div>
-                );
-            }
+            if (Object.keys(groups).length === 0) return <div className="flex flex-col items-center justify-center py-10 text-white/40 gap-4"><Icons.PieChart size={48} className="opacity-20" /><p>No hay movimientos.</p></div>;
 
             return (
                 <div className="space-y-6 pb-20">
@@ -231,20 +270,16 @@
                             <div className={`flex items-center justify-between mb-4 p-4 rounded-2xl bg-gradient-to-r ${data.color} shadow-lg relative overflow-hidden group/header`}>
                                 <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]"></div>
                                 <div className="relative flex items-center gap-3">
-                                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md shadow-sm">
-                                        <Icons.CreditCard size={20} className="text-white"/> 
-                                    </div>
+                                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md shadow-sm"><Icons.CreditCard size={20} className="text-white"/></div>
                                     <div>
                                         <h3 className="text-white font-bold text-lg leading-tight uppercase tracking-wide flex items-center gap-2">
                                             {groupName}
                                             <button onClick={() => onEditGroup(groupName, data.color)} className="opacity-50 hover:opacity-100 transition p-1 bg-white/10 rounded-full"><Icons.Edit3 size={14}/></button>
                                         </h3>
-                                        <p className="text-white/70 text-[10px] font-medium">TOTAL GRUPO</p>
+                                        <p className="text-white/70 text-[10px] font-medium">TOTAL</p>
                                     </div>
                                 </div>
-                                <div className="relative text-right">
-                                    <span className="text-xl font-bold text-white text-shadow-sm">${data.total.toLocaleString('es-AR')}</span>
-                                </div>
+                                <div className="relative text-right"><span className="text-xl font-bold text-white text-shadow-sm">${data.total.toLocaleString('es-AR')}</span></div>
                             </div>
 
                             <div className="grid gap-3">
@@ -253,25 +288,17 @@
                                         key={tx.id} 
                                         onClick={() => onSelect(tx)}
                                         className="glass-panel rounded-xl p-3 md:p-4 flex items-center gap-4 transition-all duration-300 group cursor-pointer relative overflow-hidden hover:scale-[1.01]"
-                                        style={{ 
-                                            // Dynamic blue/cyan glow based on item color
-                                            background: `linear-gradient(90deg, rgba(255,255,255,0.02) 0%, ${tx.color}15 100%)`,
-                                            borderColor: `${tx.color}30`
-                                        }}
+                                        style={{ background: `linear-gradient(90deg, rgba(255,255,255,0.02) 0%, ${tx.color}15 100%)`, borderColor: `${tx.color}30` }}
                                     >
                                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(45deg, transparent, ${tx.color}20)` }}></div>
                                         <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: tx.color }}></div>
                                         <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900/50 flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden">
-                                            {tx.image ? (
-                                                <img src={tx.image} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div style={{ color: tx.color }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon}</div>
-                                            )}
+                                            {tx.image ? <img src={tx.image} className="w-full h-full object-cover" /> : <div style={{ color: tx.color }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon}</div>}
                                         </div>
                                         <div className="flex-1 min-w-0 relative">
                                             <div className="flex justify-between items-start">
                                                 <h4 className="text-white font-medium truncate pr-2 text-sm md:text-base">{tx.description}</h4>
-                                                <span className="text-white font-bold text-sm md:text-base whitespace-nowrap">${tx.currentAmt.toLocaleString('es-AR')}</span>
+                                                <span className={`font-bold text-sm md:text-base whitespace-nowrap ${tx.type === 'income' ? 'text-emerald-400' : 'text-white'}`}>{tx.type === 'income' ? '+' : ''}${tx.currentAmt.toLocaleString('es-AR')}</span>
                                             </div>
                                             <div className="flex justify-between items-center mt-1">
                                                 <p className="text-white/40 text-xs flex items-center gap-1">{tx.category}</p>
@@ -285,9 +312,7 @@
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="text-white/20 group-hover:text-white/60 transition-colors relative">
-                                           <Icons.Pencil size={14} />
-                                        </div>
+                                        <button onClick={(e) => { e.stopPropagation(); onEdit(tx); }} className="relative p-2 text-white/20 hover:text-white bg-transparent hover:bg-white/10 rounded-full transition z-10"><Icons.Edit3 size={16} /></button>
                                     </div>
                                 ))}
                             </div>
@@ -308,13 +333,15 @@
             const [showModal, setShowModal] = useState(false);
             const [showImportModal, setShowImportModal] = useState(false);
             const [showGroupModal, setShowGroupModal] = useState(false);
+            const [showReceipt, setShowReceipt] = useState(null); // Selected tx for receipt
+            
             const [editingId, setEditingId] = useState(null);
             const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '' });
             const [importText, setImportText] = useState("");
 
             const [formData, setFormData] = useState({
                 type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', 
-                groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#3b82f6'
+                groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#0ea5e9'
             });
 
             const [dbReady, setDbReady] = useState(false);
@@ -328,109 +355,17 @@
                     const signIn = window.signInAnonymously;
 
                     if (db && auth && signIn) {
-                        signIn(auth)
-                            .then(() => {
-                                setDbReady(true);
-                                const q = query(collection(db, TRANSACTIONS_COL), orderBy("date", "desc"));
-                                onSnapshot(q, (snapshot) => {
-                                    const txs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                                    setTransactions(txs);
-                                }, err => console.log("Waiting permissions..."));
-                                
-                                onSnapshot(collection(db, GROUPS_COL), (snapshot) => {
-                                    const metas = snapshot.docs.map(doc => doc.data());
-                                    setGroupMeta(metas);
-                                });
-                            })
-                            .catch(e => { console.error(e); alert("Error conexión Firebase: " + e.message); });
+                        signIn(auth).then(() => {
+                            setDbReady(true);
+                            onSnapshot(query(collection(db, TRANSACTIONS_COL), orderBy("date", "desc")), (snap) => setTransactions(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+                            onSnapshot(collection(db, GROUPS_COL), (snap) => setGroupMeta(snap.docs.map(d => d.data())));
+                        }).catch(e => console.error(e));
                     }
                 };
                 if (window.firebaseDB) initDb();
                 else window.addEventListener('firebase-modules-ready', initDb);
                 return () => window.removeEventListener('firebase-modules-ready', initDb);
             }, []);
-
-            const handleInstall = async () => { /* ... */ };
-
-            // -- IMPORT LOGIC --
-            const parseAndImport = async () => {
-                if(!dbReady) return;
-                setIsSaving(true);
-                const batch = window.fb.writeBatch(window.firebaseDB);
-                const { doc } = window.fb;
-                
-                const getDate = (currentQuota) => {
-                    const dec2025 = new Date(2025, 11, 1);
-                    dec2025.setMonth(dec2025.getMonth() - (currentQuota - 1));
-                    return dec2025.toISOString().split('T')[0];
-                };
-
-                const segments = importText.split('$');
-                if (segments.length < 2) {
-                    alert("Formato no reconocido.");
-                    setIsSaving(false);
-                    return;
-                }
-
-                let currentDesc = segments[0].trim();
-                let currentGroup = "Importado";
-                if(currentDesc.includes("A PAGAR")) currentGroup = "A PAGAR";
-                
-                for (let i = 1; i < segments.length; i++) {
-                    const seg = segments[i].trim();
-                    const match = seg.match(/^([\d\.]+)/);
-                    if (match) {
-                        const amountStr = match[1];
-                        const amount = Number(amountStr.replace(/\./g, ''));
-                        const rest = seg.substring(match[0].length).trim();
-                        const quotaMatch = rest.match(/^(\d+)\/(\d+)/);
-                        let quotaC = 1, quotaT = 1;
-                        let nextDesc = rest;
-
-                        if (quotaMatch) {
-                            quotaC = Number(quotaMatch[1]);
-                            quotaT = Number(quotaMatch[2]);
-                            nextDesc = rest.substring(quotaMatch[0].length).trim();
-                        }
-
-                        if (currentDesc.includes("NARANJA")) currentGroup = "NARANJA";
-                        if (currentDesc.includes("GALICIA")) currentGroup = "TARJETA GALICIA";
-                        if (currentDesc.includes("ICBC")) currentGroup = "ICBC";
-
-                        // Assign Colors based on group logic for consistent theme
-                        let color = '#3b82f6'; // Default Blue
-                        if(currentGroup.includes('NARANJA')) color = '#0ea5e9'; // Sky
-                        if(currentGroup.includes('GALICIA')) color = '#2563eb'; // Royal
-                        if(currentGroup.includes('ICBC')) color = '#06b6d4'; // Cyan
-                        if(currentGroup.includes('PAGAR')) color = '#1e293b'; // Slate
-
-                        const id = Math.random().toString(36).substr(2, 9);
-                        const ref = doc(window.firebaseDB, TRANSACTIONS_COL, id);
-                        batch.set(ref, {
-                            type: 'expense',
-                            subtype: quotaT > 1 ? 'credit' : 'fixed',
-                            amount: amount * quotaT,
-                            description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto",
-                            category: 'Varios',
-                            groupName: currentGroup,
-                            date: getDate(quotaC),
-                            installments: quotaT,
-                            icon: 'shopping',
-                            color: color
-                        });
-                        currentDesc = nextDesc;
-                    }
-                }
-                await batch.commit();
-                setIsSaving(false);
-                setShowImportModal(false);
-                setImportText("");
-            };
-
-            const loadDefaultList = () => {
-                const defaultText = `A PAGARMONTOCUOTAEPEC$85.000Aguas Cordobesas$45.000Nobis$100.0001/3Gas$12.000Google$45.000NETFLIX$18.000flow$65.000Personal LPersonal CMercado Pago$50.0003/12All Boys$30.000Préstamo Gobierno$15.000Monotributo$20.000Auto$450.0008/42Seguro$60.0003/4MeLi$4.000TOTAL$999.000NARANJAMANTENIMIENTO$8.000HELADERA$69.2867/14CELULAR$38.6007/12CARTERA$5.8335/6IMPUESTOS$3.000ZAPATILLAS MA$26.6675/6ROPA SPORTS$34.000PASTILLAS$15.0003/3RESPUESTO PA$59.3332/3CASA$33.3331/3KANGOO$216.0001/3ROPA KARMYA$66.6672/3GORRA Y +$30.0001/6BATERIA$28.3332/6TOTAL$634.052TARJETA GALICIAMERCADO LIBRE$4.00011/12PC$40.0008/12JOYSTICK$6.0008/12CAFÉ$5.0008/12FUENTE$12.0008/9CAFES Y BLUETOOH$3.2007/12TALLERES$160.000KARMIA$18.3336/6ROPA DE INVIERNO$60.0005/6CAMPERA DE CUERO$25.0005/6ZAPATOS$19.0005/6STITCH$36.0005/6CELULARES$40.0005/12IMPUESTO DE SELLOS$3.000MANDOLINA$17.0004/6TINTA$6.0004/6LAVARROPAS$77.5004/6JUEGOS$20.000ROPA CARO$16.6671/3ROPA LUCAS$36.6671/6MERCADO LIBRE HIGIEN$12.0001/12TOTAL$617.367ICBCLIFE SEGUROS$6.400AIRE ACONDICIONADO$105.0009/12ROMANO HNOS$3.0009/12IMPUESTOS$5.000LIFE SEGURO$7.000IVA$4.000COMISIÓN$3.500CELULARES$160.0004/12CARGADOR IPHONE$11.8332/6SEGURO$1.700TOTAL$307.433`;
-                setImportText(defaultText);
-            };
 
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0;
@@ -464,12 +399,11 @@
                 return data;
             }, [transactions, currentDate]);
 
-            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#3b82f6', date: new Date().toISOString().split('T')[0] }); setShowModal(true); };
+            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#0ea5e9', date: new Date().toISOString().split('T')[0] }); setShowModal(true); };
             const openEdit = (tx) => { setEditingId(tx.id); setFormData({ ...tx, amount: tx.amount, imageUrl: '' }); setShowModal(true); };
             
             const saveTx = async () => {
                 if (!formData.description || !formData.amount) return;
-                if (!dbReady) { alert("Base de datos no conectada. Revisa tu internet o permisos."); return; }
                 try {
                     const finalImg = formData.imageUrl || formData.image;
                     const txData = { ...formData, amount: Number(formData.amount), image: finalImg, date: editingId ? formData.date : new Date().toISOString().split('T')[0] };
@@ -477,13 +411,12 @@
                     if (editingId) await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId), txData);
                     else await addDoc(collection(window.firebaseDB, TRANSACTIONS_COL), txData);
                     setShowModal(false);
-                } catch(e) { console.error(e); alert("Error al guardar: " + e.message); }
+                } catch(e) { alert("Error: " + e.message); }
             };
 
-            const deleteTx = async () => { if (confirm('¿Eliminar gasto?') && dbReady) { const { deleteDoc, doc } = window.fb; await deleteDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
+            const deleteTx = async () => { if (confirm('¿Eliminar?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
             const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
             const saveGroupEdit = async () => {
-                if (!dbReady) return;
                 const { oldName, newName, color } = groupEditData;
                 const batch = window.fb.writeBatch(window.firebaseDB);
                 batch.set(window.fb.doc(window.firebaseDB, GROUPS_COL, newName), { name: newName, color });
@@ -496,6 +429,38 @@
                 setShowGroupModal(false);
             };
             const handleFile = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = () => setFormData(p => ({ ...p, image: r.result })); r.readAsDataURL(f); } };
+            const loadDefaultList = () => { setImportText(`A PAGARMONTOCUOTAEPEC$85.000Aguas Cordobesas$45.000Nobis$100.0001/3Gas$12.000Google$45.000NETFLIX$18.000flow$65.000Personal LPersonal CMercado Pago$50.0003/12All Boys$30.000Préstamo Gobierno$15.000Monotributo$20.000Auto$450.0008/42Seguro$60.0003/4MeLi$4.000TOTAL$999.000NARANJAMANTENIMIENTO$8.000HELADERA$69.2867/14CELULAR$38.6007/12CARTERA$5.8335/6IMPUESTOS$3.000ZAPATILLAS MA$26.6675/6ROPA SPORTS$34.000PASTILLAS$15.0003/3RESPUESTO PA$59.3332/3CASA$33.3331/3KANGOO$216.0001/3ROPA KARMYA$66.6672/3GORRA Y +$30.0001/6BATERIA$28.3332/6TOTAL$634.052TARJETA GALICIAMERCADO LIBRE$4.00011/12PC$40.0008/12JOYSTICK$6.0008/12CAFÉ$5.0008/12FUENTE$12.0008/9CAFES Y BLUETOOH$3.2007/12TALLERES$160.000KARMIA$18.3336/6ROPA DE INVIERNO$60.0005/6CAMPERA DE CUERO$25.0005/6ZAPATOS$19.0005/6STITCH$36.0005/6CELULARES$40.0005/12IMPUESTO DE SELLOS$3.000MANDOLINA$17.0004/6TINTA$6.0004/6LAVARROPAS$77.5004/6JUEGOS$20.000ROPA CARO$16.6671/3ROPA LUCAS$36.6671/6MERCADO LIBRE HIGIEN$12.0001/12TOTAL$617.367ICBCLIFE SEGUROS$6.400AIRE ACONDICIONADO$105.0009/12ROMANO HNOS$3.0009/12IMPUESTOS$5.000LIFE SEGURO$7.000IVA$4.000COMISIÓN$3.500CELULARES$160.0004/12CARGADOR IPHONE$11.8332/6SEGURO$1.700TOTAL$307.433`); };
+            const parseAndImport = async () => {
+                if(!dbReady) return; setIsSaving(true);
+                const batch = window.fb.writeBatch(window.firebaseDB);
+                const segments = importText.split('$');
+                if (segments.length < 2) { alert("Error formato."); setIsSaving(false); return; }
+                let currentDesc = segments[0].trim();
+                let currentGroup = "Importado";
+                if(currentDesc.includes("A PAGAR")) currentGroup = "A PAGAR";
+                for (let i = 1; i < segments.length; i++) {
+                    const match = segments[i].trim().match(/^([\d\.]+)/);
+                    if (match) {
+                        const amount = Number(match[1].replace(/\./g, ''));
+                        const rest = segments[i].trim().substring(match[0].length).trim();
+                        const quotaMatch = rest.match(/^(\d+)\/(\d+)/);
+                        let quotaT = quotaMatch ? Number(quotaMatch[2]) : 1;
+                        let nextDesc = quotaMatch ? rest.substring(quotaMatch[0].length).trim() : rest;
+                        if (currentDesc.includes("NARANJA")) currentGroup = "NARANJA";
+                        if (currentDesc.includes("GALICIA")) currentGroup = "TARJETA GALICIA";
+                        if (currentDesc.includes("ICBC")) currentGroup = "ICBC";
+                        let color = '#3b82f6';
+                        if(currentGroup.includes('NARANJA')) color = '#0ea5e9';
+                        if(currentGroup.includes('GALICIA')) color = '#2563eb';
+                        if(currentGroup.includes('ICBC')) color = '#06b6d4';
+                        if(currentGroup.includes('PAGAR')) color = '#1e293b';
+                        const ref = window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, Math.random().toString(36).substr(2,9));
+                        batch.set(ref, { type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: new Date().toISOString().split('T')[0], installments: quotaT, icon: 'shopping', color });
+                        currentDesc = nextDesc;
+                    }
+                }
+                await batch.commit(); setIsSaving(false); setShowImportModal(false); setImportText("");
+            };
 
             return (
                 <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24">
@@ -506,17 +471,17 @@
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-white tracking-tight">Finanzas de la familia</h1>
-                                <p className="text-pink-400 text-xs font-mono font-bold uppercase tracking-widest">{currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</p>
+                                <p className="text-sky-400 text-xs font-mono font-bold uppercase tracking-widest">{currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</p>
                             </div>
                         </div>
                         <div className="flex gap-2">
                             <button onClick={() => setShowImportModal(true)} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Importar / Pegar"><Icons.UploadCloud size={20} /></button>
-                            <button onClick={openAdd} className="bg-pink-600 hover:bg-pink-500 text-white p-3 rounded-full shadow-lg shadow-pink-500/30 transition-all"><Icons.Plus size={24} /></button>
+                            <button onClick={openAdd} className="bg-sky-600 hover:bg-sky-500 text-white p-3 rounded-full shadow-lg shadow-sky-500/30 transition-all"><Icons.Plus size={24} /></button>
                         </div>
                     </header>
 
                     <div className="hidden md:flex gap-4 mb-6">
-                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'dashboard' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Resumen</button>
+                        <button onClick={() => setView('dashboard')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'dashboard' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Resumen</button>
                         <button onClick={() => setView('future')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'future' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Futuro</button>
                     </div>
 
@@ -526,21 +491,15 @@
                                 <GlassCard className="bg-gradient-to-r from-slate-800 to-slate-900 border-white/5">
                                     <div className="flex justify-between items-start">
                                         <div><p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total a Pagar</p><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter">${dashboardTotals.toLocaleString('es-AR')}</h2></div>
-                                        <div className="p-3 bg-white/5 rounded-full"><Icons.TrendingDown className="text-rose-400" /></div>
+                                        <div className="p-3 bg-white/5 rounded-full"><Icons.TrendingDown className="text-sky-400" /></div>
                                     </div>
                                 </GlassCard>
-                                {transactions.length === 0 ? (
-                                    <div className="text-center py-10">
-                                        <p className="text-white/50 mb-4">No hay gastos visibles.</p>
-                                        <button onClick={() => setShowImportModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 mx-auto">
-                                            <Icons.UploadCloud size={20}/> Importar / Pegar Datos
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} />
-                                )}
+                                {transactions.length === 0 ? <div className="text-center py-10 text-white/50">No hay datos.</div> : 
+                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} />
+                                }
                             </div>
                         )}
+                        {/* Future View Logic Omitted for brevity, assumed consistent with previous */}
                         {view === 'future' && (
                             <div className="animate-in space-y-6">
                                 {!selectedFutureMonth ? (
@@ -549,19 +508,18 @@
                                             <h3 className="font-bold text-white mb-4">Proyección Semestral</h3>
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <AreaChart data={futureData} margin={{top:5, right:0, left:-20, bottom:0}}>
-                                                    <defs><linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#ec4899" stopOpacity={0.6}/><stop offset="95%" stopColor="#ec4899" stopOpacity={0}/></linearGradient></defs>
+                                                    <defs><linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.6}/><stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/></linearGradient></defs>
                                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                                                     <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} />
                                                     <YAxis stroke="rgba(255,255,255,0.3)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`} />
-                                                    <RechartsTooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={v=>`$${v.toLocaleString('es-AR')}`} />
-                                                    <Area type="monotone" dataKey="total" stroke="#ec4899" strokeWidth={3} fill="url(#colorTotal)" />
+                                                    <Area type="monotone" dataKey="total" stroke="#0ea5e9" strokeWidth={3} fill="url(#colorTotal)" />
                                                 </AreaChart>
                                             </ResponsiveContainer>
                                         </GlassCard>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                             {futureData.map(m => (
-                                                <GlassCard key={m.name} onClick={() => setSelectedFutureMonth({index: m.index, year: m.year})} className="hover:border-pink-500/50 group">
-                                                    <div className="flex justify-between items-center mb-2"><span className="font-bold text-lg group-hover:text-pink-400 transition-colors">{m.name}</span><Icons.ChevronRight size={16} className="text-white/30" /></div>
+                                                <GlassCard key={m.name} onClick={() => setSelectedFutureMonth({index: m.index, year: m.year})} className="hover:border-sky-500/50 group">
+                                                    <div className="flex justify-between items-center mb-2"><span className="font-bold text-lg group-hover:text-sky-400 transition-colors">{m.name}</span><Icons.ChevronRight size={16} className="text-white/30" /></div>
                                                     <div className="text-2xl font-bold tracking-tighter">${m.total.toLocaleString('es-AR')}</div>
                                                 </GlassCard>
                                             ))}
@@ -569,8 +527,8 @@
                                     </>
                                 ) : (
                                     <div className="animate-in">
-                                        <button onClick={() => setSelectedFutureMonth(null)} className="flex items-center gap-2 text-pink-400 font-bold mb-4 hover:text-white transition-colors"><Icons.ChevronLeft size={20} /> Volver a Proyección</button>
-                                        <GroupedList transactions={transactions} monthIndex={selectedFutureMonth.index} year={selectedFutureMonth.year} onSelect={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} />
+                                        <button onClick={() => setSelectedFutureMonth(null)} className="flex items-center gap-2 text-sky-400 font-bold mb-4 hover:text-white transition-colors"><Icons.ChevronLeft size={20} /> Volver a Proyección</button>
+                                        <GroupedList transactions={transactions} monthIndex={selectedFutureMonth.index} year={selectedFutureMonth.year} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} />
                                     </div>
                                 )}
                             </div>
@@ -581,70 +539,92 @@
                     {showImportModal && (
                         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
                             <div className="bg-[#1e293b] w-full max-w-lg rounded-2xl border border-white/20 p-6 animate-in flex flex-col h-[80vh]">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="font-bold text-white text-lg">Importar Datos</h3>
-                                    <button onClick={() => setShowImportModal(false)}><Icons.X className="text-white/50 hover:text-white"/></button>
-                                </div>
+                                <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white text-lg">Importar Datos</h3><button onClick={() => setShowImportModal(false)}><Icons.X className="text-white/50 hover:text-white"/></button></div>
                                 <div className="flex-1 flex flex-col gap-4">
-                                    <p className="text-xs text-white/60">Pega aquí tu lista de gastos (formato texto o excel). El sistema intentará detectar los montos y descripciones.</p>
-                                    <textarea 
-                                        className="w-full flex-1 bg-black/30 border border-white/10 rounded-xl p-4 text-xs font-mono text-white focus:border-pink-500 outline-none resize-none"
-                                        placeholder="Ej: EPEC $85.000..."
-                                        value={importText}
-                                        onChange={e => setImportText(e.target.value)}
-                                    ></textarea>
-                                    <button onClick={loadDefaultList} className="text-pink-400 text-xs hover:text-pink-300 underline text-left">Cargar Mis Datos (Tu Lista)</button>
+                                    <p className="text-xs text-white/60">Pega aquí tu lista de gastos.</p>
+                                    <textarea className="w-full flex-1 bg-black/30 border border-white/10 rounded-xl p-4 text-xs font-mono text-white focus:border-sky-500 outline-none resize-none" value={importText} onChange={e => setImportText(e.target.value)}></textarea>
+                                    <button onClick={loadDefaultList} className="text-sky-400 text-xs hover:text-sky-300 underline text-left">Cargar Mis Datos</button>
                                 </div>
                                 <div className="flex gap-3 mt-4">
                                     <button onClick={() => setShowImportModal(false)} className="flex-1 py-3 bg-white/10 text-white rounded-xl">Cancelar</button>
-                                    <button onClick={parseAndImport} disabled={isSaving || !importText} className="flex-1 py-3 bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center gap-2">
-                                        {isSaving ? 'Procesando...' : <><Icons.Check size={18}/> Procesar</>}
-                                    </button>
+                                    <button onClick={parseAndImport} disabled={isSaving || !importText} className="flex-1 py-3 bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center gap-2">{isSaving ? 'Procesando...' : <><Icons.Check size={18}/> Procesar</>}</button>
                                 </div>
                             </div>
                         </div>
                     )}
+
+                    {/* RECEIPT MODAL */}
+                    <ReceiptModal tx={showReceipt} onClose={() => setShowReceipt(null)} />
 
                     {/* ADD/EDIT MODAL */}
                     {showModal && (
                         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/80 backdrop-blur-sm">
                             <div className="bg-[#1e293b] w-full md:max-w-lg md:rounded-3xl rounded-t-3xl border-t border-white/20 h-[85vh] md:h-auto flex flex-col overflow-hidden animate-in">
                                 <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-                                    <h3 className="font-bold text-white flex items-center gap-2"><Icons.Edit3 size={18} className="text-pink-400"/> {editingId ? 'Editar' : 'Nuevo'}</h3>
+                                    <h3 className="font-bold text-white flex items-center gap-2"><Icons.Edit3 size={18} className="text-sky-400"/> {editingId ? 'Editar' : 'Nuevo'}</h3>
                                     <button onClick={() => setShowModal(false)}><Icons.X className="text-white/50 hover:text-white"/></button>
                                 </div>
                                 <div className="p-6 overflow-y-auto flex-1 space-y-5">
+                                    {/* Type Toggle */}
+                                    <div className="flex bg-black/40 p-1 rounded-lg">
+                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-2 rounded-md text-sm font-bold transition ${formData.type === 'expense' ? 'bg-slate-700 text-white' : 'text-white/40'}`}>Gasto</button>
+                                        <button onClick={() => setFormData({...formData, type: 'income', color: '#10b981'})} className={`flex-1 py-2 rounded-md text-sm font-bold transition ${formData.type === 'income' ? 'bg-emerald-600 text-white' : 'text-white/40'}`}>Ingreso</button>
+                                    </div>
+
                                     <div className="text-center py-2"><label className="text-xs text-white/40 uppercase font-bold">Monto Total</label><input type="number" placeholder="0" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="bg-transparent text-5xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/10" autoFocus /></div>
+                                    
+                                    {formData.type === 'expense' && (
+                                        <div className="flex gap-2 overflow-x-auto pb-1">
+                                            {[{id:'one-time', label:'Único'}, {id:'fixed', label:'Fijo'}, {id:'credit', label:'Tarjeta'}].map(opt => (
+                                                <button key={opt.id} onClick={() => setFormData({...formData, subtype: opt.id})} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${formData.subtype === opt.id ? 'bg-sky-500/20 border-sky-500 text-white' : 'border-white/10 text-white/40'}`}>{opt.label}</button>
+                                            ))}
+                                        </div>
+                                    )}
+
                                     <div className="space-y-3">
-                                        <div><label className="text-xs text-pink-400 font-bold uppercase ml-1">Descripción</label><input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-pink-500 outline-none" placeholder="Ej: Supermercado" /></div>
+                                        <div><label className="text-xs text-sky-400 font-bold uppercase ml-1">Descripción</label><input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="Ej: Supermercado" /></div>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
-                                                <label className="text-xs text-pink-400 font-bold uppercase ml-1">Grupo / Tarjeta</label>
-                                                <input list="groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-pink-500 outline-none" placeholder="A PAGAR" />
+                                                <label className="text-xs text-sky-400 font-bold uppercase ml-1">Grupo</label>
+                                                <input list="groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="A PAGAR" />
                                                 <datalist id="groups"><option value="A PAGAR" /><option value="NARANJA" /><option value="TARJETA GALICIA" /><option value="ICBC" /></datalist>
                                             </div>
-                                            <div><label className="text-xs text-pink-400 font-bold uppercase ml-1">Cuotas</label><select value={formData.installments} onChange={e => setFormData({...formData, installments: Number(e.target.value)})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white outline-none">{[1,3,6,9,12,18,24,30,42].map(n => <option key={n} value={n}>{n} cuotas</option>)}</select></div>
+                                            {/* Advanced Installment Selector */}
+                                            {formData.subtype === 'credit' && (
+                                                <div>
+                                                    <label className="text-xs text-sky-400 font-bold uppercase ml-1">Cuotas</label>
+                                                    <select value={formData.installments} onChange={e => setFormData({...formData, installments: Number(e.target.value)})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white outline-none">
+                                                        {Array.from({length: 36}, (_, i) => i + 1).map(n => <option key={n} value={n}>{n} cuotas</option>)}
+                                                    </select>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
+                                    
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
-                                        <label className="text-xs text-white/50 uppercase font-bold">Color del Gasto</label>
-                                        <div className="flex gap-2 overflow-x-auto pb-2">
+                                        <label className="text-xs text-white/50 uppercase font-bold">Color</label>
+                                        <div className="flex gap-2 items-center">
                                             {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setFormData({...formData, color: c})} className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent opacity-50 hover:opacity-100'}`} style={{ backgroundColor: c }} />))}
+                                            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 bg-gradient-to-tr from-white to-black cursor-pointer hover:border-white">
+                                                <input type="color" value={formData.color} onChange={e => setFormData({...formData, color: e.target.value})} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                                <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-white text-xs font-bold">+</div>
+                                            </div>
                                         </div>
                                     </div>
+
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
                                         <div className="flex gap-2 text-xs font-bold text-white/50 uppercase"><span>Imagen o Icono</span></div>
                                         <div className="flex items-center gap-2 bg-black/30 rounded-lg p-2 border border-white/5"><Icons.Link size={16} className="text-white/40"/><input type="text" placeholder="https://..." value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value, image: ''})} className="bg-transparent text-sm w-full text-white outline-none" /></div>
                                         <div className="grid grid-cols-4 gap-2">
                                             <label className="aspect-square bg-white/5 border-dashed border border-white/20 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-white/10"><Icons.Image size={18} className="text-white/40 mb-1"/><span className="text-[8px] uppercase font-bold text-white/40">Subir</span><input type="file" className="hidden" onChange={handleFile} accept="image/*"/></label>
-                                            {ICON_GALLERY.slice(0,3).map(icon => (<button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square rounded-lg flex items-center justify-center ${formData.icon === icon.name && !formData.image ? 'bg-pink-600' : 'bg-white/5 hover:bg-white/10'}`}>{icon.icon}</button>))}
-                                            {(formData.image || formData.imageUrl) && (<div className="col-span-1 aspect-square rounded-lg overflow-hidden border border-pink-500 relative"><img src={formData.imageUrl || formData.image} className="w-full h-full object-cover" /><button onClick={() => setFormData({...formData, image:'', imageUrl:''})} className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center"><Icons.X size={16} className="text-white"/></button></div>)}
+                                            {ICON_GALLERY.slice(0,3).map(icon => (<button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square rounded-lg flex items-center justify-center ${formData.icon === icon.name && !formData.image ? 'bg-sky-600' : 'bg-white/5 hover:bg-white/10'}`}>{icon.icon}</button>))}
+                                            {(formData.image || formData.imageUrl) && (<div className="col-span-1 aspect-square rounded-lg overflow-hidden border border-sky-500 relative"><img src={formData.imageUrl || formData.image} className="w-full h-full object-cover" /><button onClick={() => setFormData({...formData, image:'', imageUrl:''})} className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center"><Icons.X size={16} className="text-white"/></button></div>)}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="p-4 bg-black/40 flex gap-3">
                                     {editingId && <button onClick={deleteTx} className="p-4 bg-red-500/20 text-red-400 rounded-xl"><Icons.Trash2 /></button>}
-                                    <button onClick={saveTx} className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold rounded-xl py-4 shadow-lg active:scale-[0.98]">Guardar</button>
+                                    <button onClick={saveTx} className="flex-1 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold rounded-xl py-4 shadow-lg active:scale-[0.98]">Guardar</button>
                                 </div>
                             </div>
                         </div>
@@ -655,20 +635,24 @@
                             <div className="bg-[#1e293b] w-full max-w-sm rounded-2xl border border-white/20 p-6 animate-in">
                                 <h3 className="text-lg font-bold text-white mb-4">Editar Grupo</h3>
                                 <label className="text-xs text-white/50 uppercase font-bold">Nombre del Grupo</label>
-                                <input type="text" value={groupEditData.newName} onChange={e => setGroupEditData({...groupEditData, newName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-pink-500 outline-none mb-4" />
-                                <label className="text-xs text-white/50 uppercase font-bold mb-2 block">Color de Etiqueta</label>
+                                <input type="text" value={groupEditData.newName} onChange={e => setGroupEditData({...groupEditData, newName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none mb-4" />
+                                <label className="text-xs text-white/50 uppercase font-bold mb-2 block">Color</label>
                                 <div className="grid grid-cols-4 gap-2 mb-6">
-                                    {['from-pink-500 to-purple-600', 'from-orange-500 to-red-500', 'from-amber-500 to-orange-400', 'from-red-600 to-red-800', 'from-emerald-500 to-emerald-800', 'from-blue-600 to-blue-800', 'from-cyan-500 to-blue-500', 'from-slate-700 to-slate-900'].map(c => (
-                                        <button key={c} onClick={() => setGroupEditData({...groupEditData, color: c})} className={`h-10 rounded-lg bg-gradient-to-r ${c} ${groupEditData.color === c ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`}></button>
-                                    ))}
+                                    {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: `from-${c} to-${c}`})} className="h-10 rounded-lg opacity-70 hover:opacity-100" style={{backgroundColor: c}}></button>))}
                                 </div>
                                 <div className="flex gap-3">
                                     <button onClick={() => setShowGroupModal(false)} className="flex-1 py-3 bg-white/10 text-white rounded-xl">Cancelar</button>
-                                    <button onClick={saveGroupEdit} className="flex-1 py-3 bg-pink-600 text-white font-bold rounded-xl">Guardar</button>
+                                    <button onClick={saveGroupEdit} className="flex-1 py-3 bg-sky-600 text-white font-bold rounded-xl">Guardar</button>
                                 </div>
                             </div>
                         </div>
                     )}
+
+                    <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-[#0f172a]/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center px-4 z-40 pb-2">
+                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`flex flex-col items-center gap-1 ${view === 'dashboard' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.PieChart size={24} /> <span className="text-[10px] font-bold">Hoy</span></button>
+                        <button onClick={openAdd} className="bg-sky-600 rounded-full w-14 h-14 flex items-center justify-center -mt-8 border-4 border-[#0f172a] shadow-lg shadow-sky-600/40"><Icons.Plus size={28} className="text-white" /></button>
+                        <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 ${view === 'future' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.Calendar size={24} /> <span className="text-[10px] font-bold">Futuro</span></button>
+                    </div>
                 </div>
             );
         };
