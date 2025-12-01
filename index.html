@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GlassFinance</title>
+    <title>Finanzas de la familia</title>
     
     <!-- PWA Settings -->
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#020617">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/16112/16112513.png">
+    <link rel="apple-touch-icon" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
+    <link rel="icon" type="image/png" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
     <link id="manifest-placeholder" rel="manifest">
 
     <!-- 1. Dependencias React & Recharts (UMD) -->
@@ -26,20 +27,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: #020617; -webkit-tap-highlight-color: transparent; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         
         .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.1); /* Borde sutil celeste */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
         
-        .animate-in { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -86,13 +88,13 @@
         const GROUPS_COL = "shared_groups";
 
         const manifest = {
-            name: "GlassFinance",
-            short_name: "GlassFi",
+            name: "Finanzas de la familia",
+            short_name: "Finanzas",
             start_url: window.location.href,
             display: "standalone",
-            background_color: "#0f172a",
-            theme_color: "#0f172a",
-            icons: [{ src: "https://cdn-icons-png.flaticon.com/512/16112/16112513.png", sizes: "512x512", type: "image/png" }]
+            background_color: "#020617",
+            theme_color: "#020617",
+            icons: [{ src: "https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png", sizes: "512x512", type: "image/png" }]
         };
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
@@ -139,7 +141,17 @@
             { name: 'other', icon: <Icons.PieChart /> },
         ];
 
-        const COLOR_PALETTE = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#6366f1', '#0f766e', '#be123c'];
+        // NUEVA PALETA: Azul, Celeste, Negro (y grises oscuros para soporte)
+        const COLOR_PALETTE = [
+            '#0ea5e9', // Sky Blue
+            '#3b82f6', // Blue
+            '#2563eb', // Royal Blue
+            '#06b6d4', // Cyan
+            '#60a5fa', // Light Blue
+            '#1e293b', // Slate 800 (Dark)
+            '#0f172a', // Slate 900 (Darker)
+            '#000000', // Black
+        ];
 
         // --- COMPONENTS ---
         const GlassCard = ({ children, className = '', onClick, style }) => (
@@ -184,13 +196,15 @@
                     if (amt > 0) {
                         const gName = t.groupName || 'Varios';
                         const meta = groupMeta.find(g => g.name === gName); 
-                        let color = meta ? meta.color : 'from-pink-500 to-purple-600';
+                        // Default Blue/Celeste theme
+                        let color = meta ? meta.color : 'from-blue-600 to-cyan-500';
                         if (!meta) {
                             const lower = gName.toLowerCase();
-                            if (lower.includes('naranja')) color = 'from-orange-500 to-red-500';
-                            else if (lower.includes('galicia')) color = 'from-amber-500 to-orange-400';
-                            else if (lower.includes('icbc')) color = 'from-red-600 to-red-800';
-                            else if (lower.includes('a pagar')) color = 'from-emerald-500 to-emerald-800';
+                            // Mapping legacy groups to new Blue/Cyan palette
+                            if (lower.includes('naranja')) color = 'from-sky-600 to-sky-400';
+                            else if (lower.includes('galicia')) color = 'from-blue-700 to-blue-500';
+                            else if (lower.includes('icbc')) color = 'from-cyan-700 to-cyan-500';
+                            else if (lower.includes('a pagar')) color = 'from-slate-700 to-slate-900';
                         }
                         
                         if (!grps[gName]) grps[gName] = { total: 0, items: [], color };
@@ -240,13 +254,12 @@
                                         onClick={() => onSelect(tx)}
                                         className="glass-panel rounded-xl p-3 md:p-4 flex items-center gap-4 transition-all duration-300 group cursor-pointer relative overflow-hidden hover:scale-[1.01]"
                                         style={{ 
-                                            background: `linear-gradient(90deg, rgba(255,255,255,0.05) 0%, ${tx.color}22 100%)` 
+                                            // Dynamic blue/cyan glow based on item color
+                                            background: `linear-gradient(90deg, rgba(255,255,255,0.02) 0%, ${tx.color}15 100%)`,
+                                            borderColor: `${tx.color}30`
                                         }}
                                     >
-                                        {/* Hover Overlay Gradient */}
-                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-                                             style={{ background: `linear-gradient(45deg, transparent, ${tx.color}40)` }}></div>
-
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(45deg, transparent, ${tx.color}20)` }}></div>
                                         <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: tx.color }}></div>
                                         <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900/50 flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden">
                                             {tx.image ? (
@@ -284,109 +297,7 @@
             );
         };
 
-        // --- DATA SEEDER ---
-        const seedData = (db) => {
-            const batch = window.fb.writeBatch(db);
-            const { doc } = window.fb;
-            
-            const getDate = (currentQuota) => {
-                const dec2025 = new Date(2025, 11, 1);
-                dec2025.setMonth(dec2025.getMonth() - (currentQuota - 1));
-                return dec2025.toISOString().split('T')[0];
-            };
-
-            const add = (desc, amount, group, quotaC=1, quotaT=1, cat='Varios', color='#ec4899') => {
-                const id = Math.random().toString(36).substr(2, 9);
-                const ref = doc(db, TRANSACTIONS_COL, id);
-                batch.set(ref, {
-                    type: 'expense',
-                    subtype: quotaT > 1 ? 'credit' : 'fixed',
-                    amount: amount * quotaT,
-                    description: desc,
-                    category: cat,
-                    groupName: group,
-                    date: getDate(quotaC),
-                    installments: quotaT,
-                    icon: 'shopping',
-                    color: color
-                });
-            };
-
-            // A PAGAR
-            const grp1 = "A PAGAR";
-            add('EPEC', 85000, grp1, 1, 1, 'Servicios', '#06b6d4');
-            add('Aguas Cordobesas', 45000, grp1, 1, 1, 'Servicios', '#3b82f6');
-            add('Nobis', 100000, grp1, 1, 3, 'Salud', '#10b981'); 
-            add('Gas', 12000, grp1, 1, 1, 'Servicios', '#f59e0b');
-            add('Google', 45000, grp1, 1, 1, 'Suscripciones', '#ef4444');
-            add('NETFLIX', 18000, grp1, 1, 1, 'Suscripciones', '#ef4444');
-            add('Flow', 65000, grp1, 1, 1, 'Servicios', '#8b5cf6');
-            add('Mercado Pago', 50000, grp1, 3, 12, 'Varios', '#3b82f6');
-            add('All Boys', 30000, grp1, 1, 1, 'Deportes', '#ffffff');
-            add('Préstamo Gobierno', 15000, grp1, 1, 1, 'Deudas', '#6366f1');
-            add('Monotributo', 20000, grp1, 1, 1, 'Impuestos', '#f59e0b');
-            add('Auto', 450000, grp1, 8, 42, 'Vehículo', '#ec4899');
-            add('Seguro', 60000, grp1, 3, 4, 'Seguros', '#10b981');
-            add('MeLi', 4000, grp1, 1, 1, 'Compras', '#f59e0b');
-
-            // NARANJA
-            const grp2 = "NARANJA";
-            add('MANTENIMIENTO', 8000, grp2, 1, 1, 'Bancario', '#f59e0b');
-            add('HELADERA', 69286, grp2, 7, 14, 'Hogar', '#ef4444');
-            add('CELULAR', 38600, grp2, 7, 12, 'Tecnología', '#8b5cf6');
-            add('CARTERA', 5833, grp2, 5, 6, 'Ropa', '#ec4899');
-            add('IMPUESTOS', 3000, grp2, 1, 1, 'Impuestos', '#10b981');
-            add('ZAPATILLAS MA', 26667, grp2, 5, 6, 'Ropa', '#ec4899');
-            add('ROPA SPORTS', 34000, grp2, 1, 1, 'Ropa', '#ec4899');
-            add('PASTILLAS', 15000, grp2, 3, 3, 'Salud', '#06b6d4');
-            add('RESPUESTO PA', 59333, grp2, 2, 3, 'Vehículo', '#6366f1');
-            add('CASA', 33333, grp2, 1, 3, 'Hogar', '#f59e0b');
-            add('KANGOO', 216000, grp2, 1, 3, 'Vehículo', '#ec4899');
-            add('ROPA KARMYA', 66667, grp2, 2, 3, 'Ropa', '#ec4899');
-            add('GORRA Y +', 30000, grp2, 1, 6, 'Ropa', '#ec4899');
-            add('BATERIA', 28333, grp2, 2, 6, 'Vehículo', '#3b82f6');
-
-            // GALICIA
-            const grp3 = "TARJETA GALICIA";
-            add('MERCADO LIBRE', 4000, grp3, 11, 12, 'Compras', '#f59e0b');
-            add('PC', 40000, grp3, 8, 12, 'Tecnología', '#8b5cf6');
-            add('JOYSTICK', 6000, grp3, 8, 12, 'Tecnología', '#8b5cf6');
-            add('CAFÉ', 5000, grp3, 8, 12, 'Comida', '#10b981');
-            add('FUENTE', 12000, grp3, 8, 9, 'Tecnología', '#8b5cf6');
-            add('CAFES Y BT', 3200, grp3, 7, 12, 'Varios', '#10b981');
-            add('TALLERES', 160000, grp3, 1, 1, 'Vehículo', '#3b82f6');
-            add('KARMIA', 18333, grp3, 6, 6, 'Ropa', '#ec4899');
-            add('ROPA INVIERNO', 60000, grp3, 5, 6, 'Ropa', '#ec4899');
-            add('CAMPERA CUERO', 25000, grp3, 5, 6, 'Ropa', '#ec4899');
-            add('ZAPATOS', 19000, grp3, 5, 6, 'Ropa', '#ec4899');
-            add('STITCH', 36000, grp3, 5, 6, 'Varios', '#f59e0b');
-            add('CELULARES', 40000, grp3, 5, 12, 'Tecnología', '#8b5cf6');
-            add('IMP SELLOS', 3000, grp3, 1, 1, 'Impuestos', '#10b981');
-            add('MANDOLINA', 17000, grp3, 4, 6, 'Hogar', '#f59e0b');
-            add('TINTA', 6000, grp3, 4, 6, 'Oficina', '#06b6d4');
-            add('LAVARROPAS', 77500, grp3, 4, 6, 'Hogar', '#f59e0b');
-            add('JUEGOS', 20000, grp3, 1, 1, 'Ocio', '#8b5cf6');
-            add('ROPA CARO', 16667, grp3, 1, 3, 'Ropa', '#ec4899');
-            add('ROPA LUCAS', 36667, grp3, 1, 6, 'Ropa', '#ec4899');
-            add('ML HIGIEN', 12000, grp3, 1, 12, 'Salud', '#10b981');
-
-            // ICBC
-            const grp4 = "ICBC";
-            add('LIFE SEGUROS', 6400, grp4, 1, 1, 'Seguros', '#10b981');
-            add('AIRE ACOND', 105000, grp4, 9, 12, 'Hogar', '#3b82f6');
-            add('ROMANO HNOS', 3000, grp4, 9, 12, 'Varios', '#f59e0b');
-            add('IMPUESTOS', 5000, grp4, 1, 1, 'Impuestos', '#10b981');
-            add('LIFE SEGURO', 7000, grp4, 1, 1, 'Seguros', '#10b981');
-            add('IVA', 4000, grp4, 1, 1, 'Impuestos', '#10b981');
-            add('COMISIÓN', 3500, grp4, 1, 1, 'Bancario', '#f59e0b');
-            add('CELULARES', 160000, grp4, 4, 12, 'Tecnología', '#8b5cf6');
-            add('CARGADOR IP', 11833, grp4, 2, 6, 'Tecnología', '#8b5cf6');
-            add('SEGURO', 1700, grp4, 1, 1, 'Seguros', '#10b981');
-
-            return batch.commit();
-        };
-
-        // --- MAIN APP ---
+        // --- APP LOGIC ---
         const App = () => {
             const [currentDate] = useState(new Date(2025, 11, 1)); 
             const [transactions, setTransactions] = useState([]);
@@ -395,17 +306,19 @@
             const [selectedFutureMonth, setSelectedFutureMonth] = useState(null);
             
             const [showModal, setShowModal] = useState(false);
+            const [showImportModal, setShowImportModal] = useState(false);
             const [showGroupModal, setShowGroupModal] = useState(false);
             const [editingId, setEditingId] = useState(null);
             const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '' });
+            const [importText, setImportText] = useState("");
 
             const [formData, setFormData] = useState({
                 type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', 
-                groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#ec4899'
+                groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#3b82f6'
             });
 
             const [dbReady, setDbReady] = useState(false);
-            const [isLoadingSeed, setIsLoadingSeed] = useState(false);
+            const [isSaving, setIsSaving] = useState(false);
 
             useEffect(() => {
                 const initDb = () => {
@@ -422,16 +335,14 @@
                                 onSnapshot(q, (snapshot) => {
                                     const txs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                                     setTransactions(txs);
-                                });
+                                }, err => console.log("Waiting permissions..."));
+                                
                                 onSnapshot(collection(db, GROUPS_COL), (snapshot) => {
                                     const metas = snapshot.docs.map(doc => doc.data());
                                     setGroupMeta(metas);
                                 });
                             })
-                            .catch(e => {
-                                console.error(e);
-                                alert("Error conexión: " + e.message);
-                            });
+                            .catch(e => { console.error(e); alert("Error conexión Firebase: " + e.message); });
                     }
                 };
                 if (window.firebaseDB) initDb();
@@ -439,32 +350,94 @@
                 return () => window.removeEventListener('firebase-modules-ready', initDb);
             }, []);
 
-            const handleInstall = async () => {
-                // ... (previous logic)
+            const handleInstall = async () => { /* ... */ };
+
+            // -- IMPORT LOGIC --
+            const parseAndImport = async () => {
+                if(!dbReady) return;
+                setIsSaving(true);
+                const batch = window.fb.writeBatch(window.firebaseDB);
+                const { doc } = window.fb;
+                
+                const getDate = (currentQuota) => {
+                    const dec2025 = new Date(2025, 11, 1);
+                    dec2025.setMonth(dec2025.getMonth() - (currentQuota - 1));
+                    return dec2025.toISOString().split('T')[0];
+                };
+
+                const segments = importText.split('$');
+                if (segments.length < 2) {
+                    alert("Formato no reconocido.");
+                    setIsSaving(false);
+                    return;
+                }
+
+                let currentDesc = segments[0].trim();
+                let currentGroup = "Importado";
+                if(currentDesc.includes("A PAGAR")) currentGroup = "A PAGAR";
+                
+                for (let i = 1; i < segments.length; i++) {
+                    const seg = segments[i].trim();
+                    const match = seg.match(/^([\d\.]+)/);
+                    if (match) {
+                        const amountStr = match[1];
+                        const amount = Number(amountStr.replace(/\./g, ''));
+                        const rest = seg.substring(match[0].length).trim();
+                        const quotaMatch = rest.match(/^(\d+)\/(\d+)/);
+                        let quotaC = 1, quotaT = 1;
+                        let nextDesc = rest;
+
+                        if (quotaMatch) {
+                            quotaC = Number(quotaMatch[1]);
+                            quotaT = Number(quotaMatch[2]);
+                            nextDesc = rest.substring(quotaMatch[0].length).trim();
+                        }
+
+                        if (currentDesc.includes("NARANJA")) currentGroup = "NARANJA";
+                        if (currentDesc.includes("GALICIA")) currentGroup = "TARJETA GALICIA";
+                        if (currentDesc.includes("ICBC")) currentGroup = "ICBC";
+
+                        // Assign Colors based on group logic for consistent theme
+                        let color = '#3b82f6'; // Default Blue
+                        if(currentGroup.includes('NARANJA')) color = '#0ea5e9'; // Sky
+                        if(currentGroup.includes('GALICIA')) color = '#2563eb'; // Royal
+                        if(currentGroup.includes('ICBC')) color = '#06b6d4'; // Cyan
+                        if(currentGroup.includes('PAGAR')) color = '#1e293b'; // Slate
+
+                        const id = Math.random().toString(36).substr(2, 9);
+                        const ref = doc(window.firebaseDB, TRANSACTIONS_COL, id);
+                        batch.set(ref, {
+                            type: 'expense',
+                            subtype: quotaT > 1 ? 'credit' : 'fixed',
+                            amount: amount * quotaT,
+                            description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto",
+                            category: 'Varios',
+                            groupName: currentGroup,
+                            date: getDate(quotaC),
+                            installments: quotaT,
+                            icon: 'shopping',
+                            color: color
+                        });
+                        currentDesc = nextDesc;
+                    }
+                }
+                await batch.commit();
+                setIsSaving(false);
+                setShowImportModal(false);
+                setImportText("");
             };
 
-            const loadInitialData = async () => {
-                if(!dbReady) return;
-                setIsLoadingSeed(true);
-                try {
-                    await seedData(window.firebaseDB);
-                } catch(e) {
-                    console.error(e);
-                    alert("Error al importar datos. Revisa permisos.");
-                }
-                setIsLoadingSeed(false);
+            const loadDefaultList = () => {
+                const defaultText = `A PAGARMONTOCUOTAEPEC$85.000Aguas Cordobesas$45.000Nobis$100.0001/3Gas$12.000Google$45.000NETFLIX$18.000flow$65.000Personal LPersonal CMercado Pago$50.0003/12All Boys$30.000Préstamo Gobierno$15.000Monotributo$20.000Auto$450.0008/42Seguro$60.0003/4MeLi$4.000TOTAL$999.000NARANJAMANTENIMIENTO$8.000HELADERA$69.2867/14CELULAR$38.6007/12CARTERA$5.8335/6IMPUESTOS$3.000ZAPATILLAS MA$26.6675/6ROPA SPORTS$34.000PASTILLAS$15.0003/3RESPUESTO PA$59.3332/3CASA$33.3331/3KANGOO$216.0001/3ROPA KARMYA$66.6672/3GORRA Y +$30.0001/6BATERIA$28.3332/6TOTAL$634.052TARJETA GALICIAMERCADO LIBRE$4.00011/12PC$40.0008/12JOYSTICK$6.0008/12CAFÉ$5.0008/12FUENTE$12.0008/9CAFES Y BLUETOOH$3.2007/12TALLERES$160.000KARMIA$18.3336/6ROPA DE INVIERNO$60.0005/6CAMPERA DE CUERO$25.0005/6ZAPATOS$19.0005/6STITCH$36.0005/6CELULARES$40.0005/12IMPUESTO DE SELLOS$3.000MANDOLINA$17.0004/6TINTA$6.0004/6LAVARROPAS$77.5004/6JUEGOS$20.000ROPA CARO$16.6671/3ROPA LUCAS$36.6671/6MERCADO LIBRE HIGIEN$12.0001/12TOTAL$617.367ICBCLIFE SEGUROS$6.400AIRE ACONDICIONADO$105.0009/12ROMANO HNOS$3.0009/12IMPUESTOS$5.000LIFE SEGURO$7.000IVA$4.000COMISIÓN$3.500CELULARES$160.0004/12CARGADOR IPHONE$11.8332/6SEGURO$1.700TOTAL$307.433`;
+                setImportText(defaultText);
             };
 
             const dashboardTotals = useMemo(() => {
-                const m = currentDate.getMonth();
-                const y = currentDate.getFullYear();
-                let expense = 0;
+                const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0;
                 transactions.filter(t => t.type === 'expense').forEach(t => {
-                    const txDate = new Date(t.date);
-                    let val = 0;
+                    const txDate = new Date(t.date); let val = 0;
                     if (t.installments > 1) {
-                        const start = txDate.getFullYear() * 12 + txDate.getMonth();
-                        const target = y * 12 + m;
+                        const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
                         if (target >= start && target < start + t.installments) val = t.amount / t.installments;
                     } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) val = t.amount;
                     expense += val;
@@ -475,24 +448,15 @@
             const futureData = useMemo(() => {
                 const data = [];
                 for(let i=0; i<6; i++) {
-                    const d = new Date(currentDate);
-                    d.setMonth(d.getMonth() + i);
-                    const m = d.getMonth();
-                    const y = d.getFullYear();
-                    let total = 0, tarjetas = 0;
+                    const d = new Date(currentDate); d.setMonth(d.getMonth() + i); const m = d.getMonth(); const y = d.getFullYear(); let total = 0, tarjetas = 0;
                     transactions.forEach(t => {
                         if(t.type === 'expense') {
-                            const txDate = new Date(t.date);
-                            let val = 0;
+                            const txDate = new Date(t.date); let val = 0;
                             if (t.installments > 1) {
-                                const start = txDate.getFullYear() * 12 + txDate.getMonth();
-                                const target = y * 12 + m;
+                                const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
                                 if (target >= start && target < start + t.installments) val = t.amount / t.installments;
                             } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) val = t.amount;
-                            if (val > 0) {
-                                total += val;
-                                if (t.installments > 1 || t.groupName.toLowerCase().includes('tarjeta')) tarjetas += val;
-                            }
+                            if (val > 0) { total += val; if (t.installments > 1 || t.groupName.toLowerCase().includes('tarjeta')) tarjetas += val; }
                         }
                     });
                     data.push({ name: d.toLocaleString('es-ES', { month: 'short' }).toUpperCase(), total, tarjetas, index: m, year: y });
@@ -500,52 +464,24 @@
                 return data;
             }, [transactions, currentDate]);
 
-            const openAdd = () => {
-                setEditingId(null);
-                setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#ec4899', date: new Date().toISOString().split('T')[0] });
-                setShowModal(true);
-            };
-
-            const openEdit = (tx) => {
-                setEditingId(tx.id);
-                setFormData({ ...tx, amount: tx.amount, imageUrl: '' });
-                setShowModal(true);
-            };
-
+            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#3b82f6', date: new Date().toISOString().split('T')[0] }); setShowModal(true); };
+            const openEdit = (tx) => { setEditingId(tx.id); setFormData({ ...tx, amount: tx.amount, imageUrl: '' }); setShowModal(true); };
+            
             const saveTx = async () => {
                 if (!formData.description || !formData.amount) return;
-                if (!dbReady) {
-                    alert("Base de datos no conectada. Espera un momento.");
-                    return;
-                }
+                if (!dbReady) { alert("Base de datos no conectada. Revisa tu internet o permisos."); return; }
                 try {
                     const finalImg = formData.imageUrl || formData.image;
                     const txData = { ...formData, amount: Number(formData.amount), image: finalImg, date: editingId ? formData.date : new Date().toISOString().split('T')[0] };
                     const { collection, addDoc, updateDoc, doc } = window.fb;
-                    
                     if (editingId) await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId), txData);
                     else await addDoc(collection(window.firebaseDB, TRANSACTIONS_COL), txData);
-                    
                     setShowModal(false);
-                } catch(e) {
-                    console.error(e);
-                    alert("Error al guardar: " + e.message);
-                }
+                } catch(e) { console.error(e); alert("Error al guardar: " + e.message); }
             };
 
-            const deleteTx = async () => {
-                if (confirm('¿Eliminar gasto?') && dbReady) {
-                    const { deleteDoc, doc } = window.fb;
-                    await deleteDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId));
-                    setShowModal(false);
-                }
-            };
-
-            const openGroupEdit = (name, currentColor) => {
-                setGroupEditData({ oldName: name, newName: name, color: currentColor });
-                setShowGroupModal(true);
-            };
-
+            const deleteTx = async () => { if (confirm('¿Eliminar gasto?') && dbReady) { const { deleteDoc, doc } = window.fb; await deleteDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
+            const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
             const saveGroupEdit = async () => {
                 if (!dbReady) return;
                 const { oldName, newName, color } = groupEditData;
@@ -559,27 +495,22 @@
                 await batch.commit();
                 setShowGroupModal(false);
             };
-
-            const handleFile = (e) => {
-                const f = e.target.files[0];
-                if (f) {
-                    const r = new FileReader();
-                    r.onload = () => setFormData(p => ({ ...p, image: r.result }));
-                    r.readAsDataURL(f);
-                }
-            };
-
-            if (!dbReady) return <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-white animate-pulse">Conectando...</div>;
+            const handleFile = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = () => setFormData(p => ({ ...p, image: r.result })); r.readAsDataURL(f); } };
 
             return (
                 <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24">
                     <header className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-2.5 rounded-xl border border-white/10 shadow-xl"><Icons.Wallet className="text-pink-400" size={24} /></div>
-                            <div><h1 className="text-2xl font-bold text-white tracking-tight">GlassFinance</h1><p className="text-pink-400 text-xs font-mono font-bold uppercase tracking-widest">{currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</p></div>
+                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-2.5 rounded-xl border border-white/10 shadow-xl">
+                                <img src="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png" className="w-8 h-8" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold text-white tracking-tight">Finanzas de la familia</h1>
+                                <p className="text-pink-400 text-xs font-mono font-bold uppercase tracking-widest">{currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</p>
+                            </div>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={handleInstall} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all"><Icons.Download size={20} /></button>
+                            <button onClick={() => setShowImportModal(true)} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Importar / Pegar"><Icons.UploadCloud size={20} /></button>
                             <button onClick={openAdd} className="bg-pink-600 hover:bg-pink-500 text-white p-3 rounded-full shadow-lg shadow-pink-500/30 transition-all"><Icons.Plus size={24} /></button>
                         </div>
                     </header>
@@ -598,12 +529,11 @@
                                         <div className="p-3 bg-white/5 rounded-full"><Icons.TrendingDown className="text-rose-400" /></div>
                                     </div>
                                 </GlassCard>
-                                
                                 {transactions.length === 0 ? (
                                     <div className="text-center py-10">
-                                        <p className="text-white/50 mb-4">No hay gastos registrados aún.</p>
-                                        <button onClick={loadInitialData} disabled={isLoadingSeed} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 mx-auto disabled:opacity-50">
-                                            {isLoadingSeed ? 'Cargando...' : <><Icons.UploadCloud size={20}/> Importar Gastos Predeterminados</>}
+                                        <p className="text-white/50 mb-4">No hay gastos visibles.</p>
+                                        <button onClick={() => setShowImportModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 mx-auto">
+                                            <Icons.UploadCloud size={20}/> Importar / Pegar Datos
                                         </button>
                                     </div>
                                 ) : (
@@ -611,7 +541,6 @@
                                 )}
                             </div>
                         )}
-                        {/* ... Rest of future view and modals remains similar but connected to new data functions ... */}
                         {view === 'future' && (
                             <div className="animate-in space-y-6">
                                 {!selectedFutureMonth ? (
@@ -648,12 +577,35 @@
                         )}
                     </main>
 
-                    <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-[#0f172a]/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center px-4 z-40 pb-2">
-                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`flex flex-col items-center gap-1 ${view === 'dashboard' ? 'text-pink-500' : 'text-slate-500'}`}><Icons.PieChart size={24} /> <span className="text-[10px] font-bold">Hoy</span></button>
-                        <button onClick={openAdd} className="bg-pink-600 rounded-full w-14 h-14 flex items-center justify-center -mt-8 border-4 border-[#0f172a] shadow-lg shadow-pink-600/40"><Icons.Plus size={28} className="text-white" /></button>
-                        <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 ${view === 'future' ? 'text-pink-500' : 'text-slate-500'}`}><Icons.Calendar size={24} /> <span className="text-[10px] font-bold">Futuro</span></button>
-                    </div>
+                    {/* IMPORT MODAL */}
+                    {showImportModal && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+                            <div className="bg-[#1e293b] w-full max-w-lg rounded-2xl border border-white/20 p-6 animate-in flex flex-col h-[80vh]">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-bold text-white text-lg">Importar Datos</h3>
+                                    <button onClick={() => setShowImportModal(false)}><Icons.X className="text-white/50 hover:text-white"/></button>
+                                </div>
+                                <div className="flex-1 flex flex-col gap-4">
+                                    <p className="text-xs text-white/60">Pega aquí tu lista de gastos (formato texto o excel). El sistema intentará detectar los montos y descripciones.</p>
+                                    <textarea 
+                                        className="w-full flex-1 bg-black/30 border border-white/10 rounded-xl p-4 text-xs font-mono text-white focus:border-pink-500 outline-none resize-none"
+                                        placeholder="Ej: EPEC $85.000..."
+                                        value={importText}
+                                        onChange={e => setImportText(e.target.value)}
+                                    ></textarea>
+                                    <button onClick={loadDefaultList} className="text-pink-400 text-xs hover:text-pink-300 underline text-left">Cargar Mis Datos (Tu Lista)</button>
+                                </div>
+                                <div className="flex gap-3 mt-4">
+                                    <button onClick={() => setShowImportModal(false)} className="flex-1 py-3 bg-white/10 text-white rounded-xl">Cancelar</button>
+                                    <button onClick={parseAndImport} disabled={isSaving || !importText} className="flex-1 py-3 bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+                                        {isSaving ? 'Procesando...' : <><Icons.Check size={18}/> Procesar</>}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
+                    {/* ADD/EDIT MODAL */}
                     {showModal && (
                         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/80 backdrop-blur-sm">
                             <div className="bg-[#1e293b] w-full md:max-w-lg md:rounded-3xl rounded-t-3xl border-t border-white/20 h-[85vh] md:h-auto flex flex-col overflow-hidden animate-in">
@@ -674,32 +626,18 @@
                                             <div><label className="text-xs text-pink-400 font-bold uppercase ml-1">Cuotas</label><select value={formData.installments} onChange={e => setFormData({...formData, installments: Number(e.target.value)})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white outline-none">{[1,3,6,9,12,18,24,30,42].map(n => <option key={n} value={n}>{n} cuotas</option>)}</select></div>
                                         </div>
                                     </div>
-                                    {/* COLOR PICKER IN ADD MODAL */}
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
                                         <label className="text-xs text-white/50 uppercase font-bold">Color del Gasto</label>
                                         <div className="flex gap-2 overflow-x-auto pb-2">
-                                            {COLOR_PALETTE.map(c => (
-                                                <button 
-                                                    key={c} 
-                                                    onClick={() => setFormData({...formData, color: c})} 
-                                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent opacity-50 hover:opacity-100'}`}
-                                                    style={{ backgroundColor: c }}
-                                                />
-                                            ))}
+                                            {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setFormData({...formData, color: c})} className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent opacity-50 hover:opacity-100'}`} style={{ backgroundColor: c }} />))}
                                         </div>
                                     </div>
-
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
                                         <div className="flex gap-2 text-xs font-bold text-white/50 uppercase"><span>Imagen o Icono</span></div>
                                         <div className="flex items-center gap-2 bg-black/30 rounded-lg p-2 border border-white/5"><Icons.Link size={16} className="text-white/40"/><input type="text" placeholder="https://..." value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value, image: ''})} className="bg-transparent text-sm w-full text-white outline-none" /></div>
                                         <div className="grid grid-cols-4 gap-2">
                                             <label className="aspect-square bg-white/5 border-dashed border border-white/20 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-white/10"><Icons.Image size={18} className="text-white/40 mb-1"/><span className="text-[8px] uppercase font-bold text-white/40">Subir</span><input type="file" className="hidden" onChange={handleFile} accept="image/*"/></label>
-                                            {/* Icon Selector */}
-                                            {ICON_GALLERY.slice(0,3).map(icon => (
-                                                <button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square rounded-lg flex items-center justify-center ${formData.icon === icon.name && !formData.image ? 'bg-pink-600' : 'bg-white/5 hover:bg-white/10'}`}>
-                                                    {icon.icon}
-                                                </button>
-                                            ))}
+                                            {ICON_GALLERY.slice(0,3).map(icon => (<button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square rounded-lg flex items-center justify-center ${formData.icon === icon.name && !formData.image ? 'bg-pink-600' : 'bg-white/5 hover:bg-white/10'}`}>{icon.icon}</button>))}
                                             {(formData.image || formData.imageUrl) && (<div className="col-span-1 aspect-square rounded-lg overflow-hidden border border-pink-500 relative"><img src={formData.imageUrl || formData.image} className="w-full h-full object-cover" /><button onClick={() => setFormData({...formData, image:'', imageUrl:''})} className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center"><Icons.X size={16} className="text-white"/></button></div>)}
                                         </div>
                                     </div>
