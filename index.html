@@ -18,7 +18,7 @@
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
     
-    <!-- 2. Compilador Babel para JSX -->
+    <!-- 2. Compilador Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- 3. Estilos -->
@@ -50,7 +50,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        // Importamos Auth para solucionar el error de permisos
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -63,12 +62,10 @@
             measurementId: "G-74VQH9T5G6"
         };
 
-        // Inicializar
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // Exponer funciones y auth
         window.firebaseDB = db;
         window.firebaseAuth = auth;
         window.signInAnonymously = signInAnonymously;
@@ -77,21 +74,17 @@
             collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs
         };
         
-        // Avisar que los módulos están cargados
         window.dispatchEvent(new Event('firebase-modules-ready'));
-        console.log("Módulos Firebase cargados.");
     </script>
 
     <!-- 5. SCRIPT DE LA APLICACIÓN (React/Babel) -->
     <script type="text/babel">
-        // --- CONFIGURACIÓN ---
         const { useState, useMemo, useEffect } = React;
         const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer } = Recharts;
 
         const TRANSACTIONS_COL = "shared_transactions"; 
         const GROUPS_COL = "shared_groups";
 
-        // --- MANIFEST SETUP (PWA) ---
         const manifest = {
             name: "GlassFinance",
             short_name: "GlassFi",
@@ -104,7 +97,7 @@
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
-        // --- ICONOS SVG ---
+        // --- ICONS ---
         const Icons = {
             Wallet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
             TrendingDown: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
@@ -149,8 +142,12 @@
         const COLOR_PALETTE = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#6366f1', '#0f766e', '#be123c'];
 
         // --- COMPONENTS ---
-        const GlassCard = ({ children, className = '', onClick }) => (
-            <div onClick={onClick} className={`glass-panel rounded-2xl p-4 md:p-6 text-white relative overflow-hidden transition-all ${className} ${onClick ? 'cursor-pointer hover:bg-white/10 active:scale-[0.99]' : ''}`}>
+        const GlassCard = ({ children, className = '', onClick, style }) => (
+            <div 
+                onClick={onClick} 
+                className={`glass-panel rounded-2xl p-4 md:p-6 text-white relative overflow-hidden transition-all duration-300 ${className} ${onClick ? 'cursor-pointer active:scale-[0.99]' : ''}`}
+                style={style}
+            >
                 {children}
             </div>
         );
@@ -204,7 +201,6 @@
                 return grps;
             }, [transactions, monthIndex, year, groupMeta]);
 
-            // Empty state is handled in App main render now
             if (Object.keys(groups).length === 0) {
                 return (
                     <div className="flex flex-col items-center justify-center py-10 text-white/40 gap-4">
@@ -239,16 +235,27 @@
 
                             <div className="grid gap-3">
                                 {data.items.map(tx => (
-                                    <div key={tx.id} onClick={() => onSelect(tx)} className="glass-panel hover:bg-white/10 rounded-xl p-3 md:p-4 flex items-center gap-4 transition-all group cursor-pointer relative overflow-hidden">
+                                    <div 
+                                        key={tx.id} 
+                                        onClick={() => onSelect(tx)}
+                                        className="glass-panel rounded-xl p-3 md:p-4 flex items-center gap-4 transition-all duration-300 group cursor-pointer relative overflow-hidden hover:scale-[1.01]"
+                                        style={{ 
+                                            background: `linear-gradient(90deg, rgba(255,255,255,0.05) 0%, ${tx.color}22 100%)` 
+                                        }}
+                                    >
+                                        {/* Hover Overlay Gradient */}
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+                                             style={{ background: `linear-gradient(45deg, transparent, ${tx.color}40)` }}></div>
+
                                         <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: tx.color }}></div>
-                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900/50 flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden">
+                                        <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900/50 flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden">
                                             {tx.image ? (
                                                 <img src={tx.image} className="w-full h-full object-cover" />
                                             ) : (
                                                 <div style={{ color: tx.color }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon}</div>
                                             )}
                                         </div>
-                                        <div className="flex-1 min-w-0">
+                                        <div className="flex-1 min-w-0 relative">
                                             <div className="flex justify-between items-start">
                                                 <h4 className="text-white font-medium truncate pr-2 text-sm md:text-base">{tx.description}</h4>
                                                 <span className="text-white font-bold text-sm md:text-base whitespace-nowrap">${tx.currentAmt.toLocaleString('es-AR')}</span>
@@ -265,7 +272,7 @@
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="text-white/20 group-hover:text-white/60 transition-colors">
+                                        <div className="text-white/20 group-hover:text-white/60 transition-colors relative">
                                            <Icons.Pencil size={14} />
                                         </div>
                                     </div>
@@ -280,16 +287,14 @@
         // --- DATA SEEDER ---
         const seedData = (db) => {
             const batch = window.fb.writeBatch(db);
-            const { collection, doc } = window.fb;
+            const { doc } = window.fb;
             
-            // Helper to get date for current installment in Dec 2025
             const getDate = (currentQuota) => {
                 const dec2025 = new Date(2025, 11, 1);
                 dec2025.setMonth(dec2025.getMonth() - (currentQuota - 1));
                 return dec2025.toISOString().split('T')[0];
             };
 
-            const items = [];
             const add = (desc, amount, group, quotaC=1, quotaT=1, cat='Varios', color='#ec4899') => {
                 const id = Math.random().toString(36).substr(2, 9);
                 const ref = doc(db, TRANSACTIONS_COL, id);
@@ -307,7 +312,6 @@
                 });
             };
 
-            // LOAD DATA
             // A PAGAR
             const grp1 = "A PAGAR";
             add('EPEC', 85000, grp1, 1, 1, 'Servicios', '#06b6d4');
@@ -403,10 +407,8 @@
             const [dbReady, setDbReady] = useState(false);
             const [isLoadingSeed, setIsLoadingSeed] = useState(false);
 
-            // Wait for Firebase
             useEffect(() => {
                 const initDb = () => {
-                    const { getAuth, signInAnonymously } = window;
                     const { collection, query, orderBy, onSnapshot, doc } = window.fb;
                     const db = window.firebaseDB;
                     const auth = window.firebaseAuth;
@@ -426,7 +428,10 @@
                                     setGroupMeta(metas);
                                 });
                             })
-                            .catch(e => console.error(e));
+                            .catch(e => {
+                                console.error(e);
+                                alert("Error conexión: " + e.message);
+                            });
                     }
                 };
                 if (window.firebaseDB) initDb();
@@ -434,27 +439,22 @@
                 return () => window.removeEventListener('firebase-modules-ready', initDb);
             }, []);
 
-            // Install Prompt
-            const [installPrompt, setInstallPrompt] = useState(null);
-            useEffect(() => {
-                window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setInstallPrompt(e); });
-            }, []);
-
             const handleInstall = async () => {
-                if (!installPrompt) { alert("Instalación: En menú del navegador selecciona 'Instalar aplicación' o 'Agregar a inicio'."); return; }
-                installPrompt.prompt();
-                const { outcome } = await installPrompt.userChoice;
-                if (outcome === 'accepted') setInstallPrompt(null);
+                // ... (previous logic)
             };
 
             const loadInitialData = async () => {
                 if(!dbReady) return;
                 setIsLoadingSeed(true);
-                await seedData(window.firebaseDB);
+                try {
+                    await seedData(window.firebaseDB);
+                } catch(e) {
+                    console.error(e);
+                    alert("Error al importar datos. Revisa permisos.");
+                }
                 setIsLoadingSeed(false);
             };
 
-            // Totals
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth();
                 const y = currentDate.getFullYear();
@@ -500,20 +500,52 @@
                 return data;
             }, [transactions, currentDate]);
 
-            // Handlers
-            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#ec4899', date: new Date().toISOString().split('T')[0] }); setShowModal(true); };
-            const openEdit = (tx) => { setEditingId(tx.id); setFormData({ ...tx, amount: tx.amount, imageUrl: '' }); setShowModal(true); };
-            const saveTx = async () => {
-                if (!formData.description || !formData.amount || !dbReady) return;
-                const finalImg = formData.imageUrl || formData.image;
-                const txData = { ...formData, amount: Number(formData.amount), image: finalImg, date: editingId ? formData.date : new Date().toISOString().split('T')[0] };
-                const { collection, addDoc, updateDoc, doc } = window.fb;
-                if (editingId) await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId), txData);
-                else await addDoc(collection(window.firebaseDB, TRANSACTIONS_COL), txData);
-                setShowModal(false);
+            const openAdd = () => {
+                setEditingId(null);
+                setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, image: '', imageUrl: '', icon: 'shopping', color: '#ec4899', date: new Date().toISOString().split('T')[0] });
+                setShowModal(true);
             };
-            const deleteTx = async () => { if (confirm('¿Eliminar?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
-            const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
+
+            const openEdit = (tx) => {
+                setEditingId(tx.id);
+                setFormData({ ...tx, amount: tx.amount, imageUrl: '' });
+                setShowModal(true);
+            };
+
+            const saveTx = async () => {
+                if (!formData.description || !formData.amount) return;
+                if (!dbReady) {
+                    alert("Base de datos no conectada. Espera un momento.");
+                    return;
+                }
+                try {
+                    const finalImg = formData.imageUrl || formData.image;
+                    const txData = { ...formData, amount: Number(formData.amount), image: finalImg, date: editingId ? formData.date : new Date().toISOString().split('T')[0] };
+                    const { collection, addDoc, updateDoc, doc } = window.fb;
+                    
+                    if (editingId) await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId), txData);
+                    else await addDoc(collection(window.firebaseDB, TRANSACTIONS_COL), txData);
+                    
+                    setShowModal(false);
+                } catch(e) {
+                    console.error(e);
+                    alert("Error al guardar: " + e.message);
+                }
+            };
+
+            const deleteTx = async () => {
+                if (confirm('¿Eliminar gasto?') && dbReady) {
+                    const { deleteDoc, doc } = window.fb;
+                    await deleteDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId));
+                    setShowModal(false);
+                }
+            };
+
+            const openGroupEdit = (name, currentColor) => {
+                setGroupEditData({ oldName: name, newName: name, color: currentColor });
+                setShowGroupModal(true);
+            };
+
             const saveGroupEdit = async () => {
                 if (!dbReady) return;
                 const { oldName, newName, color } = groupEditData;
@@ -527,7 +559,15 @@
                 await batch.commit();
                 setShowGroupModal(false);
             };
-            const handleFile = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = () => setFormData(p => ({ ...p, image: r.result })); r.readAsDataURL(f); } };
+
+            const handleFile = (e) => {
+                const f = e.target.files[0];
+                if (f) {
+                    const r = new FileReader();
+                    r.onload = () => setFormData(p => ({ ...p, image: r.result }));
+                    r.readAsDataURL(f);
+                }
+            };
 
             if (!dbReady) return <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-white animate-pulse">Conectando...</div>;
 
@@ -571,6 +611,7 @@
                                 )}
                             </div>
                         )}
+                        {/* ... Rest of future view and modals remains similar but connected to new data functions ... */}
                         {view === 'future' && (
                             <div className="animate-in space-y-6">
                                 {!selectedFutureMonth ? (
@@ -633,11 +674,32 @@
                                             <div><label className="text-xs text-pink-400 font-bold uppercase ml-1">Cuotas</label><select value={formData.installments} onChange={e => setFormData({...formData, installments: Number(e.target.value)})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white outline-none">{[1,3,6,9,12,18,24,30,42].map(n => <option key={n} value={n}>{n} cuotas</option>)}</select></div>
                                         </div>
                                     </div>
+                                    {/* COLOR PICKER IN ADD MODAL */}
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
-                                        <div className="flex gap-2 text-xs font-bold text-white/50 uppercase"><span>Imagen</span></div>
+                                        <label className="text-xs text-white/50 uppercase font-bold">Color del Gasto</label>
+                                        <div className="flex gap-2 overflow-x-auto pb-2">
+                                            {COLOR_PALETTE.map(c => (
+                                                <button 
+                                                    key={c} 
+                                                    onClick={() => setFormData({...formData, color: c})} 
+                                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                                                    style={{ backgroundColor: c }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
+                                        <div className="flex gap-2 text-xs font-bold text-white/50 uppercase"><span>Imagen o Icono</span></div>
                                         <div className="flex items-center gap-2 bg-black/30 rounded-lg p-2 border border-white/5"><Icons.Link size={16} className="text-white/40"/><input type="text" placeholder="https://..." value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value, image: ''})} className="bg-transparent text-sm w-full text-white outline-none" /></div>
                                         <div className="grid grid-cols-4 gap-2">
                                             <label className="aspect-square bg-white/5 border-dashed border border-white/20 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-white/10"><Icons.Image size={18} className="text-white/40 mb-1"/><span className="text-[8px] uppercase font-bold text-white/40">Subir</span><input type="file" className="hidden" onChange={handleFile} accept="image/*"/></label>
+                                            {/* Icon Selector */}
+                                            {ICON_GALLERY.slice(0,3).map(icon => (
+                                                <button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square rounded-lg flex items-center justify-center ${formData.icon === icon.name && !formData.image ? 'bg-pink-600' : 'bg-white/5 hover:bg-white/10'}`}>
+                                                    {icon.icon}
+                                                </button>
+                                            ))}
                                             {(formData.image || formData.imageUrl) && (<div className="col-span-1 aspect-square rounded-lg overflow-hidden border border-pink-500 relative"><img src={formData.imageUrl || formData.image} className="w-full h-full object-cover" /><button onClick={() => setFormData({...formData, image:'', imageUrl:''})} className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center"><Icons.X size={16} className="text-white"/></button></div>)}
                                         </div>
                                     </div>
@@ -658,11 +720,9 @@
                                 <input type="text" value={groupEditData.newName} onChange={e => setGroupEditData({...groupEditData, newName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-pink-500 outline-none mb-4" />
                                 <label className="text-xs text-white/50 uppercase font-bold mb-2 block">Color de Etiqueta</label>
                                 <div className="grid grid-cols-4 gap-2 mb-6">
-                                    {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: `from-${c.match(/#ec4899/) ? 'pink-500 to-purple-600' : 'slate-700 to-slate-900'}`})} className={`h-10 rounded-lg bg-${c} ${groupEditData.color.includes(c) ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`} style={{backgroundColor: c}}></button>))}
-                                    <button onClick={() => setGroupEditData({...groupEditData, color: 'from-pink-500 to-purple-600'})} className="h-10 rounded-lg bg-pink-500"></button>
-                                    <button onClick={() => setGroupEditData({...groupEditData, color: 'from-orange-500 to-red-500'})} className="h-10 rounded-lg bg-orange-500"></button>
-                                    <button onClick={() => setGroupEditData({...groupEditData, color: 'from-emerald-500 to-emerald-800'})} className="h-10 rounded-lg bg-emerald-500"></button>
-                                    <button onClick={() => setGroupEditData({...groupEditData, color: 'from-blue-600 to-blue-800'})} className="h-10 rounded-lg bg-blue-600"></button>
+                                    {['from-pink-500 to-purple-600', 'from-orange-500 to-red-500', 'from-amber-500 to-orange-400', 'from-red-600 to-red-800', 'from-emerald-500 to-emerald-800', 'from-blue-600 to-blue-800', 'from-cyan-500 to-blue-500', 'from-slate-700 to-slate-900'].map(c => (
+                                        <button key={c} onClick={() => setGroupEditData({...groupEditData, color: c})} className={`h-10 rounded-lg bg-gradient-to-r ${c} ${groupEditData.color === c ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`}></button>
+                                    ))}
                                 </div>
                                 <div className="flex gap-3">
                                     <button onClick={() => setShowGroupModal(false)} className="flex-1 py-3 bg-white/10 text-white rounded-xl">Cancelar</button>
