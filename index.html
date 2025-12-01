@@ -41,7 +41,7 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
         
-        .animate-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         input[type="color"] {
@@ -129,7 +129,7 @@
             Plus: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
             X: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
             PieChart: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>,
-            Receipt: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1z"/><line x1="14" y1="8" x2="8" y2="8"/><line x1="16" y1="12" x2="8" y2="12"/><line x1="13" y1="16" x2="8" y2="16"/></svg>,
+            Receipt: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><line x1="14" y1="8" x2="8" y2="8"/><line x1="16" y1="12" x2="8" y2="12"/><line x1="13" y1="16" x2="8" y2="16"/></svg>,
             Printer: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>,
             ChevronRight: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>,
             ChevronLeft: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>,
@@ -150,7 +150,8 @@
             Download: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
             UploadCloud: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>,
             Palette: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>,
-            FileSpreadsheet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+            FileSpreadsheet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>,
+            ClipboardCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
         };
 
         const ICON_GALLERY = [
@@ -230,7 +231,7 @@
             );
         };
 
-        const GroupedList = ({ transactions, monthIndex, year, onSelect, onEdit, groupMeta, onEditGroup }) => {
+        const GroupedList = ({ transactions, monthIndex, year, onSelect, onEdit, groupMeta, onEditGroup, checklistMode, onTogglePaid }) => {
             const getAmount = (tx) => {
                 const txDate = parseDate(tx.date); // FIX: Use safe date parsing
                 if (tx.installments > 1) {
@@ -302,33 +303,56 @@
                                 {data.items.map(tx => (
                                     <div 
                                         key={tx.id} 
-                                        onClick={() => onSelect(tx)}
-                                        className="glass-panel rounded-xl p-3 md:p-6 flex items-center gap-4 md:gap-6 transition-all duration-300 group cursor-pointer relative overflow-hidden hover:scale-[1.01]"
-                                        style={{ background: `linear-gradient(90deg, rgba(255,255,255,0.02) 0%, ${tx.color}15 100%)`, borderColor: `${tx.color}30` }}
+                                        onClick={() => checklistMode ? onTogglePaid(tx) : onSelect(tx)}
+                                        className={`glass-panel rounded-xl p-3 md:p-6 flex items-center gap-4 md:gap-6 transition-all duration-300 group cursor-pointer relative overflow-hidden hover:scale-[1.01] ${tx.isPaid ? 'bg-emerald-900/30' : ''}`}
+                                        style={{ 
+                                            background: tx.isPaid 
+                                                ? `linear-gradient(90deg, rgba(6, 78, 59, 0.4) 0%, rgba(16, 185, 129, 0.2) 100%)`
+                                                : `linear-gradient(90deg, rgba(255,255,255,0.02) 0%, ${tx.color}15 100%)`,
+                                            borderColor: tx.isPaid ? '#10b981' : `${tx.color}30`
+                                        }}
                                     >
-                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(45deg, transparent, ${tx.color}60)` }}></div>
-                                        <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: tx.color }}></div>
-                                        <div className="relative w-10 h-10 md:w-14 md:h-14 rounded-full bg-slate-900/50 flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden">
-                                            {tx.image ? <img src={tx.image} className="w-full h-full object-cover" /> : <div style={{ color: tx.color }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon}</div>}
+                                        {/* Hover Effect */}
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(45deg, transparent, ${tx.isPaid ? '#10b981' : tx.color}60)` }}></div>
+                                        
+                                        {/* Left Bar */}
+                                        <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: tx.isPaid ? '#10b981' : tx.color }}></div>
+                                        
+                                        {/* Icon/Image */}
+                                        <div className={`relative w-10 h-10 md:w-14 md:h-14 rounded-full flex-shrink-0 flex items-center justify-center border overflow-hidden ${tx.isPaid ? 'bg-emerald-900/50 border-emerald-500/50' : 'bg-slate-900/50 border-white/10'}`}>
+                                            {tx.image ? <img src={tx.image} className={`w-full h-full object-cover ${tx.isPaid ? 'opacity-50 grayscale' : ''}`} /> : <div style={{ color: tx.isPaid ? '#10b981' : tx.color }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon}</div>}
                                         </div>
+                                        
+                                        {/* Content */}
                                         <div className="flex-1 min-w-0 relative">
                                             <div className="flex justify-between items-start">
-                                                <h4 className="text-white font-medium truncate pr-2 text-sm md:text-xl">{tx.description}</h4>
-                                                <span className={`font-bold text-sm md:text-xl whitespace-nowrap ${tx.type === 'income' ? 'text-emerald-400' : 'text-white'}`}>{tx.type === 'income' ? '+' : ''}${tx.currentAmt.toLocaleString('es-AR')}</span>
+                                                <h4 className={`font-medium truncate pr-2 text-sm md:text-xl ${tx.isPaid ? 'text-emerald-400 line-through italic' : 'text-white'}`}>{tx.description}</h4>
+                                                <span className={`font-bold text-sm md:text-xl whitespace-nowrap ${tx.type === 'income' ? 'text-emerald-400' : tx.isPaid ? 'text-emerald-400 line-through' : 'text-white'}`}>
+                                                    {tx.type === 'income' ? '+' : ''}${tx.currentAmt.toLocaleString('es-AR')}
+                                                </span>
                                             </div>
                                             <div className="flex justify-between items-center mt-1">
-                                                <p className="text-white/40 text-xs md:text-sm flex items-center gap-1">{tx.category}</p>
+                                                <p className={`text-xs md:text-sm flex items-center gap-1 ${tx.isPaid ? 'text-emerald-500/70' : 'text-white/40'}`}>{tx.category}</p>
                                                 {tx.quotaInfo && (
-                                                    <div className="flex items-center gap-2 bg-black/30 px-2 py-0.5 rounded-md border border-white/5">
-                                                        <div className="w-12 md:w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                                            <div className="h-full rounded-full" style={{ width: `${(tx.quotaInfo.current/tx.quotaInfo.total)*100}%`, backgroundColor: tx.color }}></div>
+                                                    <div className={`flex items-center gap-2 px-2 py-0.5 rounded-md border ${tx.isPaid ? 'bg-emerald-900/40 border-emerald-500/30' : 'bg-black/30 border-white/5'}`}>
+                                                        <div className="w-12 md:w-20 h-1.5 rounded-full overflow-hidden bg-white/10">
+                                                            <div className="h-full rounded-full" style={{ width: `${(tx.quotaInfo.current/tx.quotaInfo.total)*100}%`, backgroundColor: tx.isPaid ? '#10b981' : tx.color }}></div>
                                                         </div>
-                                                        <span className="text-[10px] md:text-xs font-mono font-bold text-white/80">{tx.quotaInfo.current}/{tx.quotaInfo.total}</span>
+                                                        <span className={`text-[10px] md:text-xs font-mono font-bold ${tx.isPaid ? 'text-emerald-400' : 'text-white/80'}`}>{tx.quotaInfo.current}/{tx.quotaInfo.total}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
-                                        <button onClick={(e) => { e.stopPropagation(); onEdit(tx); }} className="relative p-2 text-white/20 hover:text-white bg-transparent hover:bg-white/10 rounded-full transition z-10"><Icons.Edit3 size={20} /></button>
+
+                                        {!checklistMode && <button onClick={(e) => { e.stopPropagation(); onEdit(tx); }} className="relative p-2 text-white/20 hover:text-white bg-transparent hover:bg-white/10 rounded-full transition z-10"><Icons.Edit3 size={20} /></button>}
+                                        
+                                        {/* PAID BADGE */}
+                                        {checklistMode && tx.isPaid && (
+                                            <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-emerald-500/20 px-3 py-1 rounded-lg border border-emerald-500/50 backdrop-blur-md">
+                                                <span className="text-emerald-400 font-bold text-xs tracking-widest">PAGADO</span>
+                                                <div className="text-emerald-400"><Icons.Check size={16} /></div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -345,7 +369,8 @@
             const [groupMeta, setGroupMeta] = useState([]); 
             const [view, setView] = useState('dashboard');
             const [selectedFutureMonth, setSelectedFutureMonth] = useState(null);
-            const [installPrompt, setInstallPrompt] = useState(null); // Added state
+            const [installPrompt, setInstallPrompt] = useState(null); 
+            const [checklistMode, setChecklistMode] = useState(false); // New state
             
             const [showModal, setShowModal] = useState(false);
             const [showImportModal, setShowImportModal] = useState(false);
@@ -416,7 +441,10 @@
                         const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
                         if (target >= start && target < start + t.installments) val = t.amount / t.installments;
                     } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) val = t.amount;
-                    expense += val;
+                    
+                    // Subtract if paid in current month context (assuming isPaid marks it for current month display)
+                    // Actually, simple logic: if isPaid, don't sum to Pending Total
+                    if (!t.isPaid) expense += val;
                 });
                 return expense;
             }, [transactions, currentDate]);
@@ -450,13 +478,23 @@
                     Categoría: tx.category,
                     Monto_Total: tx.amount,
                     Cuotas_Totales: tx.installments || 1,
-                    Tipo: tx.type === 'income' ? 'Ingreso' : 'Gasto'
+                    Tipo: tx.type === 'income' ? 'Ingreso' : 'Gasto',
+                    Pagado: tx.isPaid ? 'Sí' : 'No'
                 }));
                 
                 const ws = XLSX.utils.json_to_sheet(data);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Finanzas");
                 XLSX.writeFile(wb, "Finanzas_Familia.xlsx");
+            };
+
+            const togglePaid = async (tx) => {
+                 if (!dbReady) return;
+                 try {
+                     const { doc, updateDoc } = window.fb;
+                     const txRef = doc(window.firebaseDB, TRANSACTIONS_COL, tx.id);
+                     await updateDoc(txRef, { isPaid: !tx.isPaid });
+                 } catch (e) { console.error(e); }
             };
 
             const openAdd = () => { 
@@ -568,6 +606,7 @@
                             </div>
                         </div>
                         <div className="flex gap-2">
+                            <button onClick={() => setChecklistMode(!checklistMode)} className={`p-3 rounded-full transition-all ${checklistMode ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-white/10 text-white hover:bg-white/20'}`} title="Modo Tachar Pagos"><Icons.ClipboardCheck size={20} /></button>
                             <button onClick={handleInstall} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Instalar App"><Icons.Download size={20} /></button>
                             <button onClick={exportToExcel} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Exportar Excel"><Icons.FileSpreadsheet size={20} /></button>
                             <button onClick={() => setShowImportModal(true)} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Importar / Pegar"><Icons.UploadCloud size={20} /></button>
@@ -585,12 +624,12 @@
                             <div className="animate-in space-y-6">
                                 <GlassCard className="bg-gradient-to-r from-slate-800 to-slate-900 border-white/5 max-w-4xl mx-auto">
                                     <div className="flex justify-between items-start">
-                                        <div><p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total a Pagar</p><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter">${dashboardTotals.toLocaleString('es-AR')}</h2></div>
+                                        <div><p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Pendiente a Pagar</p><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter">${dashboardTotals.toLocaleString('es-AR')}</h2></div>
                                         <div className="p-3 bg-white/5 rounded-full"><Icons.TrendingDown className="text-sky-400" /></div>
                                     </div>
                                 </GlassCard>
                                 {transactions.length === 0 ? <div className="text-center py-10 text-white/50">No hay datos.</div> : 
-                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} />
+                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
                                 }
                             </div>
                         )}
@@ -623,7 +662,7 @@
                                 ) : (
                                     <div className="animate-in">
                                         <button onClick={() => setSelectedFutureMonth(null)} className="flex items-center gap-2 text-sky-400 font-bold mb-4 hover:text-white transition-colors"><Icons.ChevronLeft size={20} /> Volver a Proyección</button>
-                                        <GroupedList transactions={transactions} monthIndex={selectedFutureMonth.index} year={selectedFutureMonth.year} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} />
+                                        <GroupedList transactions={transactions} monthIndex={selectedFutureMonth.index} year={selectedFutureMonth.year} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
                                     </div>
                                 )}
                             </div>
