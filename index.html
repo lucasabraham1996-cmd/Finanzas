@@ -276,6 +276,7 @@
                             else if (lower.includes('galicia')) color = 'from-blue-700 to-blue-500';
                             else if (lower.includes('icbc')) color = 'from-cyan-700 to-cyan-500';
                             else if (lower.includes('a pagar')) color = 'from-slate-700 to-slate-900';
+                            else if (lower.includes('ingreso')) color = 'from-emerald-600 to-emerald-400';
                         }
                         
                         if (!grps[gName]) grps[gName] = { total: 0, items: [], color };
@@ -378,7 +379,7 @@
             const [view, setView] = useState('dashboard');
             const [selectedFutureMonth, setSelectedFutureMonth] = useState(null);
             const [installPrompt, setInstallPrompt] = useState(null); 
-            const [checklistMode, setChecklistMode] = useState(false); // New state
+            const [checklistMode, setChecklistMode] = useState(false); 
             
             const [showModal, setShowModal] = useState(false);
             const [showImportModal, setShowImportModal] = useState(false);
@@ -465,7 +466,9 @@
             }, []);
 
             const dashboardTotals = useMemo(() => {
-                const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0;
+                const m = currentDate.getMonth();
+                const y = currentDate.getFullYear();
+                let expense = 0;
                 let income = 0;
 
                 transactions.forEach(t => {
@@ -609,6 +612,12 @@
                         date: finalDate 
                     };
                     delete txData.currentInstallment; 
+                    
+                    // Force Group Name for Income
+                    if (formData.type === 'income') {
+                        txData.groupName = "Ingresos";
+                        txData.subtype = "fixed"; // Treat income as monthly fixed usually
+                    }
                     
                     const { collection, addDoc, updateDoc, doc } = window.fb;
                     if (editingId) await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId), txData);
@@ -838,13 +847,27 @@
                                     <div className="space-y-3">
                                         <div><label className="text-xs text-sky-400 font-bold uppercase ml-1">Descripción</label><input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="Ej: Supermercado" /></div>
                                         <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="text-xs text-sky-400 font-bold uppercase ml-1">Grupo</label>
-                                                <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="A PAGAR" />
-                                                <datalist id="dynamic-groups">
-                                                    {availableGroups.map(g => <option key={g} value={g} />)}
-                                                </datalist>
-                                            </div>
+                                            {formData.type === 'expense' ? (
+                                                <div>
+                                                    <label className="text-xs text-sky-400 font-bold uppercase ml-1">Grupo</label>
+                                                    <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="A PAGAR" />
+                                                    <datalist id="dynamic-groups">
+                                                        {availableGroups.map(g => <option key={g} value={g} />)}
+                                                    </datalist>
+                                                </div>
+                                            ) : (
+                                                // For Income, force group or hide
+                                                <div>
+                                                    <label className="text-xs text-emerald-400 font-bold uppercase ml-1">Tipo</label>
+                                                    <div className="flex items-center gap-2 h-full">
+                                                        <label className="flex items-center gap-2 text-white text-sm cursor-pointer">
+                                                            <input type="checkbox" checked={formData.subtype === 'fixed'} onChange={(e) => setFormData({...formData, subtype: e.target.checked ? 'fixed' : 'one-time'})} className="accent-emerald-500 w-5 h-5" />
+                                                            Fijo Mensual
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
                                             {/* Subcategoría (Varios, etc) */}
                                             <div>
                                                 <label className="text-xs text-sky-400 font-bold uppercase ml-1">Categoría</label>
@@ -856,7 +879,7 @@
                                         </div>
                                         
                                         {/* Advanced Installment Selector moved here */}
-                                        {formData.subtype === 'credit' && (
+                                        {formData.type === 'expense' && formData.subtype === 'credit' && (
                                             <div className="grid grid-cols-2 gap-3 p-4 bg-slate-800/50 rounded-xl border border-white/5">
                                                 <div>
                                                     <label className="text-xs text-sky-400 font-bold uppercase ml-1">Cuotas Totales</label>
