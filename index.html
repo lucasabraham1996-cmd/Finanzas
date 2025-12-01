@@ -52,6 +52,14 @@
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
         
         #root { min-height: 100dvh; display: flex; flex-direction: column; }
+        
+        .strikethrough { position: relative; }
+        .strikethrough::after {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+            animation: strike 0.3s ease-out forwards;
+        }
+        @keyframes strike { from { width: 0; } to { width: 100%; } }
     </style>
 </head>
 <body>
@@ -88,7 +96,7 @@
     <!-- REACT APP -->
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
-        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer } = Recharts;
+        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
 
         const TRANSACTIONS_COL = "shared_transactions"; 
         const GROUPS_COL = "shared_groups";
@@ -402,6 +410,7 @@
                 groupSet.add("NARANJA");
                 groupSet.add("TARJETA GALICIA");
                 groupSet.add("ICBC");
+                groupSet.add("Ingresos"); // Default group for income
                 
                 // Add from transactions
                 transactions.forEach(t => {
@@ -457,17 +466,30 @@
 
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0;
-                transactions.filter(t => t.type === 'expense').forEach(t => {
-                    const txDate = parseDate(t.date); // FIX
+                let income = 0;
+
+                transactions.forEach(t => {
+                    const txDate = parseDate(t.date);
                     let val = 0;
+                    
+                    // Calculate value for this month
                     if (t.installments > 1) {
                         const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
                         if (target >= start && target < start + t.installments) val = t.amount / t.installments;
-                    } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) val = t.amount;
-                    
-                    if (!t.isPaid) expense += val;
+                    } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) {
+                        val = t.amount;
+                    }
+
+                    // Separate income and expense
+                    if (t.type === 'income') {
+                        income += val;
+                    } else {
+                        // Only sum to "A Pagar" if NOT paid yet
+                        if (!t.isPaid) expense += val;
+                    }
                 });
-                return expense;
+
+                return { expense, income, balance: income - expense };
             }, [transactions, currentDate]);
 
             const futureData = useMemo(() => {
@@ -488,6 +510,34 @@
                     data.push({ name: d.toLocaleString('es-ES', { month: 'short' }).toUpperCase(), total, tarjetas, index: m, year: y });
                 }
                 return data;
+            }, [transactions, currentDate]);
+            
+            // --- NEW: Category Pie Chart Data ---
+            const categoryData = useMemo(() => {
+                const m = currentDate.getMonth();
+                const y = currentDate.getFullYear();
+                const catMap = {};
+                
+                transactions.forEach(t => {
+                    if(t.type === 'expense') {
+                        const txDate = parseDate(t.date);
+                        let val = 0;
+                        if (t.installments > 1) {
+                            const start = txDate.getFullYear() * 12 + txDate.getMonth();
+                            const target = y * 12 + m;
+                            if (target >= start && target < start + t.installments) val = t.amount / t.installments;
+                        } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) {
+                            val = t.amount;
+                        }
+                        
+                        if(val > 0) {
+                            const cat = t.category || 'Otros';
+                            catMap[cat] = (catMap[cat] || 0) + val;
+                        }
+                    }
+                });
+                
+                return Object.entries(catMap).map(([name, value]) => ({ name, value }));
             }, [transactions, currentDate]);
 
             // EXCEL EXPORT
@@ -608,7 +658,6 @@
                         if(currentGroup.includes('ICBC')) color = '#06b6d4';
                         if(currentGroup.includes('PAGAR')) color = '#1e293b';
                         const ref = window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, Math.random().toString(36).substr(2,9));
-                        // FIX: Explicitly set empty string for image if none provided
                         batch.set(ref, { type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping', color, image: '' });
                         currentDesc = nextDesc;
                     }
@@ -645,14 +694,62 @@
                     <main className="flex-1">
                         {view === 'dashboard' && (
                             <div className="animate-in space-y-6">
-                                <GlassCard className="bg-gradient-to-r from-slate-800 to-slate-900 border-white/5 max-w-4xl mx-auto">
-                                    <div className="flex justify-between items-start">
-                                        <div><p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Pendiente a Pagar</p><h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter">${dashboardTotals.toLocaleString('es-AR')}</h2></div>
-                                        <div className="p-3 bg-white/5 rounded-full"><Icons.TrendingDown className="text-sky-400" /></div>
-                                    </div>
-                                </GlassCard>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <GlassCard className="bg-gradient-to-br from-emerald-900/40 to-slate-900/40 border-emerald-500/20">
+                                        <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-1">Ingresos</p>
+                                        <h2 className="text-3xl font-bold text-white tracking-tighter">+${dashboardTotals.income.toLocaleString('es-AR')}</h2>
+                                    </GlassCard>
+                                    <GlassCard className="bg-gradient-to-br from-rose-900/40 to-slate-900/40 border-rose-500/20">
+                                        <p className="text-rose-400 text-xs font-bold uppercase tracking-widest mb-1">A Pagar</p>
+                                        <h2 className="text-3xl font-bold text-white tracking-tighter">-${dashboardTotals.expense.toLocaleString('es-AR')}</h2>
+                                    </GlassCard>
+                                    <GlassCard className="bg-gradient-to-r from-sky-600 to-indigo-600 border-sky-400/30 relative overflow-hidden">
+                                        <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                                        <p className="text-sky-100 text-xs font-bold uppercase tracking-widest mb-1">Saldo Restante</p>
+                                        <h2 className="text-4xl font-bold text-white tracking-tighter">${dashboardTotals.balance.toLocaleString('es-AR')}</h2>
+                                    </GlassCard>
+                                </div>
+
                                 {transactions.length === 0 ? <div className="text-center py-10 text-white/50">No hay datos.</div> : 
-                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
+                                    <>
+                                        <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
+                                        
+                                        {/* CHARTS SECTION */}
+                                        <div className="mt-12">
+                                            <h3 className="text-xl font-bold text-white mb-6 pl-2 border-l-4 border-sky-500">Análisis de Gastos</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <GlassCard className="h-80 flex flex-col items-center justify-center">
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <PieChart>
+                                                            <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                                                                {categoryData.map((entry, index) => (
+                                                                    <Cell key={`cell-${index}`} fill={COLOR_PALETTE[index % COLOR_PALETTE.length]} stroke="rgba(255,255,255,0.1)" />
+                                                                ))}
+                                                            </Pie>
+                                                            <RechartsTooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={v=>`$${v.toLocaleString('es-AR')}`} />
+                                                            <Legend verticalAlign="bottom" height={36} iconType="circle"/>
+                                                        </PieChart>
+                                                    </ResponsiveContainer>
+                                                </GlassCard>
+                                                <GlassCard className="flex flex-col justify-center p-6">
+                                                     <h4 className="text-white/70 text-sm font-bold mb-4 uppercase tracking-wide">Top Categorías</h4>
+                                                     <div className="space-y-4">
+                                                        {categoryData.sort((a,b) => b.value - a.value).slice(0, 4).map((cat, idx) => (
+                                                            <div key={idx}>
+                                                                <div className="flex justify-between text-sm mb-1">
+                                                                    <span className="text-white font-medium">{cat.name}</span>
+                                                                    <span className="text-white/60">${cat.value.toLocaleString('es-AR')}</span>
+                                                                </div>
+                                                                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                                                    <div className="h-full rounded-full" style={{ width: `${(cat.value / dashboardTotals.expense) * 100}%`, backgroundColor: COLOR_PALETTE[idx % COLOR_PALETTE.length] }}></div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                     </div>
+                                                </GlassCard>
+                                            </div>
+                                        </div>
+                                    </>
                                 }
                             </div>
                         )}
