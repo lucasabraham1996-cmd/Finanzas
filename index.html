@@ -52,6 +52,15 @@
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
         
         #root { min-height: 100dvh; display: flex; flex-direction: column; }
+
+        /* Strikethrough animation */
+        .strikethrough { position: relative; }
+        .strikethrough::after {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+            animation: strike 0.3s ease-out forwards;
+        }
+        @keyframes strike { from { width: 0; } to { width: 100%; } }
     </style>
 </head>
 <body>
@@ -233,7 +242,7 @@
 
         const GroupedList = ({ transactions, monthIndex, year, onSelect, onEdit, groupMeta, onEditGroup, checklistMode, onTogglePaid }) => {
             const getAmount = (tx) => {
-                const txDate = parseDate(tx.date); // FIX: Use safe date parsing
+                const txDate = parseDate(tx.date);
                 if (tx.installments > 1) {
                     const startMonthIndex = txDate.getFullYear() * 12 + txDate.getMonth();
                     const targetMonthIndex = year * 12 + monthIndex;
@@ -247,7 +256,7 @@
 
             const getQuotaInfo = (tx) => {
                 if (tx.installments <= 1) return null;
-                const txDate = parseDate(tx.date); // FIX: Use safe date parsing
+                const txDate = parseDate(tx.date);
                 const targetMonthIndex = year * 12 + monthIndex;
                 const startMonthIndex = txDate.getFullYear() * 12 + txDate.getMonth();
                 const current = targetMonthIndex - startMonthIndex + 1;
@@ -435,15 +444,13 @@
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0;
                 transactions.filter(t => t.type === 'expense').forEach(t => {
-                    const txDate = parseDate(t.date); // FIX
+                    const txDate = parseDate(t.date);
                     let val = 0;
                     if (t.installments > 1) {
                         const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
                         if (target >= start && target < start + t.installments) val = t.amount / t.installments;
                     } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) val = t.amount;
                     
-                    // Subtract if paid in current month context (assuming isPaid marks it for current month display)
-                    // Actually, simple logic: if isPaid, don't sum to Pending Total
                     if (!t.isPaid) expense += val;
                 });
                 return expense;
@@ -455,7 +462,7 @@
                     const d = new Date(currentDate); d.setMonth(d.getMonth() + i); const m = d.getMonth(); const y = d.getFullYear(); let total = 0, tarjetas = 0;
                     transactions.forEach(t => {
                         if(t.type === 'expense') {
-                            const txDate = parseDate(t.date); // FIX
+                            const txDate = parseDate(t.date);
                             let val = 0;
                             if (t.installments > 1) {
                                 const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
@@ -508,7 +515,7 @@
                 let currentQuota = 1;
                 if(tx.subtype === 'credit') {
                     const today = new Date(currentDate); 
-                    const txDate = parseDate(tx.date); // FIX
+                    const txDate = parseDate(tx.date);
                     const monthsDiff = (today.getFullYear() - txDate.getFullYear()) * 12 + (today.getMonth() - txDate.getMonth());
                     currentQuota = Math.max(1, monthsDiff + 1);
                 }
@@ -519,7 +526,8 @@
             const saveTx = async () => {
                 if (!formData.description || !formData.amount) return;
                 try {
-                    const finalImg = formData.imageUrl || formData.image;
+                    // FIX: Ensure finalImg is never undefined. Use '' as fallback.
+                    const finalImg = formData.imageUrl || formData.image || '';
                     
                     // Logic to set purchase date based on "Current Installment"
                     let finalDate = editingId ? formData.date : toLocalDateString(new Date());
@@ -586,7 +594,8 @@
                         if(currentGroup.includes('ICBC')) color = '#06b6d4';
                         if(currentGroup.includes('PAGAR')) color = '#1e293b';
                         const ref = window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, Math.random().toString(36).substr(2,9));
-                        batch.set(ref, { type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping', color });
+                        // FIX: Explicitly set empty string for image if none provided
+                        batch.set(ref, { type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping', color, image: '' });
                         currentDesc = nextDesc;
                     }
                 }
