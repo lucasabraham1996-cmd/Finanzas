@@ -52,15 +52,6 @@
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
         
         #root { min-height: 100dvh; display: flex; flex-direction: column; }
-
-        /* Strikethrough animation */
-        .strikethrough { position: relative; }
-        .strikethrough::after {
-            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
-            background-color: rgba(255, 255, 255, 0.5);
-            animation: strike 0.3s ease-out forwards;
-        }
-        @keyframes strike { from { width: 0; } to { width: 100%; } }
     </style>
 </head>
 <body>
@@ -402,6 +393,29 @@
                 const cats = new Set(transactions.map(t => t.category).filter(Boolean));
                 return Array.from(cats);
             }, [transactions]);
+            
+            // ADDED: Dynamic groups logic for the datalist
+            const availableGroups = useMemo(() => {
+                const groupSet = new Set();
+                // Add defaults
+                groupSet.add("A PAGAR");
+                groupSet.add("NARANJA");
+                groupSet.add("TARJETA GALICIA");
+                groupSet.add("ICBC");
+                
+                // Add from transactions
+                transactions.forEach(t => {
+                    if (t.groupName) groupSet.add(t.groupName);
+                });
+
+                // Add from metadata
+                groupMeta.forEach(g => {
+                    if (g.name) groupSet.add(g.name);
+                });
+
+                return Array.from(groupSet).sort();
+            }, [transactions, groupMeta]);
+
 
             // Install Prompt Listener
             useEffect(() => {
@@ -444,7 +458,7 @@
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0;
                 transactions.filter(t => t.type === 'expense').forEach(t => {
-                    const txDate = parseDate(t.date);
+                    const txDate = parseDate(t.date); // FIX
                     let val = 0;
                     if (t.installments > 1) {
                         const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
@@ -462,7 +476,7 @@
                     const d = new Date(currentDate); d.setMonth(d.getMonth() + i); const m = d.getMonth(); const y = d.getFullYear(); let total = 0, tarjetas = 0;
                     transactions.forEach(t => {
                         if(t.type === 'expense') {
-                            const txDate = parseDate(t.date);
+                            const txDate = parseDate(t.date); // FIX
                             let val = 0;
                             if (t.installments > 1) {
                                 const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
@@ -729,8 +743,10 @@
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label className="text-xs text-sky-400 font-bold uppercase ml-1">Grupo</label>
-                                                <input list="groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="A PAGAR" />
-                                                <datalist id="groups"><option value="A PAGAR" /><option value="NARANJA" /><option value="TARJETA GALICIA" /><option value="ICBC" /></datalist>
+                                                <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="A PAGAR" />
+                                                <datalist id="dynamic-groups">
+                                                    {availableGroups.map(g => <option key={g} value={g} />)}
+                                                </datalist>
                                             </div>
                                             {/* Subcategoría (Varios, etc) */}
                                             <div>
