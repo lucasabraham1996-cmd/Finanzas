@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finanzas de la familia</title>
     
-    <!-- PWA Settings -->
     <meta name="theme-color" content="#020617">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,7 +12,6 @@
     <link rel="icon" type="image/png" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
     <link id="manifest-placeholder" rel="manifest">
 
-    <!-- Dependencies -->
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
@@ -27,45 +25,24 @@
         html, body { height: 100%; margin: 0; padding: 0; background-color: #020617; }
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-        
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(56, 189, 248, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
         .animate-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        input[type="color"] {
-            -webkit-appearance: none; border: none; width: 32px; height: 32px;
-            border-radius: 50%; padding: 0; overflow: hidden; cursor: pointer;
-        }
+        input[type="color"] { -webkit-appearance: none; border: none; width: 32px; height: 32px; border-radius: 50%; padding: 0; overflow: hidden; cursor: pointer; }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
-        
         #root { min-height: 100dvh; display: flex; flex-direction: column; }
-        
         .strikethrough { position: relative; }
-        .strikethrough::after {
-            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
-            background-color: rgba(255, 255, 255, 0.5);
-            animation: strike 0.3s ease-out forwards;
-        }
+        .strikethrough::after { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background-color: rgba(255, 255, 255, 0.5); animation: strike 0.3s ease-out forwards; }
         @keyframes strike { from { width: 0; } to { width: 100%; } }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- FIREBASE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -93,9 +70,8 @@
         window.dispatchEvent(new Event('firebase-modules-ready'));
     </script>
 
-    <!-- REACT APP -->
     <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
+        const { useState, useMemo, useEffect, useRef } = React;
         const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
 
         const TRANSACTIONS_COL = "shared_transactions"; 
@@ -113,7 +89,6 @@
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
-        // --- UTILS ---
         const toLocalDateString = (date) => {
             const y = date.getFullYear();
             const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -127,11 +102,9 @@
             return new Date(y, m - 1, d);
         };
 
-        // --- ICONS ---
         const Icons = {
             Wallet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
             TrendingDown: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
-            TrendingUp: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
             Calendar: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
             CreditCard: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
             Plus: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
@@ -163,8 +136,7 @@
             Award: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
             Clock: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
             BarChart2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-            Send: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
-            MessageSquare: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+            Search: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
             Share: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         };
 
@@ -181,12 +153,14 @@
 
         const COLOR_PALETTE = ['#0ea5e9', '#3b82f6', '#2563eb', '#06b6d4', '#60a5fa', '#1e293b', '#0f172a', '#000000'];
 
-        // --- HELPER FUNCTIONS ---
-        // Default currentDate to Dec 2025 as requested for demo, but respect day > 15 logic if needed in future
-        // For this demo, we stick to Dec 2025 as the "Current" view
-        const getBillingMonth = () => new Date(2025, 11, 1);
+        const getBillingMonth = () => {
+            const today = new Date(2025, 11, 21); // Dec 21, 2025 (Month 11 is Dec)
+            if (today.getDate() >= 15) {
+                return new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            }
+            return new Date(today.getFullYear(), today.getMonth(), 1);
+        };
 
-        // --- COMPONENTS ---
         const GlassCard = ({ children, className = '', onClick, style }) => (
             <div 
                 onClick={onClick} 
@@ -290,7 +264,7 @@
                             else if (lower.includes('galicia')) color = 'from-blue-700 to-blue-500';
                             else if (lower.includes('icbc')) color = 'from-cyan-700 to-cyan-500';
                             else if (lower.includes('a pagar')) color = 'from-slate-700 to-slate-900';
-                            else if (lower.includes('ingresos')) color = 'from-emerald-600 to-emerald-400';
+                            else if (lower.includes('ingreso')) color = 'from-emerald-600 to-emerald-400';
                         }
                         
                         if (!grps[gName]) grps[gName] = { total: 0, items: [], color };
@@ -380,15 +354,16 @@
             );
         };
 
-        // --- APP LOGIC ---
         const App = () => {
-            const [currentDate] = useState(getBillingMonth()); 
+            const [currentDate, setCurrentDate] = useState(getBillingMonth());
+            
             const [transactions, setTransactions] = useState([]);
             const [groupMeta, setGroupMeta] = useState([]); 
             const [view, setView] = useState('dashboard');
             const [selectedFutureMonth, setSelectedFutureMonth] = useState(null);
             const [installPrompt, setInstallPrompt] = useState(null); 
             const [checklistMode, setChecklistMode] = useState(false); 
+            const [searchQuery, setSearchQuery] = useState("");
             
             const [showModal, setShowModal] = useState(false);
             const [showImportModal, setShowImportModal] = useState(false);
@@ -398,8 +373,6 @@
             const [editingId, setEditingId] = useState(null);
             const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '' });
             const [importText, setImportText] = useState("");
-            const [chatInput, setChatInput] = useState("");
-            const [chatHistory, setChatHistory] = useState([{role: 'bot', text: 'Hola, soy tu asistente financiero. ¿En qué puedo ayudarte hoy?'}]);
 
             const [formData, setFormData] = useState({
                 type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', 
@@ -427,7 +400,10 @@
             }, []);
 
             const handleInstall = async () => {
-                if (!installPrompt) { alert("Instalación: En menú del navegador selecciona 'Instalar aplicación' o 'Agregar a inicio'."); return; }
+                if (!installPrompt) {
+                    alert("Instalación: En menú del navegador selecciona 'Instalar aplicación' o 'Agregar a inicio'.");
+                    return;
+                }
                 installPrompt.prompt();
                 const { outcome } = await installPrompt.userChoice;
                 if (outcome === 'accepted') setInstallPrompt(null);
@@ -462,7 +438,7 @@
                     const current = (currentDate.getFullYear() - txDate.getFullYear()) * 12 + (currentDate.getMonth() - txDate.getMonth()) + 1;
                     return { ...t, remaining: (t.installments || 1) - current };
                 }).filter(t => t.remaining > 0).sort((a,b) => a.remaining - b.remaining).slice(0, 5);
-                const longestRemaining = creditTx.map(t => {
+                const longestRemaining = creditTx.filter(t => (t.amount/(t.installments||1)) > 20000).map(t => {
                      const txDate = parseDate(t.date);
                      const current = (currentDate.getFullYear() - txDate.getFullYear()) * 12 + (currentDate.getMonth() - txDate.getMonth()) + 1;
                      return { ...t, remaining: (t.installments || 1) - current };
@@ -470,10 +446,9 @@
                 return { mostExpensive, closestToFinish, longestRemaining };
             }, [transactions, currentDate]);
 
-            // FIX: Dashboard totals now sums ALL types, including Income
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0; let income = 0;
-                transactions.forEach(t => {
+                transactions.filter(t => !searchQuery || t.description.toLowerCase().includes(searchQuery.toLowerCase())).forEach(t => {
                     const txDate = parseDate(t.date); let val = 0;
                     if (t.installments > 1) {
                         const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
@@ -484,7 +459,7 @@
                     else if (!t.isPaid) expense += val;
                 });
                 return { expense, income, balance: income - expense };
-            }, [transactions, currentDate]);
+            }, [transactions, currentDate, searchQuery]);
 
             const futureData = useMemo(() => {
                 const data = [];
@@ -504,21 +479,6 @@
                 }
                 return data;
             }, [transactions, currentDate]);
-            
-            const categoryData = useMemo(() => {
-                const m = currentDate.getMonth(); const y = currentDate.getFullYear(); const catMap = {};
-                transactions.forEach(t => {
-                    if(t.type === 'expense') {
-                        const txDate = parseDate(t.date); let val = 0;
-                        if (t.installments > 1) {
-                            const start = txDate.getFullYear() * 12 + txDate.getMonth(); const target = y * 12 + m;
-                            if (target >= start && target < start + t.installments) val = t.amount / t.installments;
-                        } else if (t.subtype === 'fixed' || (txDate.getMonth() === m && txDate.getFullYear() === y)) val = t.amount;
-                        if(val > 0) { const cat = t.category || 'Otros'; catMap[cat] = (catMap[cat] || 0) + val; }
-                    }
-                });
-                return Object.entries(catMap).map(([name, value]) => ({ name, value }));
-            }, [transactions, currentDate]);
 
             const exportToExcel = () => {
                 const data = transactions.map(tx => ({ Fecha: tx.date, Descripción: tx.description, Grupo: tx.groupName, Categoría: tx.category, Monto_Total: tx.amount, Cuotas_Totales: tx.installments || 1, Tipo: tx.type === 'income' ? 'Ingreso' : 'Gasto', Pagado: tx.isPaid ? 'Sí' : 'No' }));
@@ -530,43 +490,27 @@
 
             const togglePaid = async (tx) => { if (!dbReady) return; try { const { doc, updateDoc } = window.fb; await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, tx.id), { isPaid: !tx.isPaid }); } catch (e) { console.error(e); } };
             const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, image: '', imageUrl: '', icon: 'shopping', color: '#0ea5e9', date: toLocalDateString(currentDate) }); setShowModal(true); };
-            
-            const openEdit = (tx) => { 
-                setEditingId(tx.id);
-                let currentQuota = 1;
-                if(tx.subtype === 'credit') {
-                    const today = new Date(currentDate); 
-                    const txDate = parseDate(tx.date); 
-                    const monthsDiff = (today.getFullYear() - txDate.getFullYear()) * 12 + (today.getMonth() - txDate.getMonth());
-                    currentQuota = Math.max(1, monthsDiff + 1);
-                }
-                setFormData({ ...tx, amount: tx.amount, imageUrl: '', currentInstallment: currentQuota }); 
-                setShowModal(true); 
-            };
+            const openEdit = (tx) => { setEditingId(tx.id); let currentQuota = 1; if(tx.subtype === 'credit') { const today = new Date(currentDate); const txDate = parseDate(tx.date); const monthsDiff = (today.getFullYear() - txDate.getFullYear()) * 12 + (today.getMonth() - txDate.getMonth()); currentQuota = Math.max(1, monthsDiff + 1); } setFormData({ ...tx, amount: tx.amount, imageUrl: '', currentInstallment: currentQuota }); setShowModal(true); };
             
             const saveTx = async () => {
                 if (!formData.description || !formData.amount) return;
                 try {
                     const finalImg = formData.imageUrl || formData.image || '';
-                    let finalDate = editingId ? formData.date : toLocalDateString(currentDate);
+                    let finalDate = editingId ? formData.date : formData.date || toLocalDateString(currentDate);
                     
-                    // If Income & Fixed, ensure correct subtype
-                    if (formData.type === 'income') {
-                        // Keep user selected subtype (fixed or one-time)
-                    } else if (formData.subtype === 'credit' && formData.currentInstallment > 1) { 
+                    if (formData.subtype === 'credit' && formData.currentInstallment > 1) { 
                         const targetDate = new Date(currentDate); 
                         targetDate.setMonth(targetDate.getMonth() - (formData.currentInstallment - 1)); 
                         finalDate = toLocalDateString(targetDate); 
                     }
-                    
+                    finalDate = formData.date;
+
                     const txData = { ...formData, amount: Number(formData.amount), image: finalImg, date: finalDate };
                     delete txData.currentInstallment; 
-                    
-                    // FIX: Force Income Group if none set
-                    if (formData.type === 'income' && (!txData.groupName || txData.groupName === 'A PAGAR')) {
-                         txData.groupName = "Ingresos";
+                    if (formData.type === 'income') { 
+                        if (!txData.groupName || txData.groupName === 'A PAGAR') txData.groupName = "Ingresos"; 
+                        // Keep subtype as chosen (fixed/one-time)
                     }
-                    
                     const { collection, addDoc, updateDoc, doc } = window.fb;
                     if (editingId) await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, editingId), txData); else await addDoc(collection(window.firebaseDB, TRANSACTIONS_COL), txData);
                     setShowModal(false);
@@ -610,42 +554,12 @@
                 await batch.commit(); setIsSaving(false); setShowImportModal(false); setImportText("");
             };
 
-            const handleChat = () => {
-                if (!chatInput.trim()) return;
-                const userMsg = chatInput;
-                setChatHistory(prev => [...prev, { role: 'user', text: userMsg }]);
-                setChatInput("");
-
-                setTimeout(() => {
-                    let response = "No estoy seguro de entender. Intenta preguntar por tus gastos.";
-                    const lower = userMsg.toLowerCase();
-                    
-                    if (lower.includes("liberar") || lower.includes("terminar") || lower.includes("libero")) {
-                        const amountMatch = userMsg.match(/(\d+)/);
-                        const targetDrop = amountMatch ? parseInt(amountMatch[0].replace(/\./g,'')) : 0;
-                        
-                        if (targetDrop > 0) {
-                            const currentTotal = futureData[0].total;
-                            const targetTotal = currentTotal - targetDrop;
-                            const freeMonth = futureData.find(m => m.total <= targetTotal);
-                            if (freeMonth) response = `Podrás liberar $${targetDrop.toLocaleString()} para el mes de **${freeMonth.name}**, cuando tus gastos bajen a $${freeMonth.total.toLocaleString()}.`;
-                            else response = `No veo una reducción de $${targetDrop.toLocaleString()} en el próximo año.`;
-                        } else {
-                             const lastDebt = insights.longestRemaining[0];
-                             if(lastDebt) {
-                                 const months = lastDebt.remaining;
-                                 response = `Tu deuda más larga es **${lastDebt.description}**. Terminarás de pagarla en **${months} meses**.`;
-                             }
-                        }
-                    } else if (lower.includes("gasto") && (lower.includes("mas") || lower.includes("mayor"))) {
-                         const top = insights.mostExpensive[0];
-                         response = `Tu gasto mensual más alto es **${top.description}** por $${(top.amount/(top.installments||1)).toLocaleString()}.`;
-                    } else if (lower.includes("total") || lower.includes("debo")) {
-                        response = `Este mes tienes pendientes $${dashboardTotals.expense.toLocaleString()}.`;
-                    }
-                    setChatHistory(prev => [...prev, { role: 'bot', text: response }]);
-                }, 600);
-            };
+            const filteredTransactions = transactions.filter(t => 
+                !searchQuery || 
+                t.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                t.groupName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                t.category.toLowerCase().includes(searchQuery.toLowerCase())
+            );
 
             return (
                 <div className="w-full max-w-7xl mx-auto p-4 md:p-8 pb-24 min-h-[100dvh]">
@@ -672,7 +586,7 @@
                         <button onClick={() => setView('dashboard')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'dashboard' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Resumen</button>
                         <button onClick={() => setView('future')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'future' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Futuro</button>
                         <button onClick={() => setView('insights')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'insights' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Análisis</button>
-                        <button onClick={() => setView('chat')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'chat' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Asistente IA</button>
+                        <button onClick={() => setView('search')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'search' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Buscar</button>
                     </div>
 
                     <main className="flex-1">
@@ -694,48 +608,10 @@
                                     </GlassCard>
                                 </div>
                                 {transactions.length === 0 ? <div className="text-center py-10 text-white/50">No hay datos.</div> : 
-                                    <>
-                                        <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
-                                        
-                                        <div className="mt-12">
-                                            <h3 className="text-xl font-bold text-white mb-6 pl-2 border-l-4 border-sky-500">Análisis de Gastos</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <GlassCard className="h-80 flex flex-col items-center justify-center">
-                                                    <ResponsiveContainer width="100%" height="100%">
-                                                        <PieChart>
-                                                            <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                                                                {categoryData.map((entry, index) => (
-                                                                    <Cell key={`cell-${index}`} fill={COLOR_PALETTE[index % COLOR_PALETTE.length]} stroke="rgba(255,255,255,0.1)" />
-                                                                ))}
-                                                            </Pie>
-                                                            <RechartsTooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={v=>`$${v.toLocaleString('es-AR')}`} />
-                                                            <Legend verticalAlign="bottom" height={36} iconType="circle"/>
-                                                        </PieChart>
-                                                    </ResponsiveContainer>
-                                                </GlassCard>
-                                                <GlassCard className="flex flex-col justify-center p-6">
-                                                     <h4 className="text-white/70 text-sm font-bold mb-4 uppercase tracking-wide">Top Categorías</h4>
-                                                     <div className="space-y-4">
-                                                        {categoryData.sort((a,b) => b.value - a.value).slice(0, 4).map((cat, idx) => (
-                                                            <div key={idx}>
-                                                                <div className="flex justify-between text-sm mb-1">
-                                                                    <span className="text-white font-medium">{cat.name}</span>
-                                                                    <span className="text-white/60">${cat.value.toLocaleString('es-AR')}</span>
-                                                                </div>
-                                                                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                                                                    <div className="h-full rounded-full" style={{ width: `${(cat.value / dashboardTotals.expense) * 100}%`, backgroundColor: COLOR_PALETTE[idx % COLOR_PALETTE.length] }}></div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                     </div>
-                                                </GlassCard>
-                                            </div>
-                                        </div>
-                                    </>
+                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
                                 }
                             </div>
                         )}
-                        {/* Future View Logic Omitted for brevity, assumed consistent with previous */}
                         {view === 'future' && (
                             <div className="animate-in space-y-6">
                                 {!selectedFutureMonth ? (
@@ -815,29 +691,39 @@
                                 </div>
                             </div>
                         )}
-                        {/* Chat View */}
-                        {view === 'chat' && (
+                        {/* Search View */}
+                        {view === 'search' && (
                             <div className="animate-in h-[75vh] flex flex-col">
-                                <div className="flex-1 overflow-y-auto space-y-4 p-4">
-                                    {chatHistory.map((msg, i) => (
-                                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-sky-600 text-white rounded-tr-none' : 'bg-white/10 text-white rounded-tl-none'}`}>
-                                                {msg.text.split('**').map((part, j) => j % 2 === 1 ? <strong key={j}>{part}</strong> : part)}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="p-4 bg-black/20">
+                                <div className="p-4 bg-black/20 mb-4 rounded-xl">
                                     <div className="flex gap-2">
                                         <input 
-                                            value={chatInput}
-                                            onChange={(e) => setChatInput(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleChat()}
-                                            placeholder="Pregunta ej: ¿Cuándo libero 100.000?"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Buscar gasto, categoría o grupo..."
                                             className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-3 text-white outline-none focus:border-sky-500"
+                                            autoFocus
                                         />
-                                        <button onClick={handleChat} className="bg-sky-600 p-3 rounded-full text-white"><Icons.Send size={20}/></button>
+                                        <button className="bg-sky-600 p-3 rounded-full text-white"><Icons.Search size={20}/></button>
                                     </div>
+                                </div>
+                                <div className="flex-1 overflow-y-auto space-y-4 pb-20">
+                                    {searchQuery ? (
+                                        filteredTransactions.length > 0 ? (
+                                            filteredTransactions.map(tx => (
+                                                <div key={tx.id} onClick={() => setShowReceipt(tx)} className="glass-panel p-4 rounded-xl flex justify-between items-center cursor-pointer hover:bg-white/10">
+                                                    <div>
+                                                        <div className="font-bold text-white">{tx.description}</div>
+                                                        <div className="text-xs text-white/50">{tx.groupName} - {tx.date}</div>
+                                                    </div>
+                                                    <div className="font-bold text-sky-400">${(tx.amount / (tx.installments || 1)).toLocaleString('es-AR')}</div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-center text-white/50 mt-10">No se encontraron resultados.</div>
+                                        )
+                                    ) : (
+                                        <div className="text-center text-white/30 mt-10">Escribe para buscar...</div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -935,6 +821,8 @@
                                                         {Array.from({length: formData.installments || 1}, (_, i) => i + 1).map(n => <option key={n} value={n}>Cuota {n}</option>)}
                                                     </select>
                                                 </div>
+                                                
+                                                {/* New: Valor Cuota Input */}
                                                 <div className="col-span-2 mt-2 pt-2 border-t border-white/5">
                                                     <label className="text-xs text-white/50 uppercase font-bold mb-1 block">Valor de la Cuota (Mensual)</label>
                                                     <div className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2 border border-white/10 focus-within:border-emerald-500/50 transition-colors">
@@ -957,6 +845,17 @@
                                                 </div>
                                             </div>
                                         )}
+                                        
+                                        {/* Date Input */}
+                                        <div>
+                                            <label className="text-xs text-sky-400 font-bold uppercase ml-1">Inicio / Compra</label>
+                                            <input 
+                                                type="date" 
+                                                value={formData.date} 
+                                                onChange={e => setFormData({...formData, date: e.target.value})} 
+                                                className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" 
+                                            />
+                                        </div>
                                     </div>
                                     
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
@@ -1011,7 +910,7 @@
                         <button onClick={openAdd} className="bg-sky-600 rounded-full w-14 h-14 flex items-center justify-center -mt-8 border-4 border-[#0f172a] shadow-lg shadow-sky-600/40"><Icons.Plus size={28} className="text-white" /></button>
                         <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 ${view === 'future' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.Calendar size={24} /> <span className="text-[10px] font-bold">Futuro</span></button>
                         <button onClick={() => setView('insights')} className={`flex flex-col items-center gap-1 ${view === 'insights' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.BarChart2 size={24} /> <span className="text-[10px] font-bold">Análisis</span></button>
-                        <button onClick={() => setView('chat')} className={`flex flex-col items-center gap-1 ${view === 'chat' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.MessageSquare size={24} /> <span className="text-[10px] font-bold">Chat</span></button>
+                        <button onClick={() => setView('search')} className={`flex flex-col items-center gap-1 ${view === 'search' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.Search size={24} /> <span className="text-[10px] font-bold">Buscar</span></button>
                     </div>
                 </div>
             );
