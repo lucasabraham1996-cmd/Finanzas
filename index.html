@@ -6,7 +6,7 @@
     <title>Finanzas de la familia</title>
     
     <!-- PWA Settings -->
-    <meta name="theme-color" content="#020617">
+    <meta name="theme-color" content="#0b1120">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
@@ -21,45 +21,98 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        html, body { height: 100%; margin: 0; padding: 0; background-color: #020617; }
+        :root {
+            /* Fondo Azul Oscuro */
+            --bg-page: #0b1120; 
+            --shadow-page-dark: #070a13;
+            --shadow-page-light: #0f182d;
+            
+            /* Recuadros Azules Claros */
+            --bg-card: #1d4ed8; 
+            --shadow-card-dark: #153aa1;
+            --shadow-card-light: #2562ff;
+        }
+
+        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-page); color: white; }
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-track { background: var(--bg-page); }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
         
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        /* Neumorphism Base Styles */
+        .neo-panel {
+            background-color: var(--bg-card);
+            border-radius: 1.25rem;
+            box-shadow: 8px 8px 16px var(--shadow-page-dark), -8px -8px 16px var(--shadow-page-light);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
+        .neo-inset {
+            background-color: var(--bg-card);
+            border-radius: 0.75rem;
+            box-shadow: inset 4px 4px 8px var(--shadow-card-dark), inset -4px -4px 8px var(--shadow-card-light);
+            color: white;
+        }
+        
+        .neo-button {
+            background-color: var(--bg-card);
+            border-radius: 9999px;
+            box-shadow: 4px 4px 8px var(--shadow-card-dark), -4px -4px 8px var(--shadow-card-light);
+            color: white;
+            transition: all 0.2s ease-in-out;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .neo-button:active {
+            box-shadow: inset 4px 4px 8px var(--shadow-card-dark), inset -4px -4px 8px var(--shadow-card-light);
+            border-color: transparent;
+        }
+
+        /* Page Level Neumorphism (For dark background elements) */
+        .neo-page-panel {
+            background-color: var(--bg-page);
+            border-radius: 1.25rem;
+            box-shadow: 8px 8px 16px var(--shadow-page-dark), -8px -8px 16px var(--shadow-page-light);
+            color: white;
+        }
+
+        .neo-page-inset {
+            background-color: var(--bg-page);
+            border-radius: 9999px;
+            box-shadow: inset 4px 4px 8px var(--shadow-page-dark), inset -4px -4px 8px var(--shadow-page-light);
+            color: white;
+        }
+
+        .neo-page-button {
+            background-color: var(--bg-page);
+            border-radius: 9999px;
+            box-shadow: 4px 4px 8px var(--shadow-page-dark), -4px -4px 8px var(--shadow-page-light);
+            transition: all 0.2s ease-in-out;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .neo-page-button:active, .neo-page-active {
+            box-shadow: inset 4px 4px 8px var(--shadow-page-dark), inset -4px -4px 8px var(--shadow-page-light);
+            color: #60a5fa;
+        }
+
+        .neo-nav {
+            background-color: var(--bg-page);
+            box-shadow: 0 -4px 20px var(--shadow-page-dark);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
         .animate-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        input[type="color"] {
-            -webkit-appearance: none; border: none; width: 32px; height: 32px;
-            border-radius: 50%; padding: 0; overflow: hidden; cursor: pointer;
-        }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
-        
         #root { min-height: 100dvh; display: flex; flex-direction: column; }
-        
-        .strikethrough { position: relative; }
-        .strikethrough::after {
-            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
-            background-color: rgba(255, 255, 255, 0.5);
-            animation: strike 0.3s ease-out forwards;
-        }
-        @keyframes strike { from { width: 0; } to { width: 100%; } }
     </style>
 </head>
 <body>
@@ -68,7 +121,7 @@
     <!-- FIREBASE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -77,8 +130,7 @@
             projectId: "finanzas-c0397",
             storageBucket: "finanzas-c0397.firebasestorage.app",
             messagingSenderId: "915605749318",
-            appId: "1:915605749318:web:5f60729bc0c3a04b43d447",
-            measurementId: "G-74VQH9T5G6"
+            appId: "1:915605749318:web:5f60729bc0c3a04b43d447"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -88,26 +140,26 @@
         window.firebaseDB = db;
         window.firebaseAuth = auth;
         window.signInAnonymously = signInAnonymously;
-        window.fb = { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs };
+        window.fb = { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch };
         
         window.dispatchEvent(new Event('firebase-modules-ready'));
     </script>
 
     <!-- REACT APP -->
     <script type="text/babel">
-        const { useState, useMemo, useEffect, useRef } = React;
+        const { useState, useMemo, useEffect } = React;
         const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
 
         const TRANSACTIONS_COL = "shared_transactions"; 
         const GROUPS_COL = "shared_groups";
 
         const manifest = {
-            name: "Finanzas de la familia",
+            name: "Finanzas Familiares",
             short_name: "Finanzas",
             start_url: window.location.href,
             display: "standalone",
-            background_color: "#020617",
-            theme_color: "#020617",
+            background_color: "#0b1120",
+            theme_color: "#1d4ed8",
             icons: [{ src: "https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png", sizes: "512x512", type: "image/png" }]
         };
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
@@ -127,11 +179,10 @@
             return new Date(y, m - 1, d);
         };
         
+        // Auto-switch to next month if day >= 15
         const getBillingMonth = () => {
-            // Simulated date: Dec 21, 2025. If real, use new Date()
-            const today = new Date(2025, 11, 21); 
+            const today = new Date();
             if (today.getDate() >= 15) {
-                // If day >= 15, current billing month is NEXT month
                 return new Date(today.getFullYear(), today.getMonth() + 1, 1);
             }
             return new Date(today.getFullYear(), today.getMonth(), 1);
@@ -139,28 +190,17 @@
 
         const getPaymentForMonth = (tx, month, year) => {
              let date = parseDate(tx.date);
-             
-             // Credit Card Shift: If >= 15th, shift start to next month
              if (tx.subtype === 'credit' && date.getDate() >= 15) {
                  date = new Date(date.getFullYear(), date.getMonth() + 1, 1);
              }
-             
-             // Installments Logic
              if (tx.installments > 1) {
                  const start = date.getFullYear() * 12 + date.getMonth();
                  const target = year * 12 + month;
-                 if (target >= start && target < start + tx.installments) {
-                     return tx.amount / tx.installments;
-                 }
+                 if (target >= start && target < start + tx.installments) return tx.amount / tx.installments;
                  return 0;
              }
-             
-             // Fixed Logic (Recurring)
              if (tx.subtype === 'fixed') return tx.amount;
-             
-             // One-Time Logic (Only if month/year match)
              if (date.getMonth() === month && date.getFullYear() === year) return tx.amount;
-             
              return 0;
         };
 
@@ -175,7 +215,6 @@
             X: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
             PieChart: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>,
             Receipt: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><line x1="14" y1="8" x2="8" y2="8"/><line x1="16" y1="12" x2="8" y2="12"/><line x1="13" y1="16" x2="8" y2="16"/></svg>,
-            Printer: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>,
             ChevronRight: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>,
             ChevronLeft: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>,
             ShoppingBag: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
@@ -185,7 +224,6 @@
             Zap: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
             Smartphone: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>,
             Gift: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>,
-            Bot: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>,
             Edit3: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
             Check: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
             Image: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
@@ -194,14 +232,14 @@
             Trash2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
             Download: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
             UploadCloud: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>,
-            Palette: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>,
             FileSpreadsheet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>,
             ClipboardCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>,
             Award: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
             Clock: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
             BarChart2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
             Search: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-            Share: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+            Pin: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.5c0-1.5-2-3.5-2-5.5v-3c0-1.7-1.3-3-3-3h-4c-1.7 0-3 1.3-3 3v3c0 2-2 4-2 5.5V17z"></path></svg>
         };
 
         const ICON_GALLERY = [
@@ -215,21 +253,19 @@
             { name: 'other', icon: <Icons.PieChart /> },
         ];
 
-        // Default Palette
         const COLOR_PALETTE = ['#0ea5e9', '#3b82f6', '#2563eb', '#06b6d4', '#60a5fa', '#1e293b', '#0f172a', '#000000'];
 
         // --- COMPONENTS ---
-        const GlassCard = ({ children, className = '', onClick, style }) => (
+        const NeoCard = ({ children, className = '', onClick, style }) => (
             <div 
                 onClick={onClick} 
-                className={`glass-panel rounded-2xl p-4 md:p-6 text-white relative overflow-hidden transition-all duration-300 ${className} ${onClick ? 'cursor-pointer active:scale-[0.99]' : ''}`}
+                className={`neo-panel p-4 md:p-6 relative transition-all duration-200 ${className} ${onClick ? 'cursor-pointer active:scale-[0.99] hover:brightness-110' : ''}`}
                 style={style}
             >
                 {children}
             </div>
         );
 
-        // Receipt Modal
         const ReceiptModal = ({ tx, onClose, onEdit }) => {
             if (!tx) return null;
             const currentQuota = tx.installments > 1 ? tx.quotaInfo?.current || 1 : 1;
@@ -248,42 +284,40 @@
             };
 
             return (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in">
-                    <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative">
-                        {/* Header Image/Color */}
-                        <div className="h-32 w-full relative" style={{ backgroundColor: tx.color }}>
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in">
+                    <div className="neo-panel w-full max-w-sm overflow-hidden relative border-none">
+                        <div className="h-32 w-full relative" style={{ backgroundColor: tx.color || '#2563eb' }}>
                             {tx.image && <img src={tx.image} className="w-full h-full object-cover opacity-50" />}
                             <div className="absolute top-4 right-4 flex gap-2">
-                                <button onClick={() => { onClose(); onEdit(tx); }} className="bg-black/20 p-2 rounded-full text-white hover:bg-black/40"><Icons.Edit3 size={20}/></button>
-                                <button onClick={onClose} className="bg-black/20 p-2 rounded-full text-white hover:bg-black/40"><Icons.X size={20}/></button>
+                                <button onClick={() => { onClose(); onEdit(tx); }} className="neo-button w-10 h-10"><Icons.Edit3 size={18}/></button>
+                                <button onClick={onClose} className="neo-button w-10 h-10"><Icons.X size={18}/></button>
                             </div>
                         </div>
-                        {/* Content */}
                         <div className="p-6 -mt-10 relative">
-                            <div className="bg-white rounded-2xl shadow-lg p-6 text-center border border-slate-100">
-                                <div className="w-16 h-16 rounded-full mx-auto -mt-14 mb-4 flex items-center justify-center text-white text-2xl shadow-md border-4 border-white" style={{backgroundColor: tx.color}}>
+                            <div className="neo-inset p-6 text-center border-none">
+                                <div className="w-16 h-16 rounded-full mx-auto -mt-14 mb-4 flex items-center justify-center text-white text-2xl neo-panel border-4 border-[#1d4ed8]" style={{backgroundColor: tx.color || '#2563eb'}}>
                                     {ICON_GALLERY.find(i=>i.name===tx.icon)?.icon || <Icons.Receipt/>}
                                 </div>
-                                <h2 className="text-xl font-bold text-slate-800 mb-1">{tx.description}</h2>
-                                <p className="text-sm text-slate-500 uppercase font-bold tracking-wide">{tx.groupName}</p>
-                                <div className="my-6 border-t border-dashed border-slate-300"></div>
+                                <h2 className="text-xl font-bold text-white mb-1">{tx.description}</h2>
+                                <p className="text-sm text-sky-200 uppercase font-bold tracking-wide">{tx.groupName}</p>
+                                <div className="my-6 border-t border-dashed border-white/20"></div>
                                 <div className="flex justify-between items-end mb-2">
-                                    <span className="text-slate-400 text-xs font-bold uppercase">Monto Cuota</span>
-                                    <span className="text-3xl font-bold text-slate-900">${amountStr}</span>
+                                    <span className="text-white/70 text-xs font-bold uppercase">Monto Cuota</span>
+                                    <span className="text-3xl font-bold text-white">${amountStr}</span>
                                 </div>
                                 {tx.installments > 1 && (
-                                    <div className="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                        <div className="flex justify-between text-xs font-bold text-slate-500 mb-2">
+                                    <div className="mt-4 bg-black/10 p-3 rounded-xl">
+                                        <div className="flex justify-between text-xs font-bold text-white/70 mb-2">
                                             <span>Cuota {currentQuota} de {totalQuota}</span>
                                             <span>{percentage.toFixed(0)}%</span>
                                         </div>
-                                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                                            <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${percentage}%`, backgroundColor: tx.color }}></div>
+                                        <div className="w-full bg-black/20 h-2 rounded-full overflow-hidden">
+                                            <div className="h-full rounded-full transition-all duration-1000 bg-sky-300" style={{ width: `${percentage}%` }}></div>
                                         </div>
-                                        <p className="text-[10px] text-slate-400 mt-2 text-left">Total Original: ${tx.amount.toLocaleString('es-AR')}</p>
+                                        <p className="text-[10px] text-white/50 mt-2 text-left">Total Original: ${tx.amount.toLocaleString('es-AR')}</p>
                                     </div>
                                 )}
-                                <button onClick={handleShare} className="mt-6 w-full py-3 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-emerald-700 transition"><Icons.Share size={18}/> Compartir</button>
+                                <button onClick={handleShare} className="mt-6 w-full py-3 neo-button font-bold gap-2"><Icons.Share size={18}/> Compartir</button>
                             </div>
                         </div>
                     </div>
@@ -312,14 +346,14 @@
                     if (val > 0) {
                         const gName = t.groupName || 'Varios';
                         const meta = groupMeta.find(g => g.name === gName); 
-                        let color = meta ? meta.color : 'from-blue-600 to-cyan-500';
+                        let color = meta ? meta.color : '#2563eb';
                         if (!meta) {
                             const lower = gName.toLowerCase();
-                            if (lower.includes('naranja')) color = 'from-sky-600 to-sky-400';
-                            else if (lower.includes('galicia')) color = 'from-blue-700 to-blue-500';
-                            else if (lower.includes('icbc')) color = 'from-cyan-700 to-cyan-500';
-                            else if (lower.includes('a pagar')) color = 'from-slate-700 to-slate-900';
-                            else if (lower.includes('ingreso')) color = 'from-emerald-600 to-emerald-400';
+                            if (lower.includes('naranja')) color = '#ea580c';
+                            else if (lower.includes('galicia')) color = '#d97706';
+                            else if (lower.includes('icbc')) color = '#dc2626';
+                            else if (lower.includes('a pagar')) color = '#64748b';
+                            else if (lower.includes('ingreso')) color = '#10b981';
                         }
                         
                         if (!grps[gName]) grps[gName] = { total: 0, items: [], color };
@@ -335,25 +369,24 @@
                 return grps;
             }, [transactions, monthIndex, year, groupMeta]);
 
-            if (Object.keys(groups).length === 0) return <div className="flex flex-col items-center justify-center py-10 text-white/40 gap-4"><Icons.PieChart size={48} className="opacity-20" /><p>No hay movimientos.</p></div>;
+            if (Object.keys(groups).length === 0) return <div className="flex flex-col items-center justify-center py-10 text-slate-400 gap-4"><Icons.PieChart size={48} className="opacity-50" /><p>No hay movimientos en este mes.</p></div>;
 
             return (
                 <div className="space-y-6 pb-20">
                     {Object.entries(groups).map(([groupName, data]) => (
                         <div key={groupName} className="animate-in">
-                            <div className={`flex items-center justify-between mb-4 p-4 rounded-2xl bg-gradient-to-r ${data.color} shadow-lg relative overflow-hidden group/header`}>
-                                <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]"></div>
-                                <div className="relative flex items-center gap-3">
-                                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md shadow-sm"><Icons.CreditCard size={20} className="text-white"/></div>
+                            <div className="neo-panel mb-4 p-4 flex items-center justify-between border-l-4" style={{ borderLeftColor: data.color }}>
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 neo-inset text-white" style={{ backgroundColor: data.color }}><Icons.CreditCard size={20} /></div>
                                     <div>
                                         <h3 className="text-white font-bold text-lg md:text-xl leading-tight uppercase tracking-wide flex items-center gap-2">
                                             {groupName}
-                                            <button onClick={() => onEditGroup(groupName, data.color)} className="opacity-50 hover:opacity-100 transition p-1 bg-white/10 rounded-full"><Icons.Edit3 size={14}/></button>
+                                            <button onClick={() => onEditGroup(groupName, data.color)} className="opacity-70 hover:opacity-100 transition p-1.5 neo-button" title="Editar Grupo"><Icons.Edit3 size={16}/></button>
                                         </h3>
-                                        <p className="text-white/70 text-[10px] md:text-xs font-medium">TOTAL</p>
+                                        <p className="text-white/60 text-[10px] md:text-xs font-medium">TOTAL DEL GRUPO</p>
                                     </div>
                                 </div>
-                                <div className="relative text-right"><span className="text-xl md:text-2xl font-bold text-white text-shadow-sm">${data.total.toLocaleString('es-AR')}</span></div>
+                                <div className="text-right"><span className="text-xl md:text-2xl font-bold text-white">${data.total.toLocaleString('es-AR')}</span></div>
                             </div>
 
                             <div className="grid gap-3">
@@ -361,45 +394,29 @@
                                     <div 
                                         key={tx.id} 
                                         onClick={() => checklistMode ? onTogglePaid(tx) : onSelect(tx)}
-                                        className={`glass-panel rounded-xl p-3 md:p-6 flex items-center gap-4 md:gap-6 transition-all duration-300 group cursor-pointer relative overflow-hidden hover:scale-[1.01] ${tx.isPaid ? 'bg-emerald-900/30' : ''}`}
-                                        style={{ 
-                                            background: tx.isPaid 
-                                                ? `linear-gradient(90deg, rgba(6, 78, 59, 0.4) 0%, rgba(16, 185, 129, 0.2) 100%)`
-                                                : `linear-gradient(90deg, rgba(255,255,255,0.02) 0%, ${tx.color}15 100%)`,
-                                            borderColor: tx.isPaid ? '#10b981' : `${tx.color}30`
-                                        }}
+                                        className={`neo-panel p-3 md:p-5 flex items-center gap-4 transition-all duration-200 cursor-pointer border-l-4 ${tx.isPaid ? 'opacity-60 bg-emerald-700' : ''}`}
+                                        style={{ borderLeftColor: tx.isPaid ? '#10b981' : (tx.color || '#3b82f6') }}
                                     >
-                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(45deg, transparent, ${tx.isPaid ? '#10b981' : tx.color}60)` }}></div>
-                                        <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: tx.isPaid ? '#10b981' : tx.color }}></div>
-                                        <div className={`relative w-10 h-10 md:w-14 md:h-14 rounded-full flex-shrink-0 flex items-center justify-center border overflow-hidden ${tx.isPaid ? 'bg-emerald-900/50 border-emerald-500/50' : 'bg-slate-900/50 border-white/10'}`}>
-                                            {tx.image ? <img src={tx.image} className={`w-full h-full object-cover ${tx.isPaid ? 'opacity-50 grayscale' : ''}`} /> : <div style={{ color: tx.isPaid ? '#10b981' : tx.color }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon}</div>}
+                                        <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden ${tx.isPaid ? 'neo-inset' : 'neo-inset'}`}>
+                                            {tx.image ? <img src={tx.image} className={`w-full h-full object-cover ${tx.isPaid ? 'grayscale' : ''}`} /> : <div style={{ color: tx.isPaid ? '#a7f3d0' : (tx.color || 'white') }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon || <Icons.ShoppingBag />}</div>}
                                         </div>
-                                        <div className="flex-1 min-w-0 relative">
+                                        <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-start">
-                                                <h4 className={`font-medium truncate pr-2 text-sm md:text-xl ${tx.isPaid ? 'text-emerald-400 line-through italic' : 'text-white'}`}>{tx.description}</h4>
-                                                <span className={`font-bold text-sm md:text-xl whitespace-nowrap ${tx.type === 'income' ? 'text-emerald-400' : tx.isPaid ? 'text-emerald-400 line-through' : 'text-white'}`}>
+                                                <h4 className={`font-bold truncate pr-2 text-sm md:text-lg ${tx.isPaid ? 'line-through text-emerald-200' : 'text-white'}`}>{tx.description}</h4>
+                                                <span className={`font-bold text-sm md:text-lg whitespace-nowrap ${tx.type === 'income' ? 'text-sky-300' : tx.isPaid ? 'line-through text-emerald-200' : 'text-white'}`}>
                                                     {tx.type === 'income' ? '+' : ''}${tx.currentAmt.toLocaleString('es-AR')}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between items-center mt-1">
-                                                <p className={`text-xs md:text-sm flex items-center gap-1 ${tx.isPaid ? 'text-emerald-500/70' : 'text-white/40'}`}>{tx.category}</p>
+                                                <p className={`text-xs md:text-sm flex items-center gap-1 ${tx.isPaid ? 'text-emerald-300/70' : 'text-white/70'}`}>{tx.category}</p>
                                                 {tx.quotaInfo && (
-                                                    <div className={`flex items-center gap-2 px-2 py-0.5 rounded-md border ${tx.isPaid ? 'bg-emerald-900/40 border-emerald-500/30' : 'bg-black/30 border-white/5'}`}>
-                                                        <div className="w-12 md:w-20 h-1.5 rounded-full overflow-hidden bg-white/10">
-                                                            <div className="h-full rounded-full" style={{ width: `${(tx.quotaInfo.current/tx.quotaInfo.total)*100}%`, backgroundColor: tx.isPaid ? '#10b981' : tx.color }}></div>
-                                                        </div>
-                                                        <span className={`text-[10px] md:text-xs font-mono font-bold ${tx.isPaid ? 'text-emerald-400' : 'text-white/80'}`}>{tx.quotaInfo.current}/{tx.quotaInfo.total}</span>
+                                                    <div className={`flex items-center px-2 py-0.5 rounded-md bg-black/20`}>
+                                                        <span className={`text-[10px] md:text-xs font-mono font-bold ${tx.isPaid ? 'text-emerald-300' : 'text-sky-200'}`}>{tx.quotaInfo.current}/{tx.quotaInfo.total}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
-                                        {!checklistMode && <button onClick={(e) => { e.stopPropagation(); onEdit(tx); }} className="relative p-2 text-white/20 hover:text-white bg-transparent hover:bg-white/10 rounded-full transition z-10"><Icons.Edit3 size={20} /></button>}
-                                        {checklistMode && tx.isPaid && (
-                                            <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-emerald-500/20 px-3 py-1 rounded-lg border border-emerald-500/50 backdrop-blur-md">
-                                                <span className="text-emerald-400 font-bold text-xs tracking-widest">PAGADO</span>
-                                                <div className="text-emerald-400"><Icons.Check size={16} /></div>
-                                            </div>
-                                        )}
+                                        {checklistMode && tx.isPaid && <div className="text-emerald-300"><Icons.Check size={20} /></div>}
                                     </div>
                                 ))}
                             </div>
@@ -411,8 +428,13 @@
 
         // --- APP LOGIC ---
         const App = () => {
-            const [currentDate, setCurrentDate] = useState(getBillingMonth()); 
+            const [currentDate, setCurrentDate] = useState(() => {
+                const saved = localStorage.getItem('fixedMonth');
+                return saved ? new Date(saved) : getBillingMonth();
+            }); 
             
+            const [isMonthFixed, setIsMonthFixed] = useState(() => localStorage.getItem('fixedMonth') !== null);
+
             const [transactions, setTransactions] = useState([]);
             const [groupMeta, setGroupMeta] = useState([]); 
             const [view, setView] = useState('dashboard');
@@ -438,6 +460,23 @@
             const [dbReady, setDbReady] = useState(false);
             const [isSaving, setIsSaving] = useState(false);
 
+            const toggleFixedMonth = () => {
+                if (isMonthFixed) {
+                    localStorage.removeItem('fixedMonth');
+                    setIsMonthFixed(false);
+                    setCurrentDate(getBillingMonth());
+                } else {
+                    localStorage.setItem('fixedMonth', currentDate.toISOString());
+                    setIsMonthFixed(true);
+                }
+            };
+
+            const navigateMonth = (offset) => {
+                const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
+                setCurrentDate(newDate);
+                if (isMonthFixed) localStorage.setItem('fixedMonth', newDate.toISOString());
+            };
+
             const availableCategories = useMemo(() => {
                 const cats = new Set(transactions.map(t => t.category).filter(Boolean));
                 return Array.from(cats);
@@ -455,19 +494,20 @@
                 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setInstallPrompt(e); });
             }, []);
 
-            const handleInstall = async () => {
+            const handleInstall = () => {
                 if (!installPrompt) {
-                    alert("Instalación: En menú del navegador selecciona 'Instalar aplicación' o 'Agregar a inicio'.");
+                    alert("Instrucciones: En el menú de tu navegador, selecciona 'Añadir a la pantalla de inicio' o 'Instalar aplicación'.");
                     return;
                 }
                 installPrompt.prompt();
-                const { outcome } = await installPrompt.userChoice;
-                if (outcome === 'accepted') setInstallPrompt(null);
+                installPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') setInstallPrompt(null);
+                });
             };
 
             useEffect(() => {
                 const initDb = () => {
-                    const { collection, query, orderBy, onSnapshot, doc } = window.fb;
+                    const { collection, query, orderBy, onSnapshot } = window.fb;
                     const db = window.firebaseDB;
                     const auth = window.firebaseAuth;
                     const signIn = window.signInAnonymously;
@@ -489,16 +529,18 @@
                 const allExpenses = transactions.filter(t => t.type === 'expense');
                 const mostExpensive = [...allExpenses].sort((a,b) => (b.amount/ (b.installments||1)) - (a.amount/(a.installments||1))).slice(0, 5);
                 const creditTx = allExpenses.filter(t => t.subtype === 'credit');
-                const closestToFinish = creditTx.map(t => {
+                
+                const creditTxWithRemaining = creditTx.map(t => {
                     const txDate = parseDate(t.date);
-                    const current = (currentDate.getFullYear() - txDate.getFullYear()) * 12 + (currentDate.getMonth() - txDate.getMonth()) + 1;
-                    return { ...t, remaining: (t.installments || 1) - current };
-                }).filter(t => t.remaining > 0).sort((a,b) => a.remaining - b.remaining).slice(0, 5);
-                const longestRemaining = creditTx.filter(t => (t.amount/(t.installments||1)) > 20000).map(t => {
-                     const txDate = parseDate(t.date);
-                     const current = (currentDate.getFullYear() - txDate.getFullYear()) * 12 + (currentDate.getMonth() - txDate.getMonth()) + 1;
-                     return { ...t, remaining: (t.installments || 1) - current };
-                }).filter(t => t.remaining > 0).sort((a,b) => b.remaining - a.remaining).slice(0, 5);
+                    const startMonthIndex = txDate.getFullYear() * 12 + txDate.getMonth();
+                    const currentMonthIndex = currentDate.getFullYear() * 12 + currentDate.getMonth();
+                    const currentQuota = Math.max(1, currentMonthIndex - startMonthIndex + 1);
+                    return { ...t, remaining: Math.max(0, (t.installments || 1) - currentQuota) };
+                });
+
+                const closestToFinish = creditTxWithRemaining.filter(t => t.remaining > 0).sort((a,b) => a.remaining - b.remaining).slice(0, 5);
+                const longestRemaining = creditTxWithRemaining.filter(t => t.remaining > 0 && (t.amount/(t.installments||1)) > 20000).sort((a,b) => b.remaining - a.remaining).slice(0, 5);
+                
                 return { mostExpensive, closestToFinish, longestRemaining };
             }, [transactions, currentDate]);
 
@@ -515,11 +557,13 @@
             const futureData = useMemo(() => {
                 const data = [];
                 for(let i=0; i<24; i++) {
-                    const d = new Date(currentDate); d.setMonth(d.getMonth() + i); const m = d.getMonth(); const y = d.getFullYear(); let total = 0, tarjetas = 0;
+                    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1); 
+                    const m = d.getMonth(); const y = d.getFullYear(); let total = 0, tarjetas = 0;
                     transactions.forEach(t => {
                         const val = getPaymentForMonth(t, m, y);
-                        if(t.type === 'expense') {
-                             if (val > 0) { total += val; if (t.installments > 1 || t.groupName.toLowerCase().includes('tarjeta')) tarjetas += val; }
+                        if(t.type === 'expense' && val > 0) {
+                             total += val; 
+                             if (t.installments > 1 || t.groupName.toLowerCase().includes('tarjeta')) tarjetas += val; 
                         }
                     });
                     data.push({ name: d.toLocaleString('es-ES', { month: 'short' }).toUpperCase() + " '" + y.toString().slice(2), total, tarjetas, index: m, year: y });
@@ -541,9 +585,8 @@
                 setEditingId(tx.id); 
                 let currentQuota = 1; 
                 if(tx.subtype === 'credit') {
-                    const today = new Date(currentDate); 
                     const txDate = parseDate(tx.date); 
-                    const monthsDiff = (today.getFullYear() - txDate.getFullYear()) * 12 + (today.getMonth() - txDate.getMonth());
+                    const monthsDiff = (currentDate.getFullYear() - txDate.getFullYear()) * 12 + (currentDate.getMonth() - txDate.getMonth());
                     currentQuota = Math.max(1, monthsDiff + 1);
                 }
                 setFormData({ ...tx, amount: tx.amount, imageUrl: '', currentInstallment: currentQuota }); 
@@ -561,7 +604,7 @@
                         targetDate.setMonth(targetDate.getMonth() - (formData.currentInstallment - 1)); 
                         finalDate = toLocalDateString(targetDate); 
                     }
-                    finalDate = formData.date; // Ensure user date is respected if manually set
+                    if(formData.date && formData.date !== finalDate && editingId) finalDate = formData.date; 
 
                     const txData = { ...formData, amount: Number(formData.amount), image: finalImg, date: finalDate };
                     delete txData.currentInstallment; 
@@ -578,7 +621,8 @@
             const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
             const saveGroupEdit = async () => { const { oldName, newName, color } = groupEditData; const batch = window.fb.writeBatch(window.firebaseDB); batch.set(window.fb.doc(window.firebaseDB, GROUPS_COL, newName), { name: newName, color }); if (oldName !== newName) { batch.delete(window.fb.doc(window.firebaseDB, GROUPS_COL, oldName)); const snap = await window.fb.getDocs(window.fb.query(window.fb.collection(window.firebaseDB, TRANSACTIONS_COL), window.fb.where("groupName", "==", oldName))); snap.forEach(d => batch.update(d.ref, { groupName: newName })); } await batch.commit(); setShowGroupModal(false); };
             const handleFile = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = () => setFormData(p => ({ ...p, image: r.result })); r.readAsDataURL(f); } };
-            const loadDefaultList = () => { setImportText(`A PAGARMONTOCUOTAEPEC$85.000Aguas Cordobesas$45.000Nobis$100.0001/3Gas$12.000Google$45.000NETFLIX$18.000flow$65.000Personal LPersonal CMercado Pago$50.0003/12All Boys$30.000Préstamo Gobierno$15.000Monotributo$20.000Auto$450.0008/42Seguro$60.0003/4MeLi$4.000TOTAL$999.000NARANJAMANTENIMIENTO$8.000HELADERA$69.2867/14CELULAR$38.6007/12CARTERA$5.8335/6IMPUESTOS$3.000ZAPATILLAS MA$26.6675/6ROPA SPORTS$34.000PASTILLAS$15.0003/3RESPUESTO PA$59.3332/3CASA$33.3331/3KANGOO$216.0001/3ROPA KARMYA$66.6672/3GORRA Y +$30.0001/6BATERIA$28.3332/6TOTAL$634.052TARJETA GALICIAMERCADO LIBRE$4.00011/12PC$40.0008/12JOYSTICK$6.0008/12CAFÉ$5.0008/12FUENTE$12.0008/9CAFES Y BLUETOOH$3.2007/12TALLERES$160.000KARMIA$18.3336/6ROPA DE INVIERNO$60.0005/6CAMPERA DE CUERO$25.0005/6ZAPATOS$19.0005/6STITCH$36.0005/6CELULARES$40.0005/12IMPUESTO DE SELLOS$3.000MANDOLINA$17.0004/6TINTA$6.0004/6LAVARROPAS$77.5004/6JUEGOS$20.000ROPA CARO$16.6671/3ROPA LUCAS$36.6671/6MERCADO LIBRE HIGIEN$12.0001/12TOTAL$617.367ICBCLIFE SEGUROS$6.400AIRE ACONDICIONADO$105.0009/12ROMANO HNOS$3.0009/12IMPUESTOS$5.000LIFE SEGURO$7.000IVA$4.000COMISIÓN$3.500CELULARES$160.0004/12CARGADOR IPHONE$11.8332/6SEGURO$1.700TOTAL$307.433`); };
+            const loadDefaultList = () => { setImportText(`A PAGARMONTOCUOTAEPEC$85.000`); };
+            
             const parseAndImport = async () => {
                 if(!dbReady) return; setIsSaving(true);
                 const batch = window.fb.writeBatch(window.firebaseDB);
@@ -598,13 +642,8 @@
                         if (currentDesc.includes("NARANJA")) currentGroup = "NARANJA";
                         if (currentDesc.includes("GALICIA")) currentGroup = "TARJETA GALICIA";
                         if (currentDesc.includes("ICBC")) currentGroup = "ICBC";
-                        let color = '#3b82f6';
-                        if(currentGroup.includes('NARANJA')) color = '#0ea5e9';
-                        if(currentGroup.includes('GALICIA')) color = '#2563eb';
-                        if(currentGroup.includes('ICBC')) color = '#06b6d4';
-                        if(currentGroup.includes('PAGAR')) color = '#1e293b';
                         const ref = window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, Math.random().toString(36).substr(2,9));
-                        batch.set(ref, { type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping', color, image: '' });
+                        batch.set(ref, { type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping', color: '#2563eb', image: '' });
                         currentDesc = nextDesc;
                     }
                 }
@@ -620,166 +659,177 @@
 
             return (
                 <div className="w-full max-w-7xl mx-auto p-4 md:p-8 pb-24 min-h-[100dvh]">
-                    <header className="flex justify-between items-center mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-2.5 rounded-xl border border-white/10 shadow-xl">
-                                <img src="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png" className="w-8 h-8" />
+                    <header className="flex justify-between items-center mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="neo-page-panel p-3 text-white">
+                                <Icons.Wallet size={28} />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-white tracking-tight">Finanzas de la familia</h1>
-                                <p className="text-sky-400 text-xs font-mono font-bold uppercase tracking-widest">{currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</p>
+                                <h1 className="text-2xl font-extrabold text-white tracking-tight">Finanzas Familiares</h1>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <button onClick={() => navigateMonth(-1)} className="neo-page-button w-8 h-8" title="Mes anterior">
+                                        <Icons.ChevronLeft size={16} />
+                                    </button>
+                                    <p className="text-blue-400 bg-white/5 text-xs font-mono font-bold uppercase tracking-widest min-w-[120px] text-center select-none py-1 rounded-md">
+                                        {currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}
+                                    </p>
+                                    <button onClick={() => navigateMonth(1)} className="neo-page-button w-8 h-8" title="Mes siguiente">
+                                        <Icons.ChevronRight size={16} />
+                                    </button>
+                                    <button onClick={toggleFixedMonth} className={`neo-page-button w-8 h-8 ml-2 transition-colors ${isMonthFixed ? 'text-rose-500 neo-page-inset' : 'text-slate-400'}`} title={isMonthFixed ? "Desfijar mes" : "Fijar este mes"}>
+                                        <Icons.Pin size={14} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => setChecklistMode(!checklistMode)} className={`p-3 rounded-full transition-all ${checklistMode ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-white/10 text-white hover:bg-white/20'}`} title="Modo Tachar Pagos"><Icons.ClipboardCheck size={20} /></button>
-                            <button onClick={handleInstall} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Instalar App"><Icons.Download size={20} /></button>
-                            <button onClick={exportToExcel} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Exportar Excel"><Icons.FileSpreadsheet size={20} /></button>
-                            <button onClick={() => setShowImportModal(true)} className="bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all" title="Importar / Pegar"><Icons.UploadCloud size={20} /></button>
-                            <button onClick={openAdd} className="bg-sky-600 hover:bg-sky-500 text-white p-3 rounded-full shadow-lg shadow-sky-500/30 transition-all"><Icons.Plus size={24} /></button>
+                        <div className="flex gap-3">
+                            <button onClick={() => setChecklistMode(!checklistMode)} className={`w-12 h-12 ${checklistMode ? 'neo-page-inset text-emerald-500' : 'neo-page-button text-slate-400'}`} title="Modo Tachar Pagos"><Icons.ClipboardCheck size={20} /></button>
+                            <button onClick={handleInstall} className="neo-page-button w-12 h-12 text-slate-400 hidden sm:flex" title="Instalar App"><Icons.Download size={20} /></button>
+                            <button onClick={exportToExcel} className="neo-page-button w-12 h-12 text-slate-400 hidden sm:flex" title="Exportar Excel"><Icons.FileSpreadsheet size={20} /></button>
+                            <button onClick={() => setShowImportModal(true)} className="neo-page-button w-12 h-12 text-slate-400 hidden sm:flex" title="Importar"><Icons.UploadCloud size={20} /></button>
+                            <button onClick={openAdd} className="neo-panel w-12 h-12 flex items-center justify-center transition-all hover:scale-105 active:scale-95"><Icons.Plus size={24} className="text-white"/></button>
                         </div>
                     </header>
 
-                    <div className="hidden md:flex gap-4 mb-6">
-                        <button onClick={() => setView('dashboard')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'dashboard' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Resumen</button>
-                        <button onClick={() => setView('future')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'future' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Futuro</button>
-                        <button onClick={() => setView('insights')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'insights' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Análisis</button>
-                        <button onClick={() => setView('search')} className={`px-6 py-2 rounded-full font-bold transition-all ${view === 'search' ? 'bg-white text-black' : 'text-white/50 hover:bg-white/10'}`}>Buscar</button>
+                    <div className="hidden md:flex gap-4 mb-8">
+                        <button onClick={() => setView('dashboard')} className={`px-6 py-3 font-bold transition-all ${view === 'dashboard' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Resumen</button>
+                        <button onClick={() => setView('future')} className={`px-6 py-3 font-bold transition-all ${view === 'future' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Futuro</button>
+                        <button onClick={() => setView('insights')} className={`px-6 py-3 font-bold transition-all ${view === 'insights' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Análisis</button>
+                        <button onClick={() => setView('search')} className={`px-6 py-3 font-bold transition-all ${view === 'search' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Buscar</button>
                     </div>
 
                     <main className="flex-1">
                         {view === 'dashboard' && (
-                            <div className="animate-in space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                    <GlassCard className="bg-gradient-to-br from-emerald-900/40 to-slate-900/40 border-emerald-500/20">
-                                        <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-1">Ingresos</p>
+                            <div className="animate-in space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                    <NeoCard className="bg-[#1d4ed8]">
+                                        <p className="text-emerald-300 text-xs font-bold uppercase tracking-widest mb-1">Ingresos</p>
                                         <h2 className="text-3xl font-bold text-white tracking-tighter">+${dashboardTotals.income.toLocaleString('es-AR')}</h2>
-                                    </GlassCard>
-                                    <GlassCard className="bg-gradient-to-br from-rose-900/40 to-slate-900/40 border-rose-500/20">
-                                        <p className="text-rose-400 text-xs font-bold uppercase tracking-widest mb-1">A Pagar</p>
+                                    </NeoCard>
+                                    <NeoCard className="bg-[#1d4ed8]">
+                                        <p className="text-rose-300 text-xs font-bold uppercase tracking-widest mb-1">A Pagar</p>
                                         <h2 className="text-3xl font-bold text-white tracking-tighter">-${dashboardTotals.expense.toLocaleString('es-AR')}</h2>
-                                    </GlassCard>
-                                    <GlassCard className="bg-gradient-to-r from-sky-600 to-indigo-600 border-sky-400/30 relative overflow-hidden">
-                                        <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-                                        <p className="text-sky-100 text-xs font-bold uppercase tracking-widest mb-1">Saldo Restante</p>
-                                        <h2 className="text-4xl font-bold text-white tracking-tighter">${dashboardTotals.balance.toLocaleString('es-AR')}</h2>
-                                    </GlassCard>
+                                    </NeoCard>
+                                    <NeoCard className="bg-[#2563eb]">
+                                        <p className="text-sky-200 text-xs font-bold uppercase tracking-widest mb-1">Saldo Restante</p>
+                                        <h2 className="text-4xl font-extrabold text-white tracking-tighter">${dashboardTotals.balance.toLocaleString('es-AR')}</h2>
+                                    </NeoCard>
                                 </div>
-                                {transactions.length === 0 ? <div className="text-center py-10 text-white/50">No hay datos.</div> : 
+                                {transactions.length === 0 ? <div className="text-center py-10 text-slate-500 font-mono">No hay datos para este mes.</div> : 
                                     <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
                                 }
                             </div>
                         )}
+                        
                         {view === 'future' && (
                             <div className="animate-in space-y-6">
                                 {!selectedFutureMonth ? (
                                     <>
-                                        <GlassCard className="h-64">
-                                            <h3 className="font-bold text-white mb-4">Proyección 2025-2026</h3>
+                                        <NeoCard className="h-72">
+                                            <h3 className="font-bold text-white mb-4 uppercase tracking-wider">Proyección 2025-2026</h3>
                                             <ResponsiveContainer width="100%" height="100%">
-                                                <AreaChart data={futureData} margin={{top:5, right:0, left:-20, bottom:0}}>
-                                                    <defs><linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.6}/><stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/></linearGradient></defs>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} />
-                                                    <YAxis stroke="rgba(255,255,255,0.3)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`} />
-                                                    <Area type="monotone" dataKey="total" stroke="#0ea5e9" strokeWidth={3} fill="url(#colorTotal)" />
+                                                <AreaChart data={futureData} margin={{top:5, right:0, left:-20, bottom:20}}>
+                                                    <defs><linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#fff" stopOpacity={0.6}/><stop offset="95%" stopColor="#fff" stopOpacity={0}/></linearGradient></defs>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                                                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} />
+                                                    <YAxis stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`} />
+                                                    <Area type="monotone" dataKey="total" stroke="#fff" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                                                 </AreaChart>
                                             </ResponsiveContainer>
-                                        </GlassCard>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                        </NeoCard>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                             {futureData.map(m => (
-                                                <GlassCard key={m.name} onClick={() => setSelectedFutureMonth({index: m.index, year: m.year})} className="hover:border-sky-500/50 group">
-                                                    <div className="flex justify-between items-center mb-2"><span className="font-bold text-lg group-hover:text-sky-400 transition-colors">{m.name}</span><Icons.ChevronRight size={16} className="text-white/30" /></div>
-                                                    <div className="text-2xl font-bold tracking-tighter">${m.total.toLocaleString('es-AR')}</div>
-                                                </GlassCard>
+                                                <NeoCard key={m.name} onClick={() => setSelectedFutureMonth({index: m.index, year: m.year})} className="group">
+                                                    <div className="flex justify-between items-center mb-3"><span className="font-bold text-sm text-blue-200 group-hover:text-white transition-colors">{m.name}</span><Icons.ChevronRight size={16} className="text-white/50" /></div>
+                                                    <div className="text-xl font-bold tracking-tighter text-white">${m.total.toLocaleString('es-AR')}</div>
+                                                </NeoCard>
                                             ))}
                                         </div>
                                     </>
                                 ) : (
                                     <div className="animate-in">
-                                        <button onClick={() => setSelectedFutureMonth(null)} className="flex items-center gap-2 text-sky-400 font-bold mb-4 hover:text-white transition-colors"><Icons.ChevronLeft size={20} /> Volver a Proyección</button>
+                                        <button onClick={() => setSelectedFutureMonth(null)} className="neo-page-button px-4 py-2 text-blue-400 font-bold mb-6 flex items-center gap-2"><Icons.ChevronLeft size={20} /> Volver a Proyección</button>
                                         <GroupedList transactions={transactions} monthIndex={selectedFutureMonth.index} year={selectedFutureMonth.year} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} />
                                     </div>
                                 )}
                             </div>
                         )}
-                        {/* Insights View */}
+                        
                         {view === 'insights' && (
                             <div className="animate-in space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <GlassCard className="flex flex-col h-80">
-                                        <h3 className="font-bold text-white mb-4">Gastos Más Caros</h3>
-                                        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                                    <NeoCard className="flex flex-col h-80">
+                                        <h3 className="font-bold text-rose-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.TrendingUp size={18}/> Gastos Más Caros</h3>
+                                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                                             {insights.mostExpensive.map(t => (
-                                                <div key={t.id} className="flex justify-between items-center bg-white/5 p-3 rounded-lg">
-                                                    <span className="text-sm font-medium">{t.description}</span>
-                                                    <span className="text-sm font-bold">${(t.amount/(t.installments||1)).toLocaleString('es-AR')}</span>
+                                                <div key={t.id} className="flex justify-between items-center neo-inset p-4">
+                                                    <span className="text-sm font-medium text-white">{t.description}</span>
+                                                    <span className="text-sm font-bold text-rose-300">${(t.amount/(t.installments||1)).toLocaleString('es-AR')}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                    </GlassCard>
-                                    <GlassCard className="flex flex-col h-80">
-                                        <h3 className="font-bold text-white mb-4 text-emerald-400">Cerca de Terminar (Cuotas)</h3>
-                                        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                                    </NeoCard>
+                                    <NeoCard className="flex flex-col h-80">
+                                        <h3 className="font-bold text-emerald-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.Award size={18}/> Cerca de Terminar</h3>
+                                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                                             {insights.closestToFinish.map(t => (
-                                                <div key={t.id} className="flex justify-between items-center bg-emerald-900/20 p-3 rounded-lg border border-emerald-500/20">
+                                                <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4 border-emerald-400">
                                                     <div>
-                                                        <div className="text-sm font-medium">{t.description}</div>
-                                                        <div className="text-xs text-emerald-400/70">Faltan {t.remaining} cuotas</div>
+                                                        <div className="text-sm font-medium text-white">{t.description}</div>
+                                                        <div className="text-xs text-emerald-200 mt-1 font-mono">Faltan {t.remaining} cuotas</div>
                                                     </div>
-                                                    <span className="text-sm font-bold">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
+                                                    <span className="text-sm font-bold text-emerald-300">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                    </GlassCard>
-                                    <GlassCard className="flex flex-col h-80 md:col-span-2">
-                                        <h3 className="font-bold text-white mb-4 text-orange-400">Deudas a Largo Plazo</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    </NeoCard>
+                                    <NeoCard className="flex flex-col h-80 md:col-span-2">
+                                        <h3 className="font-bold text-amber-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.Clock size={18}/> Deudas a Largo Plazo (>$20k)</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-2">
                                             {insights.longestRemaining.map(t => (
-                                                <div key={t.id} className="flex justify-between items-center bg-orange-900/20 p-3 rounded-lg border border-orange-500/20">
+                                                <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4 border-amber-400">
                                                      <div>
-                                                        <div className="text-sm font-medium">{t.description}</div>
-                                                        <div className="text-xs text-orange-400/70">Faltan {t.remaining} cuotas</div>
+                                                        <div className="text-sm font-medium text-white">{t.description}</div>
+                                                        <div className="text-xs text-amber-200 mt-1 font-mono">Faltan {t.remaining} cuotas</div>
                                                     </div>
-                                                    <span className="text-sm font-bold">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
+                                                    <span className="text-sm font-bold text-amber-300">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                    </GlassCard>
+                                    </NeoCard>
                                 </div>
                             </div>
                         )}
-                        {/* Search View */}
+                        
                         {view === 'search' && (
-                            <div className="animate-in h-[75vh] flex flex-col">
-                                <div className="p-4 bg-black/20 mb-4 rounded-xl">
-                                    <div className="flex gap-2">
-                                        <input 
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder="Buscar gasto, categoría o grupo..."
-                                            className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-3 text-white outline-none focus:border-sky-500"
-                                            autoFocus
-                                        />
-                                        <button className="bg-sky-600 p-3 rounded-full text-white"><Icons.Search size={20}/></button>
-                                    </div>
+                            <div className="animate-in flex flex-col h-[70vh]">
+                                <div className="neo-page-inset p-2 mb-6 flex items-center">
+                                    <input 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Buscar gasto, categoría o grupo..."
+                                        className="flex-1 bg-transparent px-4 py-3 text-white font-medium outline-none"
+                                        autoFocus
+                                    />
+                                    <div className="p-3 text-blue-400"><Icons.Search size={20}/></div>
                                 </div>
-                                <div className="flex-1 overflow-y-auto space-y-4 pb-20">
+                                <div className="flex-1 overflow-y-auto space-y-4 pb-20 pr-2">
                                     {searchQuery ? (
                                         filteredTransactions.length > 0 ? (
                                             filteredTransactions.map(tx => (
-                                                <div key={tx.id} onClick={() => setShowReceipt(tx)} className="glass-panel p-4 rounded-xl flex justify-between items-center cursor-pointer hover:bg-white/10">
+                                                <div key={tx.id} onClick={() => setShowReceipt(tx)} className="neo-panel p-5 flex justify-between items-center cursor-pointer hover:brightness-110 transition-all">
                                                     <div>
                                                         <div className="font-bold text-white">{tx.description}</div>
-                                                        <div className="text-xs text-white/50">{tx.groupName} - {tx.date}</div>
+                                                        <div className="text-xs text-blue-200 mt-1 font-mono">{tx.groupName} | {tx.category}</div>
                                                     </div>
-                                                    <div className="font-bold text-sky-400">${(tx.amount / (tx.installments || 1)).toLocaleString('es-AR')}</div>
+                                                    <div className="font-bold text-white">${(tx.amount / (tx.installments || 1)).toLocaleString('es-AR')}</div>
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="text-center text-white/50 mt-10">No se encontraron resultados.</div>
+                                            <div className="text-center text-slate-500 mt-10 font-medium">No se encontraron resultados.</div>
                                         )
                                     ) : (
-                                        <div className="text-center text-white/30 mt-10">Escribe para buscar...</div>
+                                        <div className="text-center text-slate-500 mt-10 font-medium">Empieza a escribir para buscar...</div>
                                     )}
                                 </div>
                             </div>
@@ -788,17 +838,16 @@
 
                     {/* IMPORT MODAL */}
                     {showImportModal && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-                            <div className="bg-[#1e293b] w-full max-w-lg rounded-2xl border border-white/20 p-6 animate-in flex flex-col h-[80vh]">
-                                <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white text-lg">Importar Datos</h3><button onClick={() => setShowImportModal(false)}><Icons.X className="text-white/50 hover:text-white"/></button></div>
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4">
+                            <div className="neo-page-panel w-full max-w-lg p-6 animate-in flex flex-col h-[80vh]">
+                                <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white text-lg">Importar Datos</h3><button onClick={() => setShowImportModal(false)}><Icons.X className="text-slate-400 hover:text-white"/></button></div>
                                 <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-                                    <p className="text-xs text-white/60">Pega aquí tu lista de gastos.</p>
-                                    <textarea className="w-full flex-1 bg-black/30 border border-white/10 rounded-xl p-4 text-xs font-mono text-white focus:border-sky-500 outline-none resize-none" value={importText} onChange={e => setImportText(e.target.value)}></textarea>
-                                    <button onClick={loadDefaultList} className="text-sky-400 text-xs hover:text-sky-300 underline text-left">Cargar Mis Datos</button>
+                                    <p className="text-xs text-slate-400 font-medium">Pega aquí tu lista de gastos.</p>
+                                    <textarea className="w-full flex-1 neo-page-inset p-4 text-xs font-mono text-white outline-none resize-none" value={importText} onChange={e => setImportText(e.target.value)}></textarea>
                                 </div>
-                                <div className="flex gap-3 mt-4">
-                                    <button onClick={() => setShowImportModal(false)} className="flex-1 py-3 bg-white/10 text-white rounded-xl">Cancelar</button>
-                                    <button onClick={parseAndImport} disabled={isSaving || !importText} className="flex-1 py-3 bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center gap-2">{isSaving ? 'Procesando...' : <><Icons.Check size={18}/> Procesar</>}</button>
+                                <div className="flex gap-3 mt-6">
+                                    <button onClick={() => setShowImportModal(false)} className="flex-1 py-3 neo-page-button text-slate-400 font-bold">Cancelar</button>
+                                    <button onClick={parseAndImport} disabled={isSaving || !importText} className="flex-1 py-3 neo-panel font-bold flex items-center justify-center gap-2">{isSaving ? 'Procesando...' : <><Icons.Check size={18}/> Procesar</>}</button>
                                 </div>
                             </div>
                         </div>
@@ -809,164 +858,143 @@
 
                     {/* ADD/EDIT MODAL */}
                     {showModal && (
-                        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/80 backdrop-blur-sm">
-                            <div className="bg-[#1e293b] w-full md:max-w-2xl md:rounded-3xl rounded-t-3xl border-t border-white/20 h-[90vh] md:h-auto flex flex-col overflow-hidden animate-in">
-                                <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-                                    <h3 className="font-bold text-white flex items-center gap-2"><Icons.Edit3 size={18} className="text-sky-400"/> {editingId ? 'Editar' : 'Nuevo'}</h3>
-                                    <button onClick={() => setShowModal(false)}><Icons.X className="text-white/50 hover:text-white"/></button>
+                        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-slate-900/80 backdrop-blur-sm p-0 md:p-4">
+                            <div className="neo-panel w-full md:max-w-2xl h-[95vh] md:h-auto flex flex-col overflow-hidden animate-in">
+                                <div className="p-5 flex justify-between items-center">
+                                    <h3 className="font-bold text-white flex items-center gap-3"><div className="p-2 neo-inset text-white">{editingId ? <Icons.Edit3 size={16}/> : <Icons.Plus size={16}/>}</div> {editingId ? 'Editar' : 'Nuevo'}</h3>
+                                    <button onClick={() => setShowModal(false)} className="neo-button w-10 h-10"><Icons.X size={18}/></button>
                                 </div>
-                                <div className="p-6 overflow-y-auto flex-1 space-y-5">
+                                <div className="p-6 overflow-y-auto flex-1 space-y-6">
                                     {/* Type Toggle */}
-                                    <div className="flex bg-black/40 p-1 rounded-lg">
-                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-2 rounded-md text-sm font-bold transition ${formData.type === 'expense' ? 'bg-slate-700 text-white' : 'text-white/40'}`}>Gasto</button>
-                                        <button onClick={() => setFormData({...formData, type: 'income', color: '#10b981'})} className={`flex-1 py-2 rounded-md text-sm font-bold transition ${formData.type === 'income' ? 'bg-emerald-600 text-white' : 'text-white/40'}`}>Ingreso</button>
+                                    <div className="flex neo-inset p-1">
+                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'expense' ? 'neo-panel' : 'text-blue-300'}`}>Egreso</button>
+                                        <button onClick={() => setFormData({...formData, type: 'income', color: '#10b981'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'income' ? 'bg-emerald-500 text-white shadow-md' : 'text-blue-300'}`}>Ingreso</button>
                                     </div>
 
-                                    <div className="text-center py-2"><label className="text-xs text-white/40 uppercase font-bold">Monto Total</label><input type="number" placeholder="0" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="bg-transparent text-5xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/10" autoFocus /></div>
+                                    <div className="text-center py-4">
+                                        <label className="text-xs text-blue-200 uppercase font-bold tracking-widest">Monto Total</label>
+                                        <input type="number" placeholder="0" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="bg-transparent text-5xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/50 mt-2" autoFocus />
+                                    </div>
                                     
                                     {formData.type === 'expense' && (
-                                        <div className="flex gap-2 overflow-x-auto pb-1">
+                                        <div className="flex gap-2 overflow-x-auto pb-2">
                                             {[{id:'one-time', label:'Único'}, {id:'fixed', label:'Fijo'}, {id:'credit', label:'Tarjeta'}].map(opt => (
-                                                <button key={opt.id} onClick={() => setFormData({...formData, subtype: opt.id})} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${formData.subtype === opt.id ? 'bg-sky-500/20 border-sky-500 text-white' : 'border-white/10 text-white/40'}`}>{opt.label}</button>
+                                                <button key={opt.id} onClick={() => setFormData({...formData, subtype: opt.id})} className={`px-5 py-3 rounded-xl text-xs font-bold transition-all ${formData.subtype === opt.id ? 'neo-inset text-white' : 'neo-panel text-blue-200'}`}>{opt.label}</button>
                                             ))}
                                         </div>
                                     )}
 
-                                    <div className="space-y-3">
-                                        <div><label className="text-xs text-sky-400 font-bold uppercase ml-1">Descripción</label><input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="Ej: Supermercado" /></div>
-                                        <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-4">
+                                        <div className="neo-inset p-2">
+                                            <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-transparent px-4 py-2 text-white outline-none placeholder:text-blue-300 font-bold" placeholder="Descripción (Ej: Supermercado)" />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
                                             {formData.type === 'expense' ? (
-                                                <div>
-                                                    <label className="text-xs text-sky-400 font-bold uppercase ml-1">Grupo</label>
-                                                    <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="A PAGAR" />
-                                                    <datalist id="dynamic-groups">
-                                                        {availableGroups.map(g => <option key={g} value={g} />)}
-                                                    </datalist>
+                                                <div className="neo-inset p-2">
+                                                    <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-transparent px-4 py-2 text-white outline-none text-sm placeholder:text-blue-300" placeholder="Grupo (A PAGAR)" />
+                                                    <datalist id="dynamic-groups">{availableGroups.map(g => <option key={g} value={g} />)}</datalist>
                                                 </div>
                                             ) : (
-                                                <div>
-                                                    <label className="text-xs text-emerald-400 font-bold uppercase ml-1">Tipo</label>
-                                                    <div className="flex items-center gap-2 h-full">
-                                                        <label className="flex items-center gap-2 text-white text-sm cursor-pointer">
-                                                            <input type="checkbox" checked={formData.subtype === 'fixed'} onChange={(e) => setFormData({...formData, subtype: e.target.checked ? 'fixed' : 'one-time'})} className="accent-emerald-500 w-5 h-5" />
-                                                            Fijo Mensual
-                                                        </label>
-                                                    </div>
+                                                <div className="neo-inset p-2 flex items-center px-4">
+                                                    <label className="flex items-center gap-3 text-white text-sm cursor-pointer w-full font-medium">
+                                                        <input type="checkbox" checked={formData.subtype === 'fixed'} onChange={(e) => setFormData({...formData, subtype: e.target.checked ? 'fixed' : 'one-time'})} className="accent-emerald-500 w-4 h-4" /> Fijo Mensual
+                                                    </label>
                                                 </div>
                                             )}
                                             
-                                            <div>
-                                                <label className="text-xs text-sky-400 font-bold uppercase ml-1">Categoría</label>
-                                                <input list="categoryList" type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" placeholder="Varios" />
-                                                <datalist id="categoryList">
-                                                    {availableCategories.map(c => <option key={c} value={c} />)}
-                                                </datalist>
+                                            <div className="neo-inset p-2">
+                                                <input list="categoryList" type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-transparent px-4 py-2 text-white outline-none text-sm placeholder:text-blue-300" placeholder="Categoría (Varios)" />
+                                                <datalist id="categoryList">{availableCategories.map(c => <option key={c} value={c} />)}</datalist>
                                             </div>
                                         </div>
                                         
                                         {formData.type === 'expense' && formData.subtype === 'credit' && (
-                                            <div className="grid grid-cols-2 gap-3 p-4 bg-slate-800/50 rounded-xl border border-white/5">
+                                            <div className="grid grid-cols-2 gap-4 neo-panel p-5 shadow-none border-t border-blue-400">
                                                 <div>
-                                                    <label className="text-xs text-sky-400 font-bold uppercase ml-1">Cuotas Totales</label>
-                                                    <select value={formData.installments} onChange={e => setFormData({...formData, installments: Number(e.target.value)})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white outline-none">
-                                                        {Array.from({length: 36}, (_, i) => i + 1).map(n => <option key={n} value={n}>{n} cuotas</option>)}
-                                                    </select>
+                                                    <label className="text-xs text-white font-bold uppercase mb-2 block tracking-wider">Cuotas Totales</label>
+                                                    <input type="number" min="1" step="1" value={formData.installments} onChange={e => setFormData({...formData, installments: Math.max(1, parseInt(e.target.value) || 0)})} className="w-full neo-inset p-3 text-white outline-none font-mono" placeholder="Ej: 12" />
                                                 </div>
                                                 <div>
-                                                    <label className="text-xs text-emerald-400 font-bold uppercase ml-1">Cuota Actual</label>
-                                                    <select value={formData.currentInstallment || 1} onChange={e => setFormData({...formData, currentInstallment: Number(e.target.value), date: toLocalDateString(new Date(currentDate.getFullYear(), currentDate.getMonth() - (Number(e.target.value) - 1), 1)) })} className="w-full bg-black/30 border border-emerald-500/30 rounded-xl p-3 text-white outline-none">
-                                                        {Array.from({length: formData.installments || 1}, (_, i) => i + 1).map(n => <option key={n} value={n}>Cuota {n}</option>)}
+                                                    <label className="text-xs text-white font-bold uppercase mb-2 block tracking-wider">Cuota Actual</label>
+                                                    <select value={formData.currentInstallment || 1} onChange={e => setFormData({...formData, currentInstallment: Number(e.target.value), date: toLocalDateString(new Date(currentDate.getFullYear(), currentDate.getMonth() - (Number(e.target.value) - 1), 1)) })} className="w-full neo-inset p-3 text-white outline-none font-mono appearance-none">
+                                                        {Array.from({length: formData.installments || 1}, (_, i) => i + 1).map(n => <option key={n} value={n}>Nº {n}</option>)}
                                                     </select>
                                                 </div>
                                                 
-                                                <div className="col-span-2 mt-2 pt-2 border-t border-white/5">
-                                                    <label className="text-xs text-white/50 uppercase font-bold mb-1 block">Valor de la Cuota (Mensual)</label>
-                                                    <div className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2 border border-white/10 focus-within:border-emerald-500/50 transition-colors">
-                                                        <span className="text-emerald-400 font-bold">$</span>
+                                                <div className="col-span-2 pt-2">
+                                                    <label className="text-xs text-blue-200 uppercase font-bold mb-2 block tracking-wider">Valor de la Cuota (Mensual)</label>
+                                                    <div className="flex items-center gap-2 neo-inset px-4 py-2">
+                                                        <span className="text-white font-bold">$</span>
                                                         <input 
                                                             type="number" 
                                                             placeholder="0"
                                                             value={formData.amount > 0 && formData.installments > 0 ? Math.round(formData.amount / formData.installments) : ''}
                                                             onChange={(e) => {
                                                                 const val = Number(e.target.value);
-                                                                setFormData({
-                                                                    ...formData,
-                                                                    amount: val * (formData.installments || 1)
-                                                                });
+                                                                setFormData({...formData, amount: val * (formData.installments || 1)});
                                                             }}
                                                             className="bg-transparent w-full text-white font-bold outline-none"
                                                         />
                                                     </div>
-                                                    <p className="text-[10px] text-white/30 mt-1">Modificar esto ajustará automáticamente el monto total.</p>
                                                 </div>
                                             </div>
                                         )}
                                         
-                                        {/* Date Input */}
                                         <div>
-                                            <label className="text-xs text-sky-400 font-bold uppercase ml-1">Inicio / Compra</label>
-                                            <input 
-                                                type="date" 
-                                                value={formData.date} 
-                                                onChange={e => setFormData({...formData, date: e.target.value})} 
-                                                className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none" 
-                                            />
+                                            <label className="text-xs text-blue-200 font-bold uppercase mb-2 ml-1 block tracking-wider">Fecha de Compra/Inicio</label>
+                                            <input type="date" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full neo-inset p-4 text-white outline-none font-mono text-sm" />
                                         </div>
                                     </div>
                                     
-                                    <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
-                                        <label className="text-xs text-white/50 uppercase font-bold">Color</label>
-                                        <div className="flex gap-2 items-center flex-wrap">
-                                            {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setFormData({...formData, color: c})} className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent opacity-50 hover:opacity-100'}`} style={{ backgroundColor: c }} />))}
-                                            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 bg-gradient-to-tr from-white to-black cursor-pointer hover:border-white">
-                                                <input type="color" value={formData.color} onChange={e => setFormData({...formData, color: e.target.value})} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                                                <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-white text-xs font-bold">+</div>
+                                    <div className="neo-panel p-5 space-y-4 shadow-none border-t border-blue-400">
+                                        <div>
+                                            <label className="text-xs text-blue-200 uppercase font-bold mb-3 block tracking-wider">Color</label>
+                                            <div className="flex gap-3 items-center flex-wrap">
+                                                {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setFormData({...formData, color: c})} className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent shadow-md'}`} style={{ backgroundColor: c }} />))}
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
-                                        <div className="flex gap-2 text-xs font-bold text-white/50 uppercase"><span>Imagen o Icono</span></div>
-                                        <div className="flex items-center gap-2 bg-black/30 rounded-lg p-2 border border-white/5"><Icons.Link size={16} className="text-white/40"/><input type="text" placeholder="https://..." value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value, image: ''})} className="bg-transparent text-sm w-full text-white outline-none" /></div>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            <label className="aspect-square bg-white/5 border-dashed border border-white/20 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-white/10"><Icons.Image size={18} className="text-white/40 mb-1"/><span className="text-[8px] uppercase font-bold text-white/40">Subir</span><input type="file" className="hidden" onChange={handleFile} accept="image/*"/></label>
-                                            {ICON_GALLERY.slice(0,3).map(icon => (<button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square rounded-lg flex items-center justify-center ${formData.icon === icon.name && !formData.image ? 'bg-sky-600' : 'bg-white/5 hover:bg-white/10'}`}>{icon.icon}</button>))}
-                                            {(formData.image || formData.imageUrl) && (<div className="col-span-1 aspect-square rounded-lg overflow-hidden border border-sky-500 relative"><img src={formData.imageUrl || formData.image} className="w-full h-full object-cover" /><button onClick={() => setFormData({...formData, image:'', imageUrl:''})} className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center"><Icons.X size={16} className="text-white"/></button></div>)}
+                                        <div className="pt-4 border-t border-blue-400">
+                                            <label className="text-xs text-blue-200 uppercase font-bold mb-3 block tracking-wider">Icono o Imagen</label>
+                                            <div className="grid grid-cols-5 gap-3">
+                                                <label className="aspect-square neo-inset flex flex-col items-center justify-center cursor-pointer text-blue-300 hover:text-white transition-colors"><Icons.Image size={20}/><span className="text-[8px] mt-1 uppercase font-bold">Subir</span><input type="file" className="hidden" onChange={handleFile} accept="image/*"/></label>
+                                                {ICON_GALLERY.slice(0,4).map(icon => (<button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name, image: '', imageUrl: ''})} className={`aspect-square flex items-center justify-center rounded-xl transition-all ${formData.icon === icon.name && !formData.image ? 'neo-inset text-white border border-white/20' : 'neo-panel text-blue-300 hover:text-white'}`}>{icon.icon}</button>))}
+                                            </div>
+                                            {formData.image && (<div className="mt-4 h-24 rounded-xl overflow-hidden relative border-2 border-white/50 shadow-lg"><img src={formData.image} className="w-full h-full object-cover" /><button onClick={() => setFormData({...formData, image:''})} className="absolute top-2 right-2 neo-button w-8 h-8 text-white"><Icons.X size={14}/></button></div>)}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-black/40 flex gap-3">
-                                    {editingId && <button onClick={deleteTx} className="p-4 bg-red-500/20 text-red-400 rounded-xl"><Icons.Trash2 /></button>}
-                                    <button onClick={saveTx} className="flex-1 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold rounded-xl py-4 shadow-lg active:scale-[0.98]">Guardar</button>
+                                <div className="p-5 flex gap-4">
+                                    {editingId && <button onClick={deleteTx} className="neo-button w-14 h-14 text-rose-300"><Icons.Trash2 size={24} /></button>}
+                                    <button onClick={saveTx} className="flex-1 neo-inset bg-blue-700 text-white font-bold rounded-xl py-4 flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase tracking-widest"><Icons.Check size={20} /> Guardar</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {showGroupModal && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-                            <div className="bg-[#1e293b] w-full max-w-sm rounded-2xl border border-white/20 p-6 animate-in">
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4">
+                            <div className="neo-page-panel w-full max-w-sm p-6 animate-in">
                                 <h3 className="text-lg font-bold text-white mb-4">Editar Grupo</h3>
-                                <label className="text-xs text-white/50 uppercase font-bold">Nombre del Grupo</label>
-                                <input type="text" value={groupEditData.newName} onChange={e => setGroupEditData({...groupEditData, newName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white focus:border-sky-500 outline-none mb-4" />
-                                <label className="text-xs text-white/50 uppercase font-bold mb-2 block">Color</label>
+                                <label className="text-xs text-slate-400 uppercase font-bold">Nombre del Grupo</label>
+                                <input type="text" value={groupEditData.newName} onChange={e => setGroupEditData({...groupEditData, newName: e.target.value})} className="w-full neo-page-inset p-3 text-white outline-none mb-4 mt-1" />
+                                <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Color Personalizado</label>
                                 <div className="grid grid-cols-4 gap-2 mb-6">
-                                    {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: `from-${c} to-${c}`})} className="h-10 rounded-lg opacity-70 hover:opacity-100" style={{backgroundColor: c}}></button>))}
+                                    {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: c})} className={`h-10 rounded-lg transition-transform ${groupEditData.color === c ? 'scale-110 border-2 border-white' : 'opacity-70 hover:opacity-100'}`} style={{backgroundColor: c}}></button>))}
                                 </div>
                                 <div className="flex gap-3">
-                                    <button onClick={() => setShowGroupModal(false)} className="flex-1 py-3 bg-white/10 text-white rounded-xl">Cancelar</button>
-                                    <button onClick={saveGroupEdit} className="flex-1 py-3 bg-sky-600 text-white font-bold rounded-xl">Guardar</button>
+                                    <button onClick={() => setShowGroupModal(false)} className="flex-1 py-3 neo-page-button text-slate-400 font-bold">Cancelar</button>
+                                    <button onClick={saveGroupEdit} className="flex-1 py-3 neo-panel text-white font-bold">Guardar</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-[#0f172a]/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center px-4 z-40 pb-2">
-                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`flex flex-col items-center gap-1 ${view === 'dashboard' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.PieChart size={24} /> <span className="text-[10px] font-bold">Hoy</span></button>
-                        <button onClick={openAdd} className="bg-sky-600 rounded-full w-14 h-14 flex items-center justify-center -mt-8 border-4 border-[#0f172a] shadow-lg shadow-sky-600/40"><Icons.Plus size={28} className="text-white" /></button>
-                        <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 ${view === 'future' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.Calendar size={24} /> <span className="text-[10px] font-bold">Futuro</span></button>
-                        <button onClick={() => setView('insights')} className={`flex flex-col items-center gap-1 ${view === 'insights' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.BarChart2 size={24} /> <span className="text-[10px] font-bold">Análisis</span></button>
-                        <button onClick={() => setView('search')} className={`flex flex-col items-center gap-1 ${view === 'search' ? 'text-sky-500' : 'text-slate-500'}`}><Icons.Search size={24} /> <span className="text-[10px] font-bold">Buscar</span></button>
+                    <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 neo-nav flex justify-around items-center px-2 z-40 pb-2">
+                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'dashboard' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.PieChart size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Hoy</span></button>
+                        <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'future' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.Calendar size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Futuro</span></button>
+                        <button onClick={openAdd} className="neo-panel w-14 h-14 flex items-center justify-center -mt-8"><Icons.Plus size={28} /></button>
+                        <button onClick={() => setView('insights')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.BarChart2 size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Análisis</span></button>
+                        <button onClick={() => setView('search')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'search' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.Search size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Buscar</span></button>
                     </div>
                 </div>
             );
