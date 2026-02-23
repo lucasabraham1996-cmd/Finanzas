@@ -53,7 +53,6 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Custom Panel without specific background (inherits style) */
         .neo-panel-custom {
             border-radius: 1.25rem;
             box-shadow: 8px 8px 16px var(--shadow-page-dark), -8px -8px 16px var(--shadow-page-light);
@@ -158,7 +157,7 @@
     <!-- REACT APP -->
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
-        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
+        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer } = Recharts;
 
         const TRANSACTIONS_COL = "shared_transactions"; 
         const GROUPS_COL = "shared_groups";
@@ -223,7 +222,7 @@
              return 0;
         };
 
-        // --- EXTENDED ICONS ---
+        // --- EXTENDED ICONS GALLERY ---
         const Icons = {
             Wallet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
             TrendingDown: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
@@ -275,29 +274,79 @@
             Tool: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>,
             DollarSign: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>,
             Briefcase: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>,
-            Truck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            Truck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>,
+            Tv: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>,
+            Shirt: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46 16 2 8 2 3.62 3.46 2 8.5 5.82 11.41 5.82 22 18.18 22 18.18 11.41 22 8.5 20.38 3.46z"></path></svg>,
+            Monitor: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>,
+            Gamepad2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>,
+            User: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
+            Bath: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path><line x1="10" y1="5" x2="8" y2="7"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="7" y1="19" x2="7" y2="21"></line><line x1="17" y1="19" x2="17" y2="21"></line></svg>,
+            Scale: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"></circle><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"></path></svg>,
+            Snowflake: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><path d="m20 16-4-4 4-4"></path><path d="m4 8 4 4-4 4"></path><path d="m16 4-4 4-4-4"></path><path d="m8 20 4-4 4 4"></path></svg>,
+            Sun: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>,
+            ShieldCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>,
+            Percent: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>,
+            PlaySquare: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>,
+            Chrome: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>,
+            Dribbble: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"></path></svg>,
+            Apple: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" /><path d="M10 2c1 .5 2 2 2 5h-2c0-3-1-5-2-5Z" /></svg>,
+            BedDouble: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path><path d="M12 4v6"></path><path d="M2 18h20"></path></svg>,
+            Puzzle: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 0-.288.877l.122.797c.189 1.25-.17 2.518-1.002 3.35-.833.833-2.101 1.192-3.35 1.003l-.796-.122a.98.98 0 0 0-.877.289l-1.611 1.611c-.47.47-1.087.706-1.704.706s-1.233-.235-1.704-.706l-1.568-1.568a.98.98 0 0 0-.878-.289l-.797.122c-1.25.189-2.518-.17-3.35-1.003-.833-.833-1.192-2.101-1.003-3.35l.122-.796a.98.98 0 0 0-.289-.877L1.6 15.485c-.47-.47-.706-1.087-.706-1.704s.235-1.233.706-1.704l1.611-1.611a.98.98 0 0 0 .288-.877l-.122-.797c-.189-1.25.17-2.518 1.003-3.35.832-.833 2.101-1.192 3.35-1.003l.796.122a.98.98 0 0 0 .877-.289l1.611-1.611c.47-.47 1.087-.706 1.704-.706s1.233.235 1.704.706l1.568 1.568c.23.23.556.338.878.289l.797-.122c1.25-.189 2.518.17 3.35 1.003.833.833 1.192 2.101 1.002 3.35l-.122.796z"></path></svg>,
+            Dices: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="10" width="10" height="10" rx="2"></rect><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"></path><path d="M6 18h.01"></path><path d="M10 14h.01"></path><path d="M15 6h.01"></path><path d="M18 9h.01"></path></svg>,
+            Cpu: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>,
+            Shield: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>,
+            Tent: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 21 14 3"></path><path d="M20.5 21 10 3"></path><path d="M15.5 21 12 15l-3.5 6"></path><path d="M2 21h20"></path></svg>,
+            Footprints: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"></path><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"></path><path d="M16 17h4"></path><path d="M4 13h4"></path></svg>,
+            FileText: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
         };
 
         const ICON_GALLERY = [
+            { name: 'netflix', icon: <Icons.PlaySquare />, label: 'Netflix' },
+            { name: 'google', icon: <Icons.Chrome />, label: 'Google' },
+            { name: 'spotify', icon: <Icons.Music />, label: 'Spotify' },
+            { name: 'crunchyroll', icon: <Icons.Tv />, label: 'Crunchyroll' },
+            { name: 'tv', icon: <Icons.Tv />, label: 'TV' },
+            { name: 'football', icon: <Icons.Dribbble />, label: 'Fútbol' },
+            { name: 'shield', icon: <Icons.Shield />, label: 'Escudo' },
+            { name: 'stadium', icon: <Icons.Tent />, label: 'Estadio' },
+            { name: 'clothes', icon: <Icons.Shirt />, label: 'Ropa' },
+            { name: 'tshirt', icon: <Icons.Shirt />, label: 'Camiseta' },
+            { name: 'bed', icon: <Icons.BedDouble />, label: 'Cama' },
+            { name: 'cellphone', icon: <Icons.Smartphone />, label: 'Celular' },
+            { name: 'apple', icon: <Icons.Apple />, label: 'Apple' },
+            { name: 'pc', icon: <Icons.Monitor />, label: 'PC' },
+            { name: 'coffee', icon: <Icons.Coffee />, label: 'Café' },
+            { name: 'tool', icon: <Icons.Tool />, label: 'Herramienta' },
+            { name: 'toys', icon: <Icons.Puzzle />, label: 'Juguetes' },
+            { name: 'child', icon: <Icons.User />, label: 'Niño' },
+            { name: 'man', icon: <Icons.User />, label: 'Hombre' },
+            { name: 'woman', icon: <Icons.User />, label: 'Mujer' },
+            { name: 'hygiene', icon: <Icons.Bath />, label: 'Higiene' },
+            { name: 'scale', icon: <Icons.Scale />, label: 'Balanza' },
+            { name: 'joystick', icon: <Icons.Gamepad2 />, label: 'Joystick' },
+            { name: 'game', icon: <Icons.Dices />, label: 'Juego' },
+            { name: 'digital', icon: <Icons.Cpu />, label: 'Digital' },
+            { name: 'appliances', icon: <Icons.Zap />, label: 'Electrodoméstico' },
+            { name: 'cleats', icon: <Icons.Footprints />, label: 'Botines' },
+            { name: 'sneakers', icon: <Icons.Footprints />, label: 'Zapatillas' },
+            { name: 'cold', icon: <Icons.Snowflake />, label: 'Frío' },
+            { name: 'heat', icon: <Icons.Sun />, label: 'Calor' },
+            { name: 'insurance', icon: <Icons.ShieldCheck />, label: 'Seguro' },
+            { name: 'tax', icon: <Icons.FileText />, label: 'Impuesto' },
+            { name: 'commission', icon: <Icons.Percent />, label: 'Comisión' },
             { name: 'shopping', icon: <Icons.ShoppingBag />, label: 'Compras' },
             { name: 'cart', icon: <Icons.ShoppingCart />, label: 'Supermercado' },
-            { name: 'food', icon: <Icons.Coffee />, label: 'Comida' },
             { name: 'transport', icon: <Icons.Car />, label: 'Transporte' },
             { name: 'bus', icon: <Icons.Truck />, label: 'Envios' },
             { name: 'home', icon: <Icons.Home />, label: 'Hogar' },
-            { name: 'utilities', icon: <Icons.Zap />, label: 'Servicios' },
             { name: 'water', icon: <Icons.Droplet />, label: 'Agua/Gas' },
-            { name: 'tech', icon: <Icons.Smartphone />, label: 'Tecnología' },
-            { name: 'laptop', icon: <Icons.Laptop />, label: 'PC' },
             { name: 'gift', icon: <Icons.Gift />, label: 'Regalo' },
             { name: 'health', icon: <Icons.Heart />, label: 'Salud' },
             { name: 'education', icon: <Icons.Book />, label: 'Educación' },
             { name: 'entertainment', icon: <Icons.Film />, label: 'Cine' },
-            { name: 'music', icon: <Icons.Music />, label: 'Música' },
             { name: 'travel', icon: <Icons.Plane />, label: 'Viajes' },
             { name: 'gym', icon: <Icons.Activity />, label: 'Deporte' },
             { name: 'pets', icon: <Icons.Feather />, label: 'Mascotas' },
-            { name: 'tools', icon: <Icons.Tool />, label: 'Taller' },
             { name: 'credit-card', icon: <Icons.CreditCard />, label: 'Tarjeta' },
             { name: 'cash', icon: <Icons.DollarSign />, label: 'Efectivo' },
             { name: 'bank', icon: <Icons.Briefcase />, label: 'Trabajo' },
@@ -351,7 +400,7 @@
                         </div>
                         <div className="p-6 -mt-12 relative">
                             <div className="neo-inset p-6 pt-10 text-center border-none relative mt-4">
-                                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl neo-panel border-4 border-[#1e3a8a]" style={{backgroundColor: tx.color || '#1e3a8a'}}>
+                                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-lg border-4 border-[#0b1120]" style={{backgroundColor: tx.color || '#1e3a8a'}}>
                                     {ICON_GALLERY.find(i=>i.name===tx.icon)?.icon || <Icons.Receipt size={32}/>}
                                 </div>
                                 <h2 className="text-xl font-bold text-white mb-1 mt-2">{tx.description}</h2>
@@ -418,7 +467,6 @@
                             else if (lower.includes('ingreso')) color = '#059669';
                         }
                         
-                        // Determinar si este gasto específico está pagado en ESTE mes
                         const monthKey = `${year}-${monthIndex}`;
                         const isPaidForMonth = t.paidMonths && t.paidMonths.includes(monthKey);
 
@@ -446,7 +494,6 @@
 
                         return (
                         <div key={groupName} className="animate-in">
-                            {/* ENCABEZADO PLEGABLE */}
                             <div className="neo-panel-custom mb-3 p-4 flex items-center justify-between cursor-pointer transition-all hover:brightness-110" style={{ backgroundColor: data.color }} onClick={() => toggleGroup(groupName)}>
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-black/20 rounded-lg text-white"><Icons.CreditCard size={20} /></div>
@@ -475,7 +522,6 @@
                                 </div>
                             </div>
 
-                            {/* LISTA DE ITEMS (ACORDEÓN) */}
                             {isExpanded && (
                             <div className="grid gap-3 mb-6 pl-2 border-l-2 border-white/10">
                                 {data.items.map(tx => (
@@ -485,8 +531,10 @@
                                         className={`neo-panel p-3 md:p-5 flex items-center gap-4 transition-all duration-200 cursor-pointer border-l-4 ${tx.isPaidForMonth ? 'opacity-60 bg-[#064e3b]' : ''}`}
                                         style={{ borderLeftColor: tx.isPaidForMonth ? '#10b981' : (tx.color || '#1e3a8a') }}
                                     >
-                                        <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden ${tx.isPaidForMonth ? 'neo-inset' : 'neo-inset'}`}>
-                                            <div style={{ color: tx.isPaidForMonth ? '#a7f3d0' : (tx.color || 'white') }}>{ICON_GALLERY.find(i => i.name === tx.icon)?.icon || <Icons.ShoppingBag />}</div>
+                                        <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden shadow-inner ${tx.isPaidForMonth ? 'opacity-50 grayscale' : ''}`} style={{ backgroundColor: tx.color || '#3b82f6' }}>
+                                            <div className="text-white">
+                                                {ICON_GALLERY.find(i => i.name === tx.icon)?.icon || <Icons.ShoppingBag />}
+                                            </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-start">
@@ -621,14 +669,24 @@
             }, []);
 
             const insights = useMemo(() => {
-                const allExpenses = transactions.filter(t => t.type === 'expense');
-                const mostExpensive = [...allExpenses].sort((a,b) => (b.amount/ (b.installments||1)) - (a.amount/(a.installments||1))).slice(0, 5);
-                const creditTx = allExpenses.filter(t => t.subtype === 'credit');
+                const m = currentDate.getMonth(); const y = currentDate.getFullYear();
+                
+                const activeExpensesThisMonth = transactions.filter(t => {
+                    if (t.type !== 'expense') return false;
+                    return getPaymentForMonth(t, m, y) > 0;
+                });
+
+                const mostExpensive = [...activeExpensesThisMonth].sort((a,b) => getPaymentForMonth(b,m,y) - getPaymentForMonth(a,m,y)).slice(0, 5);
+                
+                const creditTx = activeExpensesThisMonth.filter(t => t.subtype === 'credit');
                 
                 const creditTxWithRemaining = creditTx.map(t => {
-                    const txDate = parseDate(t.date);
+                    let txDate = parseDate(t.date);
+                    if (txDate.getDate() >= 15) {
+                        txDate = new Date(txDate.getFullYear(), txDate.getMonth() + 1, 1);
+                    }
                     const startMonthIndex = txDate.getFullYear() * 12 + txDate.getMonth();
-                    const currentMonthIndex = currentDate.getFullYear() * 12 + currentDate.getMonth();
+                    const currentMonthIndex = y * 12 + m;
                     const currentQuota = Math.max(1, currentMonthIndex - startMonthIndex + 1);
                     return { ...t, remaining: Math.max(0, (t.installments || 1) - currentQuota) };
                 });
@@ -642,13 +700,13 @@
             // Totals NO longer depend on whether a transaction is marked as paid
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0; let income = 0;
-                transactions.filter(t => !searchQuery || t.description.toLowerCase().includes(searchQuery.toLowerCase())).forEach(t => {
+                transactions.forEach(t => {
                     const val = getPaymentForMonth(t, m, y);
                     if (t.type === 'income') income += val;
                     else expense += val; 
                 });
                 return { expense, income, balance: income - expense };
-            }, [transactions, currentDate, searchQuery]);
+            }, [transactions, currentDate]);
 
             const futureData = useMemo(() => {
                 const data = [];
@@ -755,7 +813,7 @@
                 } catch(e) { console.error(e); alert("Error al guardar: " + e.message); }
             };
 
-            const deleteTx = async () => { if (confirm('¿Eliminar definitivamente?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
+            const deleteTx = async () => { if (confirm('¿Eliminar definitivamente este movimiento?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
             const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
             
             const saveGroupEdit = async () => { 
@@ -822,9 +880,9 @@
 
             const filteredTransactions = transactions.filter(t => 
                 !searchQuery || 
-                t.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                t.groupName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                t.category.toLowerCase().includes(searchQuery.toLowerCase())
+                (t.description || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+                (t.groupName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (t.category || "").toLowerCase().includes(searchQuery.toLowerCase())
             );
 
             const filteredIcons = ICON_GALLERY.filter(i => i.label.toLowerCase().includes(iconSearch.toLowerCase()) || i.name.toLowerCase().includes(iconSearch.toLowerCase()));
@@ -872,7 +930,6 @@
                         <button onClick={() => setView('dashboard')} className={`px-6 py-3 font-bold transition-all ${view === 'dashboard' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Resumen</button>
                         <button onClick={() => setView('future')} className={`px-6 py-3 font-bold transition-all ${view === 'future' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Futuro</button>
                         <button onClick={() => setView('insights')} className={`px-6 py-3 font-bold transition-all ${view === 'insights' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Análisis</button>
-                        <button onClick={() => setView('search')} className={`px-6 py-3 font-bold transition-all ${view === 'search' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Buscar</button>
                     </div>
 
                     <main className="flex-1">
@@ -892,8 +949,20 @@
                                         <h2 className="text-4xl font-extrabold text-white tracking-tighter">${dashboardTotals.balance.toLocaleString('es-AR')}</h2>
                                     </NeoCard>
                                 </div>
+                                
+                                <div className="neo-page-inset p-2 mb-6 flex items-center">
+                                    <input 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Buscar gasto, categoría o grupo..."
+                                        className="flex-1 bg-transparent px-4 py-2 text-white font-medium outline-none"
+                                    />
+                                    <div className="p-2 text-blue-400"><Icons.Search size={20}/></div>
+                                </div>
+
                                 {transactions.length === 0 ? <div className="text-center py-10 text-slate-500 font-mono">No hay datos para este mes.</div> : 
-                                    <GroupedList transactions={transactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} onToggleGroupPaid={toggleGroupPaid} />
+                                 filteredTransactions.length === 0 ? <div className="text-center py-10 text-slate-500 font-mono">No se encontraron resultados para "{searchQuery}".</div> :
+                                    <GroupedList transactions={filteredTransactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} onToggleGroupPaid={toggleGroupPaid} />
                                 }
                             </div>
                         )}
@@ -910,6 +979,7 @@
                                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                                                     <XAxis dataKey="name" stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} />
                                                     <YAxis stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`} />
+                                                    <Tooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={(v)=>`$${v.toLocaleString('es-AR')}`} />
                                                     <Area type="monotone" dataKey="total" stroke="#fff" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                                                 </AreaChart>
                                             </ResponsiveContainer>
@@ -974,40 +1044,6 @@
                                             ))}
                                         </div>
                                     </NeoCard>
-                                </div>
-                            </div>
-                        )}
-                        
-                        {view === 'search' && (
-                            <div className="animate-in flex flex-col h-[70vh]">
-                                <div className="neo-page-inset p-2 mb-6 flex items-center">
-                                    <input 
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Buscar gasto, categoría o grupo..."
-                                        className="flex-1 bg-transparent px-4 py-3 text-white font-medium outline-none"
-                                        autoFocus
-                                    />
-                                    <div className="p-3 text-blue-400"><Icons.Search size={20}/></div>
-                                </div>
-                                <div className="flex-1 overflow-y-auto space-y-4 pb-20 pr-2">
-                                    {searchQuery ? (
-                                        filteredTransactions.length > 0 ? (
-                                            filteredTransactions.map(tx => (
-                                                <div key={tx.id} onClick={() => setShowReceipt(tx)} className="neo-panel p-5 flex justify-between items-center cursor-pointer hover:brightness-110 transition-all">
-                                                    <div>
-                                                        <div className="font-bold text-white">{tx.description}</div>
-                                                        <div className="text-xs text-blue-200 mt-1 font-mono">{tx.groupName} | {tx.category}</div>
-                                                    </div>
-                                                    <div className="font-bold text-white">${(tx.amount / (tx.installments || 1)).toLocaleString('es-AR')}</div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center text-slate-500 mt-10 font-medium">No se encontraron resultados.</div>
-                                        )
-                                    ) : (
-                                        <div className="text-center text-slate-500 mt-10 font-medium">Empieza a escribir para buscar...</div>
-                                    )}
                                 </div>
                             </div>
                         )}
@@ -1139,9 +1175,12 @@
                                                 onChange={e => setIconSearch(e.target.value)} 
                                                 className="w-full neo-inset px-4 py-2 text-white text-sm outline-none placeholder:text-blue-300"
                                             />
-                                            <div className="grid grid-cols-5 gap-3 max-h-32 overflow-y-auto pr-2">
+                                            <div className="grid grid-cols-5 gap-3 max-h-40 overflow-y-auto pr-2 pb-2">
                                                 {filteredIcons.map(icon => (
-                                                    <button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name})} className={`aspect-square flex flex-col items-center justify-center rounded-xl transition-all ${formData.icon === icon.name ? 'neo-inset text-white border border-white/20' : 'neo-panel text-blue-300 hover:text-white'}`}>
+                                                    <button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name})} 
+                                                        className={`aspect-square flex flex-col items-center justify-center rounded-xl transition-all ${formData.icon === icon.name ? 'border-2 border-white scale-105' : 'neo-panel hover:brightness-110'}`}
+                                                        style={{ backgroundColor: formData.icon === icon.name ? (formData.color || '#1e3a8a') : 'var(--bg-card)', color: formData.icon === icon.name ? 'white' : 'rgba(255,255,255,0.6)' }}
+                                                    >
                                                         {icon.icon}
                                                         <span className="text-[7px] mt-1 hidden md:block">{icon.label}</span>
                                                     </button>
@@ -1182,7 +1221,6 @@
                         <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'future' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.Calendar size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Futuro</span></button>
                         <button onClick={openAdd} className="neo-panel w-14 h-14 flex items-center justify-center -mt-8"><Icons.Plus size={28} /></button>
                         <button onClick={() => setView('insights')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.BarChart2 size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Análisis</span></button>
-                        <button onClick={() => setView('search')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'search' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.Search size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Buscar</span></button>
                     </div>
                 </div>
             );
