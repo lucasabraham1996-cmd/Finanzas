@@ -84,7 +84,7 @@
             border-color: transparent;
         }
 
-        /* Page Level Neumorphism (For dark background elements) */
+        /* Page Level Neumorphism */
         .neo-page-panel {
             background-color: var(--bg-page);
             border-radius: 1.25rem;
@@ -131,7 +131,7 @@
     <!-- FIREBASE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -150,7 +150,7 @@
         window.firebaseDB = db;
         window.firebaseAuth = auth;
         window.signInAnonymously = signInAnonymously;
-        window.fb = { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch };
+        window.fb = { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, writeBatch, where, getDocs };
         
         window.dispatchEvent(new Event('firebase-modules-ready'));
     </script>
@@ -199,9 +199,8 @@
             return new Date(y, m - 1, d);
         };
         
-        // Auto-switch to next month if day >= 15
         const getBillingMonth = () => {
-            const today = new Date(); // Usar fecha real
+            const today = new Date(); 
             if (today.getDate() >= 15) {
                 return new Date(today.getFullYear(), today.getMonth() + 1, 1);
             }
@@ -756,7 +755,7 @@
                 } catch(e) { console.error(e); alert("Error al guardar: " + e.message); }
             };
 
-            const deleteTx = async () => { if (confirm('¿Eliminar?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
+            const deleteTx = async () => { if (confirm('¿Eliminar definitivamente?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
             const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
             
             const saveGroupEdit = async () => { 
@@ -775,6 +774,20 @@
                     await batch.commit(); 
                     setShowGroupModal(false); 
                 } catch(e) { console.error(e); alert("Error al guardar grupo."); }
+            };
+
+            const deleteGroup = async () => { 
+                if (confirm(`¿Seguro que deseas eliminar el grupo "${groupEditData.oldName}"? \n\n(Sus gastos no se borrarán, pasarán al grupo "A PAGAR")`)) {
+                    try {
+                        const { doc, writeBatch, collection, query, where, getDocs } = window.fb;
+                        const batch = writeBatch(window.firebaseDB);
+                        batch.delete(doc(window.firebaseDB, GROUPS_COL, groupEditData.oldName));
+                        const snap = await getDocs(query(collection(window.firebaseDB, TRANSACTIONS_COL), where("groupName", "==", groupEditData.oldName)));
+                        snap.forEach(d => batch.update(d.ref, { groupName: 'A PAGAR' }));
+                        await batch.commit();
+                        setShowGroupModal(false);
+                    } catch(e) { console.error(e); alert("Error al eliminar grupo."); }
+                }
             };
 
             const parseAndImport = async () => {
@@ -1138,7 +1151,7 @@
                                     </div>
                                 </div>
                                 <div className="p-5 flex gap-4">
-                                    {editingId && <button onClick={deleteTx} className="neo-button w-14 h-14 text-rose-300"><Icons.Trash2 size={24} /></button>}
+                                    {editingId && <button onClick={deleteTx} className="neo-button w-14 h-14 text-rose-300 hover:text-rose-400"><Icons.Trash2 size={24} /></button>}
                                     <button onClick={saveTx} className="flex-1 neo-inset bg-blue-700 text-white font-bold rounded-xl py-4 flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase tracking-widest"><Icons.Check size={20} /> Guardar</button>
                                 </div>
                             </div>
@@ -1156,6 +1169,7 @@
                                     {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: c})} className={`w-8 h-8 rounded-full transition-transform ${groupEditData.color === c ? 'scale-110 border-2 border-white' : 'opacity-70 hover:opacity-100'}`} style={{backgroundColor: c}}></button>))}
                                 </div>
                                 <div className="flex gap-3">
+                                    <button onClick={deleteGroup} className="neo-page-button w-12 text-rose-500 hover:text-rose-400" title="Eliminar Grupo"><Icons.Trash2 size={20}/></button>
                                     <button onClick={() => setShowGroupModal(false)} className="flex-1 py-3 neo-page-button text-slate-400 font-bold">Cancelar</button>
                                     <button onClick={saveGroupEdit} className="flex-1 py-3 neo-panel text-white font-bold">Guardar</button>
                                 </div>
