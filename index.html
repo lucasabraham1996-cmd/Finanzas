@@ -22,6 +22,9 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         :root {
@@ -157,7 +160,7 @@
     <!-- REACT APP -->
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
-        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer } = Recharts;
+        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip: RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
 
         const TRANSACTIONS_COL = "shared_transactions"; 
         const GROUPS_COL = "shared_groups";
@@ -222,7 +225,7 @@
              return 0;
         };
 
-        // --- EXTENDED ICONS GALLERY ---
+        // UI System Icons (Lucide SVG based)
         const Icons = {
             Wallet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
             TrendingDown: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
@@ -246,13 +249,9 @@
             Edit3: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
             Check: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
             CheckSquare: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>,
-            Image: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
-            Link: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
-            Pencil: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>,
             Trash2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
             Download: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
             UploadCloud: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>,
-            Palette: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>,
             FileSpreadsheet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>,
             ClipboardCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>,
             Award: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
@@ -261,97 +260,27 @@
             Search: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
             Share: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
             Pin: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.5c0-1.5-2-3.5-2-5.5v-3c0-1.7-1.3-3-3-3h-4c-1.7 0-3 1.3-3 3v3c0 2-2 4-2 5.5V17z"></path></svg>,
-            ShoppingCart: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>,
-            Droplet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>,
-            Laptop: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>,
-            Heart: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>,
-            Book: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>,
-            Film: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>,
-            Music: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>,
-            Plane: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-.5-.5-2.5 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.7l-1.3 2.6c-.2.4.1.9.6 1l7.6 2.3-2.6 2.6-4.5-.5c-.4-.1-.8.1-1 .5L1.2 17c-.2.4 0 .9.4 1.1l6.1 2.3 2.3 6.1c.2.4.7.6 1.1.4l1.6-1.2c.4-.2.6-.6.5-1l-.5-4.5 2.6-2.6 2.3 7.6c.1.5.6.8 1 .6l2.6-1.3c.5-.2.8-.6.7-1.1z"></path></svg>,
-            Activity: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>,
-            Feather: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>,
-            Tool: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>,
-            DollarSign: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>,
-            Briefcase: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>,
-            Truck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>,
-            Tv: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>,
-            Shirt: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46 16 2 8 2 3.62 3.46 2 8.5 5.82 11.41 5.82 22 18.18 22 18.18 11.41 22 8.5 20.38 3.46z"></path></svg>,
-            Monitor: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>,
-            Gamepad2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>,
-            User: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
-            Bath: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path><line x1="10" y1="5" x2="8" y2="7"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="7" y1="19" x2="7" y2="21"></line><line x1="17" y1="19" x2="17" y2="21"></line></svg>,
-            Scale: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"></circle><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"></path></svg>,
-            Snowflake: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><path d="m20 16-4-4 4-4"></path><path d="m4 8 4 4-4 4"></path><path d="m16 4-4 4-4-4"></path><path d="m8 20 4-4 4 4"></path></svg>,
-            Sun: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>,
-            ShieldCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>,
-            Percent: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>,
-            PlaySquare: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>,
-            Chrome: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>,
-            Dribbble: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"></path></svg>,
-            Apple: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" /><path d="M10 2c1 .5 2 2 2 5h-2c0-3-1-5-2-5Z" /></svg>,
-            BedDouble: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path><path d="M12 4v6"></path><path d="M2 18h20"></path></svg>,
-            Puzzle: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 0-.288.877l.122.797c.189 1.25-.17 2.518-1.002 3.35-.833.833-2.101 1.192-3.35 1.003l-.796-.122a.98.98 0 0 0-.877.289l-1.611 1.611c-.47.47-1.087.706-1.704.706s-1.233-.235-1.704-.706l-1.568-1.568a.98.98 0 0 0-.878-.289l-.797.122c-1.25.189-2.518-.17-3.35-1.003-.833-.833-1.192-2.101-1.003-3.35l.122-.796a.98.98 0 0 0-.289-.877L1.6 15.485c-.47-.47-.706-1.087-.706-1.704s.235-1.233.706-1.704l1.611-1.611a.98.98 0 0 0 .288-.877l-.122-.797c-.189-1.25.17-2.518 1.003-3.35.832-.833 2.101-1.192 3.35-1.003l.796.122a.98.98 0 0 0 .877-.289l1.611-1.611c.47-.47 1.087-.706 1.704-.706s1.233.235 1.704.706l1.568 1.568c.23.23.556.338.878.289l.797-.122c1.25-.189 2.518.17 3.35 1.003.833.833 1.192 2.101 1.002 3.35l-.122.796z"></path></svg>,
-            Dices: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="10" width="10" height="10" rx="2"></rect><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"></path><path d="M6 18h.01"></path><path d="M10 14h.01"></path><path d="M15 6h.01"></path><path d="M18 9h.01"></path></svg>,
-            Cpu: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>,
-            Shield: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>,
-            Tent: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 21 14 3"></path><path d="M20.5 21 10 3"></path><path d="M15.5 21 12 15l-3.5 6"></path><path d="M2 21h20"></path></svg>,
-            Footprints: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"></path><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"></path><path d="M16 17h4"></path><path d="M4 13h4"></path></svg>,
-            FileText: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+            Image: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
         };
 
-        const ICON_GALLERY = [
-            { name: 'netflix', icon: <Icons.PlaySquare />, label: 'Netflix' },
-            { name: 'google', icon: <Icons.Chrome />, label: 'Google' },
-            { name: 'spotify', icon: <Icons.Music />, label: 'Spotify' },
-            { name: 'crunchyroll', icon: <Icons.Tv />, label: 'Crunchyroll' },
-            { name: 'tv', icon: <Icons.Tv />, label: 'TV' },
-            { name: 'football', icon: <Icons.Dribbble />, label: 'Fútbol' },
-            { name: 'shield', icon: <Icons.Shield />, label: 'Escudo' },
-            { name: 'stadium', icon: <Icons.Tent />, label: 'Estadio' },
-            { name: 'clothes', icon: <Icons.Shirt />, label: 'Ropa' },
-            { name: 'tshirt', icon: <Icons.Shirt />, label: 'Camiseta' },
-            { name: 'bed', icon: <Icons.BedDouble />, label: 'Cama' },
-            { name: 'cellphone', icon: <Icons.Smartphone />, label: 'Celular' },
-            { name: 'apple', icon: <Icons.Apple />, label: 'Apple' },
-            { name: 'pc', icon: <Icons.Monitor />, label: 'PC' },
-            { name: 'coffee', icon: <Icons.Coffee />, label: 'Café' },
-            { name: 'tool', icon: <Icons.Tool />, label: 'Herramienta' },
-            { name: 'toys', icon: <Icons.Puzzle />, label: 'Juguetes' },
-            { name: 'child', icon: <Icons.User />, label: 'Niño' },
-            { name: 'man', icon: <Icons.User />, label: 'Hombre' },
-            { name: 'woman', icon: <Icons.User />, label: 'Mujer' },
-            { name: 'hygiene', icon: <Icons.Bath />, label: 'Higiene' },
-            { name: 'scale', icon: <Icons.Scale />, label: 'Balanza' },
-            { name: 'joystick', icon: <Icons.Gamepad2 />, label: 'Joystick' },
-            { name: 'game', icon: <Icons.Dices />, label: 'Juego' },
-            { name: 'digital', icon: <Icons.Cpu />, label: 'Digital' },
-            { name: 'appliances', icon: <Icons.Zap />, label: 'Electrodoméstico' },
-            { name: 'cleats', icon: <Icons.Footprints />, label: 'Botines' },
-            { name: 'sneakers', icon: <Icons.Footprints />, label: 'Zapatillas' },
-            { name: 'cold', icon: <Icons.Snowflake />, label: 'Frío' },
-            { name: 'heat', icon: <Icons.Sun />, label: 'Calor' },
-            { name: 'insurance', icon: <Icons.ShieldCheck />, label: 'Seguro' },
-            { name: 'tax', icon: <Icons.FileText />, label: 'Impuesto' },
-            { name: 'commission', icon: <Icons.Percent />, label: 'Comisión' },
-            { name: 'shopping', icon: <Icons.ShoppingBag />, label: 'Compras' },
-            { name: 'cart', icon: <Icons.ShoppingCart />, label: 'Supermercado' },
-            { name: 'transport', icon: <Icons.Car />, label: 'Transporte' },
-            { name: 'bus', icon: <Icons.Truck />, label: 'Envios' },
-            { name: 'home', icon: <Icons.Home />, label: 'Hogar' },
-            { name: 'water', icon: <Icons.Droplet />, label: 'Agua/Gas' },
-            { name: 'gift', icon: <Icons.Gift />, label: 'Regalo' },
-            { name: 'health', icon: <Icons.Heart />, label: 'Salud' },
-            { name: 'education', icon: <Icons.Book />, label: 'Educación' },
-            { name: 'entertainment', icon: <Icons.Film />, label: 'Cine' },
-            { name: 'travel', icon: <Icons.Plane />, label: 'Viajes' },
-            { name: 'gym', icon: <Icons.Activity />, label: 'Deporte' },
-            { name: 'pets', icon: <Icons.Feather />, label: 'Mascotas' },
-            { name: 'credit-card', icon: <Icons.CreditCard />, label: 'Tarjeta' },
-            { name: 'cash', icon: <Icons.DollarSign />, label: 'Efectivo' },
-            { name: 'bank', icon: <Icons.Briefcase />, label: 'Trabajo' },
-            { name: 'other', icon: <Icons.PieChart />, label: 'Otros' }
-        ];
+        // Legacy Mapping to transition existing items to Phosphor
+        const legacyIconMap = {
+            'shopping': 'shopping-bag', 'cart': 'shopping-cart', 'food': 'coffee', 'transport': 'car', 'bus': 'bus', 'home': 'house', 'utilities': 'lightning', 'water': 'drop', 'tech': 'device-mobile', 'laptop': 'laptop', 'gift': 'gift', 'health': 'heart', 'education': 'book', 'entertainment': 'film-strip', 'music': 'music-notes', 'travel': 'airplane', 'gym': 'barbell', 'pets': 'paw-print', 'tools': 'wrench', 'credit-card': 'credit-card', 'cash': 'money', 'bank': 'bank', 'other': 'chart-pie'
+        };
+
+        const renderItemIcon = (tx) => {
+            if (tx.image) return <img src={tx.image} className={`w-full h-full object-cover ${tx.isPaidForMonth ? 'grayscale opacity-50' : ''}`} />;
+            let iconName = tx.icon || 'shopping-bag';
+            if (legacyIconMap[iconName]) iconName = legacyIconMap[iconName];
+            return <i className={`ph ph-${iconName.replace(/^ph-/, '')}`} style={{ fontSize: '1.5rem' }}></i>;
+        };
+
+        const renderGroupIcon = (groupName, groupMeta) => {
+            const meta = groupMeta.find(g => g.name === groupName);
+            if (meta?.image) return <img src={meta.image} className="w-full h-full object-cover" />;
+            if (meta?.icon) return <i className={`ph ph-${meta.icon.replace(/^ph-/, '')}`} style={{fontSize:'1.25rem'}}></i>;
+            return <Icons.CreditCard size={20} />;
+        };
 
         const COLOR_PALETTE = [
             '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', 
@@ -374,6 +303,19 @@
 
         const ReceiptModal = ({ tx, onClose, onEdit }) => {
             if (!tx) return null;
+
+            const { actualStartDate, endDate } = useMemo(() => {
+                let sd = parseDate(tx.date);
+                if (tx.subtype === 'credit' && sd.getDate() >= 15) {
+                    sd = new Date(sd.getFullYear(), sd.getMonth() + 1, 1);
+                }
+                const ed = new Date(sd.getFullYear(), sd.getMonth() + (tx.installments || 1) - 1, 1);
+                return { actualStartDate: sd, endDate: ed };
+            }, [tx.date, tx.subtype, tx.installments]);
+
+            const startStr = actualStartDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            const endStr = endDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+
             const currentQuota = tx.installments > 1 ? tx.quotaInfo?.current || 1 : 1;
             const totalQuota = tx.installments || 1;
             const percentage = (currentQuota / totalQuota) * 100;
@@ -390,7 +332,7 @@
             };
 
             return (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in">
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 animate-in">
                     <div className="neo-panel w-full max-w-sm overflow-hidden relative border-none">
                         <div className="h-28 w-full relative" style={{ backgroundColor: tx.color || '#1e3a8a' }}>
                             <div className="absolute top-4 right-4 flex gap-2">
@@ -401,7 +343,7 @@
                         <div className="p-6 -mt-12 relative">
                             <div className="neo-inset p-6 pt-10 text-center border-none relative mt-4">
                                 <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-lg border-4 border-[#0b1120]" style={{backgroundColor: tx.color || '#1e3a8a'}}>
-                                    {ICON_GALLERY.find(i=>i.name===tx.icon)?.icon || <Icons.Receipt size={32}/>}
+                                    {renderItemIcon(tx)}
                                 </div>
                                 <h2 className="text-xl font-bold text-white mb-1 mt-2">{tx.description}</h2>
                                 <p className="text-sm text-sky-200 uppercase font-bold tracking-wide">{tx.groupName}</p>
@@ -411,16 +353,22 @@
                                     <span className="text-3xl font-bold text-white">${amountStr}</span>
                                 </div>
                                 {tx.installments > 1 && (
-                                    <div className="mt-4 bg-black/20 p-3 rounded-xl">
-                                        <div className="flex justify-between text-xs font-bold text-white/70 mb-2">
-                                            <span>Cuota {currentQuota} de {totalQuota}</span>
-                                            <span>{percentage.toFixed(0)}%</span>
+                                    <>
+                                        <div className="mt-4 bg-black/20 p-3 rounded-xl text-left">
+                                            <div className="flex justify-between text-xs text-white/70 mb-1">
+                                                <span>Inicio: <strong className="text-white capitalize">{startStr}</strong></span>
+                                                <span>Fin: <strong className="text-white capitalize">{endStr}</strong></span>
+                                            </div>
+                                            <div className="flex justify-between text-xs font-bold text-white/70 mt-3 mb-2">
+                                                <span>Cuota {currentQuota} de {totalQuota}</span>
+                                                <span>{percentage.toFixed(0)}%</span>
+                                            </div>
+                                            <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden">
+                                                <div className="h-full rounded-full transition-all duration-1000 bg-sky-300" style={{ width: `${percentage}%` }}></div>
+                                            </div>
+                                            <p className="text-[10px] text-white/50 mt-2 text-left">Total Original: ${tx.amount.toLocaleString('es-AR')}</p>
                                         </div>
-                                        <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden">
-                                            <div className="h-full rounded-full transition-all duration-1000 bg-sky-300" style={{ width: `${percentage}%` }}></div>
-                                        </div>
-                                        <p className="text-[10px] text-white/50 mt-2 text-left">Total Original: ${tx.amount.toLocaleString('es-AR')}</p>
-                                    </div>
+                                    </>
                                 )}
                                 <button onClick={handleShare} className="mt-6 w-full py-3 neo-button font-bold gap-2"><Icons.Share size={18}/> Compartir</button>
                             </div>
@@ -496,7 +444,9 @@
                         <div key={groupName} className="animate-in">
                             <div className="neo-panel-custom mb-3 p-4 flex items-center justify-between cursor-pointer transition-all hover:brightness-110" style={{ backgroundColor: data.color }} onClick={() => toggleGroup(groupName)}>
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-black/20 rounded-lg text-white"><Icons.CreditCard size={20} /></div>
+                                    <div className="p-2 bg-black/20 rounded-lg text-white w-10 h-10 flex items-center justify-center overflow-hidden shrink-0">
+                                        {renderGroupIcon(groupName, groupMeta)}
+                                    </div>
                                     <div className="flex items-center gap-2">
                                         <div>
                                             <h3 className="text-white font-bold text-lg md:text-xl leading-tight uppercase tracking-wide">
@@ -532,8 +482,8 @@
                                         style={{ borderLeftColor: tx.isPaidForMonth ? '#10b981' : (tx.color || '#1e3a8a') }}
                                     >
                                         <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden shadow-inner ${tx.isPaidForMonth ? 'opacity-50 grayscale' : ''}`} style={{ backgroundColor: tx.color || '#3b82f6' }}>
-                                            <div className="text-white">
-                                                {ICON_GALLERY.find(i => i.name === tx.icon)?.icon || <Icons.ShoppingBag />}
+                                            <div className="text-white flex items-center justify-center w-full h-full">
+                                                {renderItemIcon(tx)}
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -592,13 +542,13 @@
             const [showReceipt, setShowReceipt] = useState(null); 
             
             const [editingId, setEditingId] = useState(null);
-            const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '' });
+            const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '', icon: '', image: '' });
             const [importText, setImportText] = useState("");
             const [iconSearch, setIconSearch] = useState("");
 
             const [formData, setFormData] = useState({
                 type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', 
-                groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping', color: '#1e3a8a'
+                groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a'
             });
 
             const [dbReady, setDbReady] = useState(false);
@@ -697,16 +647,15 @@
                 return { mostExpensive, closestToFinish, longestRemaining };
             }, [transactions, currentDate]);
 
-            // Totals NO longer depend on whether a transaction is marked as paid
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0; let income = 0;
-                transactions.forEach(t => {
+                transactions.filter(t => !searchQuery || (t.description||"").toLowerCase().includes(searchQuery.toLowerCase())).forEach(t => {
                     const val = getPaymentForMonth(t, m, y);
                     if (t.type === 'income') income += val;
                     else expense += val; 
                 });
                 return { expense, income, balance: income - expense };
-            }, [transactions, currentDate]);
+            }, [transactions, currentDate, searchQuery]);
 
             const futureData = useMemo(() => {
                 const data = [];
@@ -770,7 +719,7 @@
                  } catch (e) { console.error(e); alert("Error al tachar grupo."); }
             };
 
-            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping', color: '#1e3a8a', date: toLocalDateString(currentDate) }); setIconSearch(""); setShowModal(true); };
+            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate) }); setShowModal(true); };
             const openEdit = (tx) => { 
                 setEditingId(tx.id); 
                 let currentQuota = 1; 
@@ -780,7 +729,6 @@
                     currentQuota = Math.max(1, monthsDiff + 1);
                 }
                 setFormData({ ...tx, amount: tx.amount, currentInstallment: currentQuota }); 
-                setIconSearch("");
                 setShowModal(true); 
             };
             
@@ -814,16 +762,21 @@
             };
 
             const deleteTx = async () => { if (confirm('¿Eliminar definitivamente este movimiento?') && dbReady) { await window.fb.deleteDoc(window.fb.doc(window.firebaseDB, TRANSACTIONS_COL, editingId)); setShowModal(false); } };
-            const openGroupEdit = (name, currentColor) => { setGroupEditData({ oldName: name, newName: name, color: currentColor }); setShowGroupModal(true); };
+            
+            const openGroupEdit = (name, currentColor) => { 
+                const meta = groupMeta.find(g => g.name === name) || {};
+                setGroupEditData({ oldName: name, newName: name, color: meta.color || currentColor, icon: meta.icon || '', image: meta.image || '' }); 
+                setShowGroupModal(true); 
+            };
             
             const saveGroupEdit = async () => { 
                 if (!groupEditData.newName.trim()) return alert("El nombre del grupo no puede estar vacío.");
                 try {
-                    const { oldName, newName, color } = groupEditData; 
+                    const { oldName, newName, color, icon, image } = groupEditData; 
                     const { doc, writeBatch, collection, query, where, getDocs } = window.fb;
                     const batch = writeBatch(window.firebaseDB); 
                     
-                    batch.set(doc(window.firebaseDB, GROUPS_COL, newName), { name: newName, color: color }); 
+                    batch.set(doc(window.firebaseDB, GROUPS_COL, newName), cleanFirestoreData({ name: newName, color, icon, image })); 
                     if (oldName !== newName) { 
                         batch.delete(doc(window.firebaseDB, GROUPS_COL, oldName)); 
                     } 
@@ -848,6 +801,11 @@
                 }
             };
 
+            const handleFile = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = () => setFormData(p => ({ ...p, image: r.result })); r.readAsDataURL(f); } };
+            const handleGroupImageFile = (e) => { const f = e.target.files[0]; if (f) { const r = new FileReader(); r.onload = () => setGroupEditData(p => ({ ...p, image: r.result })); r.readAsDataURL(f); } };
+
+            const loadDefaultList = () => { setImportText(`A PAGARMONTOCUOTAEPEC$85.000`); };
+            
             const parseAndImport = async () => {
                 if(!dbReady) return; setIsSaving(true);
                 const { doc, writeBatch } = window.fb;
@@ -869,7 +827,7 @@
                         if (currentDesc.includes("GALICIA")) currentGroup = "TARJETA GALICIA";
                         if (currentDesc.includes("ICBC")) currentGroup = "ICBC";
                         const ref = doc(window.firebaseDB, TRANSACTIONS_COL, Math.random().toString(36).substr(2,9));
-                        const txData = cleanFirestoreData({ type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping', color: '#1e3a8a' });
+                        const txData = cleanFirestoreData({ type: 'expense', subtype: quotaT > 1 ? 'credit' : 'fixed', amount: amount * quotaT, description: currentDesc.replace(/A PAGAR|NARANJA|TARJETA GALICIA|ICBC/g, '').trim() || "Gasto", category: 'Varios', groupName: currentGroup, date: toLocalDateString(new Date()), installments: quotaT, icon: 'shopping-bag', color: '#1e3a8a' });
                         batch.set(ref, txData);
                         currentDesc = nextDesc;
                     }
@@ -880,12 +838,10 @@
 
             const filteredTransactions = transactions.filter(t => 
                 !searchQuery || 
-                (t.description || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
-                (t.groupName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (t.category || "").toLowerCase().includes(searchQuery.toLowerCase())
+                (t.description||"").toLowerCase().includes(searchQuery.toLowerCase()) || 
+                (t.groupName||"").toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (t.category||"").toLowerCase().includes(searchQuery.toLowerCase())
             );
-
-            const filteredIcons = ICON_GALLERY.filter(i => i.label.toLowerCase().includes(iconSearch.toLowerCase()) || i.name.toLowerCase().includes(iconSearch.toLowerCase()));
 
             return (
                 <div className="w-full max-w-7xl mx-auto p-4 md:p-8 pb-24 min-h-[100dvh]">
@@ -961,7 +917,7 @@
                                 </div>
 
                                 {transactions.length === 0 ? <div className="text-center py-10 text-slate-500 font-mono">No hay datos para este mes.</div> : 
-                                 filteredTransactions.length === 0 ? <div className="text-center py-10 text-slate-500 font-mono">No se encontraron resultados para "{searchQuery}".</div> :
+                                 filteredTransactions.length === 0 && searchQuery ? <div className="text-center py-10 text-slate-500 font-mono">No se encontraron resultados para "{searchQuery}".</div> :
                                     <GroupedList transactions={filteredTransactions} monthIndex={currentDate.getMonth()} year={currentDate.getFullYear()} onSelect={setShowReceipt} onEdit={openEdit} groupMeta={groupMeta} onEditGroup={openGroupEdit} checklistMode={checklistMode} onTogglePaid={togglePaid} onToggleGroupPaid={toggleGroupPaid} />
                                 }
                             </div>
@@ -979,7 +935,6 @@
                                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                                                     <XAxis dataKey="name" stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} />
                                                     <YAxis stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`} />
-                                                    <Tooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={(v)=>`$${v.toLocaleString('es-AR')}`} />
                                                     <Area type="monotone" dataKey="total" stroke="#fff" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                                                 </AreaChart>
                                             </ResponsiveContainer>
@@ -1008,7 +963,7 @@
                                     <NeoCard className="flex flex-col h-80">
                                         <h3 className="font-bold text-rose-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.TrendingUp size={18}/> Gastos Más Caros</h3>
                                         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                                            {insights.mostExpensive.map(t => (
+                                            {insights.mostExpensive.length === 0 ? <p className="text-white/50 text-sm">No hay gastos activos.</p> : insights.mostExpensive.map(t => (
                                                 <div key={t.id} className="flex justify-between items-center neo-inset p-4">
                                                     <span className="text-sm font-medium text-white">{t.description}</span>
                                                     <span className="text-sm font-bold text-rose-300">${(t.amount/(t.installments||1)).toLocaleString('es-AR')}</span>
@@ -1019,7 +974,7 @@
                                     <NeoCard className="flex flex-col h-80">
                                         <h3 className="font-bold text-emerald-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.Award size={18}/> Cerca de Terminar</h3>
                                         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                                            {insights.closestToFinish.map(t => (
+                                            {insights.closestToFinish.length === 0 ? <p className="text-white/50 text-sm">No hay cuotas por terminar.</p> : insights.closestToFinish.map(t => (
                                                 <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4 border-emerald-400">
                                                     <div>
                                                         <div className="text-sm font-medium text-white">{t.description}</div>
@@ -1033,7 +988,7 @@
                                     <NeoCard className="flex flex-col h-80 md:col-span-2">
                                         <h3 className="font-bold text-amber-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.Clock size={18}/> Deudas a Largo Plazo (>$20k)</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-2">
-                                            {insights.longestRemaining.map(t => (
+                                            {insights.longestRemaining.length === 0 ? <p className="text-white/50 text-sm">Todo libre por ahora.</p> : insights.longestRemaining.map(t => (
                                                 <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4 border-amber-400">
                                                      <div>
                                                         <div className="text-sm font-medium text-white">{t.description}</div>
@@ -1071,22 +1026,22 @@
 
                     {/* ADD/EDIT MODAL */}
                     {showModal && (
-                        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-slate-900/80 backdrop-blur-sm p-0 md:p-4">
-                            <div className="neo-panel w-full md:max-w-2xl h-[95vh] md:h-auto flex flex-col overflow-hidden animate-in">
-                                <div className="p-5 flex justify-between items-center">
-                                    <h3 className="font-bold text-white flex items-center gap-3"><div className="p-2 neo-inset text-white">{editingId ? <Icons.Edit3 size={16}/> : <Icons.Plus size={16}/>}</div> {editingId ? 'Editar' : 'Nuevo'}</h3>
-                                    <button onClick={() => setShowModal(false)} className="neo-button w-10 h-10"><Icons.X size={18}/></button>
+                        <div className="fixed inset-0 z-[100] flex flex-col bg-[#0b1120]">
+                            <div className="w-full h-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                <div className="p-5 flex justify-between items-center bg-[#1e3a8a] shadow-lg shrink-0">
+                                    <h3 className="font-bold text-white flex items-center gap-3"><div className="p-2 bg-white/10 rounded-full text-white">{editingId ? <Icons.Edit3 size={16}/> : <Icons.Plus size={16}/>}</div> {editingId ? 'Editar' : 'Nuevo'}</h3>
+                                    <button onClick={() => setShowModal(false)} className="p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-colors"><Icons.X size={18}/></button>
                                 </div>
-                                <div className="p-6 overflow-y-auto flex-1 space-y-6">
+                                <div className="p-4 md:p-8 overflow-y-auto flex-1 space-y-6">
                                     {/* Type Toggle */}
                                     <div className="flex neo-inset p-1">
-                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'expense' ? 'neo-panel' : 'text-blue-300'}`}>Egreso</button>
+                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'expense' ? 'neo-panel text-white' : 'text-blue-300'}`}>Egreso</button>
                                         <button onClick={() => setFormData({...formData, type: 'income', color: '#10b981'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'income' ? 'bg-emerald-600 text-white shadow-md' : 'text-blue-300'}`}>Ingreso</button>
                                     </div>
 
                                     <div className="text-center py-4">
                                         <label className="text-xs text-blue-200 uppercase font-bold tracking-widest">Monto Total</label>
-                                        <input type="number" placeholder="0" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="bg-transparent text-5xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/50 mt-2" autoFocus />
+                                        <input type="number" placeholder="0" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="bg-transparent text-5xl md:text-6xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/50 mt-2" autoFocus />
                                     </div>
                                     
                                     {formData.type === 'expense' && (
@@ -1099,24 +1054,24 @@
 
                                     <div className="space-y-4">
                                         <div className="neo-inset p-2">
-                                            <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-transparent px-4 py-2 text-white outline-none placeholder:text-blue-300 font-bold" placeholder="Descripción (Ej: Supermercado)" />
+                                            <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none placeholder:text-blue-300 font-bold md:text-lg" placeholder="Descripción (Ej: Supermercado)" />
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             {formData.type === 'expense' ? (
                                                 <div className="neo-inset p-2">
-                                                    <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-transparent px-4 py-2 text-white outline-none text-sm placeholder:text-blue-300" placeholder="Grupo (A PAGAR)" />
+                                                    <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none text-sm md:text-base placeholder:text-blue-300" placeholder="Grupo (A PAGAR)" />
                                                     <datalist id="dynamic-groups">{availableGroups.map(g => <option key={g} value={g} />)}</datalist>
                                                 </div>
                                             ) : (
                                                 <div className="neo-inset p-2 flex items-center px-4">
                                                     <label className="flex items-center gap-3 text-white text-sm cursor-pointer w-full font-medium">
-                                                        <input type="checkbox" checked={formData.subtype === 'fixed'} onChange={(e) => setFormData({...formData, subtype: e.target.checked ? 'fixed' : 'one-time'})} className="accent-emerald-500 w-4 h-4" /> Fijo Mensual
+                                                        <input type="checkbox" checked={formData.subtype === 'fixed'} onChange={(e) => setFormData({...formData, subtype: e.target.checked ? 'fixed' : 'one-time'})} className="accent-emerald-500 w-5 h-5" /> Fijo Mensual
                                                     </label>
                                                 </div>
                                             )}
                                             
                                             <div className="neo-inset p-2">
-                                                <input list="categoryList" type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-transparent px-4 py-2 text-white outline-none text-sm placeholder:text-blue-300" placeholder="Categoría (Varios)" />
+                                                <input list="categoryList" type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none text-sm md:text-base placeholder:text-blue-300" placeholder="Categoría (Varios)" />
                                                 <datalist id="categoryList">{availableCategories.map(c => <option key={c} value={c} />)}</datalist>
                                             </div>
                                         </div>
@@ -1136,8 +1091,8 @@
                                                 
                                                 <div className="col-span-2 pt-2">
                                                     <label className="text-xs text-blue-200 uppercase font-bold mb-2 block tracking-wider">Valor de la Cuota (Mensual)</label>
-                                                    <div className="flex items-center gap-2 neo-inset px-4 py-2">
-                                                        <span className="text-white font-bold">$</span>
+                                                    <div className="flex items-center gap-2 neo-inset px-4 py-3">
+                                                        <span className="text-white font-bold text-lg">$</span>
                                                         <input 
                                                             type="number" 
                                                             placeholder="0"
@@ -1146,7 +1101,7 @@
                                                                 const val = Number(e.target.value);
                                                                 setFormData({...formData, amount: val * (formData.installments || 1)});
                                                             }}
-                                                            className="bg-transparent w-full text-white font-bold outline-none"
+                                                            className="bg-transparent w-full text-white font-bold text-lg outline-none"
                                                         />
                                                     </div>
                                                 </div>
@@ -1155,43 +1110,52 @@
                                         
                                         <div>
                                             <label className="text-xs text-blue-200 font-bold uppercase mb-2 ml-1 block tracking-wider">Fecha de Compra/Inicio</label>
-                                            <input type="date" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full neo-inset p-4 text-white outline-none font-mono text-sm" />
+                                            <input type="date" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full neo-inset p-4 text-white outline-none font-mono text-sm md:text-base" />
                                         </div>
                                     </div>
                                     
                                     <div className="neo-panel p-5 space-y-4 shadow-none border-t border-blue-400">
                                         <div>
                                             <label className="text-xs text-blue-200 uppercase font-bold mb-3 block tracking-wider">Color Etiqueta</label>
-                                            <div className="flex gap-2 items-center flex-wrap">
-                                                {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setFormData({...formData, color: c})} className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-110' : 'border-transparent shadow-md'}`} style={{ backgroundColor: c }} />))}
+                                            <div className="flex gap-2 md:gap-3 items-center flex-wrap">
+                                                {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setFormData({...formData, color: c})} className={`w-8 h-8 rounded-full border-2 transition-transform ${formData.color === c ? 'border-white scale-125' : 'border-transparent shadow-md hover:scale-110'}`} style={{ backgroundColor: c }} />))}
                                             </div>
                                         </div>
                                         <div className="pt-4 border-t border-blue-400 flex flex-col gap-3">
-                                            <label className="text-xs text-blue-200 uppercase font-bold tracking-wider">Elige un Icono</label>
-                                            <input 
-                                                type="text" 
-                                                placeholder="Buscar icono..." 
-                                                value={iconSearch} 
-                                                onChange={e => setIconSearch(e.target.value)} 
-                                                className="w-full neo-inset px-4 py-2 text-white text-sm outline-none placeholder:text-blue-300"
-                                            />
-                                            <div className="grid grid-cols-5 gap-3 max-h-40 overflow-y-auto pr-2 pb-2">
-                                                {filteredIcons.map(icon => (
-                                                    <button key={icon.name} onClick={() => setFormData({...formData, icon: icon.name})} 
-                                                        className={`aspect-square flex flex-col items-center justify-center rounded-xl transition-all ${formData.icon === icon.name ? 'border-2 border-white scale-105' : 'neo-panel hover:brightness-110'}`}
-                                                        style={{ backgroundColor: formData.icon === icon.name ? (formData.color || '#1e3a8a') : 'var(--bg-card)', color: formData.icon === icon.name ? 'white' : 'rgba(255,255,255,0.6)' }}
-                                                    >
-                                                        {icon.icon}
-                                                        <span className="text-[7px] mt-1 hidden md:block">{icon.label}</span>
-                                                    </button>
-                                                ))}
+                                            <label className="text-xs text-blue-200 uppercase font-bold tracking-wider flex justify-between">
+                                                <span>Icono o Imagen</span>
+                                                <a href="https://phosphoricons.com/" target="_blank" className="text-blue-400 underline lowercase font-normal">Galería Phosphor</a>
+                                            </label>
+                                            <div className="flex gap-4 items-center">
+                                                <label className="w-16 h-16 shrink-0 neo-inset flex flex-col items-center justify-center cursor-pointer text-blue-300 hover:text-white rounded-xl overflow-hidden relative group">
+                                                    {formData.image ? <img src={formData.image} className="w-full h-full object-cover" /> : <Icons.Image size={24}/>}
+                                                    {formData.image && (
+                                                        <div 
+                                                            className="absolute inset-0 bg-rose-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            onClick={(e) => { e.preventDefault(); setFormData({...formData, image: ''}); }}
+                                                        >
+                                                            <Icons.Trash2 size={24} className="text-white" />
+                                                        </div>
+                                                    )}
+                                                    <input type="file" className="hidden" onChange={handleFile} accept="image/*"/>
+                                                </label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Nombre del icono (Ej: car)" 
+                                                    value={formData.icon} 
+                                                    onChange={e => setFormData({...formData, icon: e.target.value, image: ''})} 
+                                                    className="flex-1 neo-inset px-4 py-4 text-white text-sm outline-none placeholder:text-blue-300"
+                                                />
+                                                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center text-white text-2xl shadow-lg border-2 border-white/20" style={{backgroundColor: formData.color || '#1e3a8a'}}>
+                                                    {formData.image ? '' : <i className={`ph ph-${(formData.icon || 'shopping-bag').replace(/^ph-/, '')}`}></i>}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-5 flex gap-4">
-                                    {editingId && <button onClick={deleteTx} className="neo-button w-14 h-14 text-rose-300 hover:text-rose-400"><Icons.Trash2 size={24} /></button>}
-                                    <button onClick={saveTx} className="flex-1 neo-inset bg-blue-700 text-white font-bold rounded-xl py-4 flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase tracking-widest"><Icons.Check size={20} /> Guardar</button>
+                                <div className="p-5 flex gap-4 bg-[#0b1120] border-t border-white/5 shrink-0">
+                                    {editingId && <button onClick={deleteTx} className="neo-panel w-14 h-14 flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"><Icons.Trash2 size={24} /></button>}
+                                    <button onClick={saveTx} className="flex-1 bg-blue-600 text-white font-bold rounded-xl py-4 flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase tracking-widest shadow-[0_0_20px_rgba(37,99,235,0.4)]"><Icons.Check size={20} /> Guardar</button>
                                 </div>
                             </div>
                         </div>
@@ -1203,10 +1167,37 @@
                                 <h3 className="text-lg font-bold text-white mb-4">Editar Grupo</h3>
                                 <label className="text-xs text-slate-400 uppercase font-bold">Nombre del Grupo</label>
                                 <input type="text" value={groupEditData.newName} onChange={e => setGroupEditData({...groupEditData, newName: e.target.value})} className="w-full neo-page-inset p-3 text-white outline-none mb-4 mt-1" />
+                                
                                 <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Color Personalizado</label>
                                 <div className="flex flex-wrap gap-2 mb-6">
-                                    {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: c})} className={`w-8 h-8 rounded-full transition-transform ${groupEditData.color === c ? 'scale-110 border-2 border-white' : 'opacity-70 hover:opacity-100'}`} style={{backgroundColor: c}}></button>))}
+                                    {COLOR_PALETTE.map(c => (<button key={c} onClick={() => setGroupEditData({...groupEditData, color: c})} className={`w-8 h-8 rounded-full transition-transform ${groupEditData.color === c ? 'scale-110 border-2 border-white shadow-lg' : 'opacity-70 hover:opacity-100 hover:scale-105'}`} style={{backgroundColor: c}}></button>))}
                                 </div>
+                                
+                                <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Icono o Imagen</label>
+                                <div className="flex gap-4 items-center mb-8">
+                                    <label className="w-14 h-14 shrink-0 neo-page-inset flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white rounded-xl overflow-hidden relative group">
+                                        {groupEditData.image ? <img src={groupEditData.image} className="w-full h-full object-cover" /> : <Icons.Image size={20}/>}
+                                        {groupEditData.image && (
+                                            <div 
+                                                className="absolute inset-0 bg-rose-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={(e) => { e.preventDefault(); setGroupEditData({...groupEditData, image: ''}); }}
+                                            >
+                                                <Icons.Trash2 size={16} className="text-white" />
+                                            </div>
+                                        )}
+                                        <input type="file" className="hidden" onChange={handleGroupImageFile} accept="image/*"/>
+                                    </label>
+                                    <div className="flex-1">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Nombre Phosphor (Ej: bank)" 
+                                            value={groupEditData.icon || ''} 
+                                            onChange={e => setGroupEditData({...groupEditData, icon: e.target.value, image: ''})} 
+                                            className="w-full neo-page-inset p-3 text-white outline-none mb-1 text-sm" 
+                                        />
+                                    </div>
+                                </div>
+
                                 <div className="flex gap-3">
                                     <button onClick={deleteGroup} className="neo-page-button w-12 text-rose-500 hover:text-rose-400" title="Eliminar Grupo"><Icons.Trash2 size={20}/></button>
                                     <button onClick={() => setShowGroupModal(false)} className="flex-1 py-3 neo-page-button text-slate-400 font-bold">Cancelar</button>
