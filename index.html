@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finanzas de la familia</title>
+    <title>Finanzas Familiares</title>
     
     <!-- PWA Settings -->
     <meta name="theme-color" content="#0b1120">
@@ -225,7 +225,7 @@
              return 0;
         };
 
-        // UI System Icons (Lucide SVG based)
+        // UI System Icons
         const Icons = {
             Wallet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>,
             TrendingDown: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
@@ -247,6 +247,8 @@
             UploadCloud: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>,
             FileSpreadsheet: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>,
             ClipboardCheck: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>,
+            Award: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
+            Clock: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
             BarChart2: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
             Search: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
             Share: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
@@ -263,7 +265,7 @@
             const imgSource = item.imageUrl || item.image;
             if (imgSource) {
                 if (item.imageAsIcon) {
-                    const iconColor = item.imageColor === 'custom' ? (item.color || '#1e3a8a') : '#ffffff';
+                    const iconColor = item.imageColor === 'custom' ? (item.color || '#1e3a8a') : (item.imageColor || '#ffffff');
                     return (
                         <div style={{
                             backgroundColor: iconColor,
@@ -446,7 +448,7 @@
                     {Object.entries(groups).map(([groupName, data]) => {
                         const isExpanded = !!expandedGroups[groupName];
                         const monthKey = `${year}-${monthIndex}`;
-                        const allPaid = data.items.every(tx => tx.paidMonths && tx.paidMonths.includes(monthKey));
+                        const allPaid = data.items.length > 0 && data.items.every(tx => tx.paidMonths && tx.paidMonths.includes(monthKey));
 
                         return (
                         <div key={groupName} className="animate-in">
@@ -550,18 +552,26 @@
             const [showReceipt, setShowReceipt] = useState(null); 
             
             const [editingId, setEditingId] = useState(null);
-            const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '', icon: '', image: '', imageUrl: '', imageAsIcon: false, imageColor: 'white' });
+            const [groupEditData, setGroupEditData] = useState({ oldName: '', newName: '', color: '', icon: '', image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff' });
             const [importText, setImportText] = useState("");
 
             const [formData, setFormData] = useState({
                 type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', 
                 groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a',
-                image: '', imageUrl: '', imageAsIcon: false, imageColor: 'white'
+                image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff'
             });
+            const [isNewGroup, setIsNewGroup] = useState(false);
+            const [isNewCategory, setIsNewCategory] = useState(false);
 
             const [dbReady, setDbReady] = useState(false);
             const [isSaving, setIsSaving] = useState(false);
+            
+            // Filters
+            const [insightFilterTarget, setInsightFilterTarget] = useState('all');
+            const [insightFilterValue, setInsightFilterValue] = useState('');
+            const [selectedCatToCheck, setSelectedCatToCheck] = useState('');
 
+            // Init Month
             const toggleFixedMonth = () => {
                 const str = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
                 if (isMonthFixed) {
@@ -626,13 +636,22 @@
                 return () => window.removeEventListener('firebase-modules-ready', initDb);
             }, []);
 
+            // Insights Data - ALWAYS tied to the current actual billing month, not navigation
             const insights = useMemo(() => {
-                const m = currentDate.getMonth(); const y = currentDate.getFullYear();
+                const insightsDate = getBillingMonth();
+                const m = insightsDate.getMonth(); 
+                const y = insightsDate.getFullYear();
                 
-                const activeExpensesThisMonth = transactions.filter(t => {
+                let activeExpensesThisMonth = transactions.filter(t => {
                     if (t.type !== 'expense') return false;
                     return getPaymentForMonth(t, m, y) > 0;
                 });
+
+                if (insightFilterTarget === 'category' && insightFilterValue) {
+                    activeExpensesThisMonth = activeExpensesThisMonth.filter(t => t.category === insightFilterValue);
+                } else if (insightFilterTarget === 'group' && insightFilterValue) {
+                    activeExpensesThisMonth = activeExpensesThisMonth.filter(t => t.groupName === insightFilterValue);
+                }
 
                 const mostExpensive = [...activeExpensesThisMonth].sort((a,b) => getPaymentForMonth(b,m,y) - getPaymentForMonth(a,m,y)).slice(0, 5);
                 
@@ -652,18 +671,39 @@
                 const closestToFinish = creditTxWithRemaining.filter(t => t.remaining > 0).sort((a,b) => a.remaining - b.remaining).slice(0, 5);
                 const longestRemaining = creditTxWithRemaining.filter(t => t.remaining > 0 && (t.amount/(t.installments||1)) > 20000).sort((a,b) => b.remaining - a.remaining).slice(0, 5);
                 
-                return { mostExpensive, closestToFinish, longestRemaining };
-            }, [transactions, currentDate]);
+                // Distribution Data for PieChart
+                const distMap = {};
+                activeExpensesThisMonth.forEach(t => {
+                    const val = getPaymentForMonth(t, m, y);
+                    const key = insightFilterTarget === 'all' ? (t.category || 'Otros') : t.description;
+                    distMap[key] = (distMap[key] || 0) + val;
+                });
+                const distribution = Object.entries(distMap)
+                    .map(([name, value], i) => ({ name, value, fill: COLOR_PALETTE[i % COLOR_PALETTE.length] }))
+                    .sort((a,b) => b.value - a.value);
 
+                return { mostExpensive, closestToFinish, longestRemaining, distribution };
+            }, [transactions, insightFilterTarget, insightFilterValue]);
+
+            const catCheckTotal = useMemo(() => {
+                if (!selectedCatToCheck) return 0;
+                const insightsDate = getBillingMonth();
+                const m = insightsDate.getMonth(); 
+                const y = insightsDate.getFullYear();
+                return transactions.filter(t => t.type === 'expense' && t.category === selectedCatToCheck)
+                    .reduce((acc, t) => acc + getPaymentForMonth(t, m, y), 0);
+            }, [transactions, selectedCatToCheck]);
+
+            // Totals NO longer depend on whether a transaction is marked as paid
             const dashboardTotals = useMemo(() => {
                 const m = currentDate.getMonth(); const y = currentDate.getFullYear(); let expense = 0; let income = 0;
-                transactions.filter(t => !searchQuery || (t.description||"").toLowerCase().includes(searchQuery.toLowerCase())).forEach(t => {
+                transactions.forEach(t => {
                     const val = getPaymentForMonth(t, m, y);
                     if (t.type === 'income') income += val;
                     else expense += val; 
                 });
                 return { expense, income, balance: income - expense };
-            }, [transactions, currentDate, searchQuery]);
+            }, [transactions, currentDate]);
 
             const futureData = useMemo(() => {
                 const data = [];
@@ -710,7 +750,7 @@
                      const { doc, writeBatch } = window.fb;
                      const batch = writeBatch(window.firebaseDB);
                      
-                     const allPaid = groupItems.every(tx => tx.paidMonths && tx.paidMonths.includes(monthKey));
+                     const allPaid = groupItems.length > 0 && groupItems.every(tx => tx.paidMonths && tx.paidMonths.includes(monthKey));
                      
                      groupItems.forEach(tx => {
                          const paidMonths = tx.paidMonths || [];
@@ -727,20 +767,29 @@
                  } catch (e) { console.error(e); alert("Error al tachar grupo."); }
             };
 
-            const openAdd = () => { setEditingId(null); setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate), image: '', imageUrl: '', imageAsIcon: false, imageColor: 'white' }); setShowModal(true); };
+            const openAdd = () => { 
+                setEditingId(null); 
+                setIsNewGroup(false);
+                setIsNewCategory(false);
+                setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate), image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff' }); 
+                setShowModal(true); 
+            };
             
             const openEdit = (tx) => { 
                 setEditingId(tx.id); 
+                setIsNewGroup(false);
+                setIsNewCategory(false);
                 let currentQuota = 1; 
                 if(tx.subtype === 'credit') {
                     const txDate = parseDate(tx.date); 
                     const monthsDiff = (currentDate.getFullYear() - txDate.getFullYear()) * 12 + (currentDate.getMonth() - txDate.getMonth());
                     currentQuota = Math.max(1, monthsDiff + 1);
                 }
-                setFormData({ ...tx, amount: tx.amount, currentInstallment: currentQuota, imageUrl: tx.imageUrl || '', imageAsIcon: tx.imageAsIcon || false, imageColor: tx.imageColor || 'white' }); 
+                setFormData({ ...tx, amount: tx.amount, currentInstallment: currentQuota, imageUrl: tx.imageUrl || '', imageAsIcon: tx.imageAsIcon || false, imageColor: tx.imageColor || '#ffffff' }); 
                 setShowModal(true); 
             };
             
+            // Save TX
             const saveTx = async () => {
                 if (!formData.description) return alert("Por favor ingresa una descripción.");
                 if (!formData.amount || Number(formData.amount) <= 0) return alert("Por favor ingresa un monto válido mayor a 0.");
@@ -774,7 +823,7 @@
             
             const openGroupEdit = (name, currentColor) => { 
                 const meta = groupMeta.find(g => g.name === name) || {};
-                setGroupEditData({ oldName: name, newName: name, color: meta.color || currentColor, icon: meta.icon || '', image: meta.image || '', imageUrl: meta.imageUrl || '', imageAsIcon: meta.imageAsIcon || false, imageColor: meta.imageColor || 'white' }); 
+                setGroupEditData({ oldName: name, newName: name, color: meta.color || currentColor, icon: meta.icon || '', image: meta.image || '', imageUrl: meta.imageUrl || '', imageAsIcon: meta.imageAsIcon || false, imageColor: meta.imageColor || '#ffffff' }); 
                 setShowGroupModal(true); 
             };
             
@@ -856,7 +905,7 @@
                 <div className="w-full max-w-7xl mx-auto p-4 md:p-8 pb-24 min-h-[100dvh]">
                     {fixedMonthStr && (
                         <div className="fixed top-0 left-0 right-0 bg-emerald-600 text-white text-center text-[10px] font-bold py-1.5 z-50 tracking-widest uppercase shadow-md flex justify-center items-center gap-2">
-                            <Icons.Pin size={12}/> Tienes un mes fijado por defecto
+                            <Icons.Pin size={12}/> Mes fijado manualmente
                         </div>
                     )}
                     <header className={`flex justify-between items-center mb-8 ${fixedMonthStr ? 'mt-4' : ''}`}>
@@ -886,7 +935,6 @@
                             <button onClick={() => setChecklistMode(!checklistMode)} className={`w-12 h-12 ${checklistMode ? 'neo-page-inset text-emerald-500' : 'neo-page-button text-slate-400'}`} title="Modo Tachar Pagos"><Icons.ClipboardCheck size={20} /></button>
                             <button onClick={handleInstall} className="neo-page-button w-12 h-12 text-slate-400 hidden sm:flex" title="Instalar App"><Icons.Download size={20} /></button>
                             <button onClick={exportToExcel} className="neo-page-button w-12 h-12 text-slate-400 hidden sm:flex" title="Exportar Excel"><Icons.FileSpreadsheet size={20} /></button>
-                            <button onClick={() => setShowImportModal(true)} className="neo-page-button w-12 h-12 text-slate-400 hidden sm:flex" title="Importar"><Icons.UploadCloud size={20} /></button>
                             <button onClick={openAdd} className="neo-panel w-12 h-12 flex items-center justify-center transition-all hover:scale-105 active:scale-95"><Icons.Plus size={24} className="text-white"/></button>
                         </div>
                     </header>
@@ -898,6 +946,7 @@
                     </div>
 
                     <main className="flex-1">
+                        {/* Resumen */}
                         {view === 'dashboard' && (
                             <div className="animate-in space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -915,6 +964,7 @@
                                     </NeoCard>
                                 </div>
                                 
+                                {/* Search */}
                                 <div className="neo-page-inset p-2 mb-6 flex items-center">
                                     <input 
                                         value={searchQuery}
@@ -932,6 +982,7 @@
                             </div>
                         )}
                         
+                        {/* Futuro */}
                         {view === 'future' && (
                             <div className="animate-in space-y-6">
                                 {!selectedFutureMonth ? (
@@ -944,6 +995,7 @@
                                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                                                     <XAxis dataKey="name" stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} />
                                                     <YAxis stroke="rgba(255,255,255,0.6)" tick={{fill:'white', fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`} />
+                                                    <RechartsTooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={(v)=>`$${v.toLocaleString('es-AR')}`} />
                                                     <Area type="monotone" dataKey="total" stroke="#fff" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                                                 </AreaChart>
                                             </ResponsiveContainer>
@@ -966,16 +1018,77 @@
                             </div>
                         )}
                         
+                        {/* Análisis */}
                         {view === 'insights' && (
                             <div className="animate-in space-y-6">
+                                {/* Filters for Insights */}
+                                <NeoCard className="flex flex-col md:flex-row gap-4 items-end">
+                                    <div className="flex-1 w-full">
+                                        <label className="text-xs text-white/50 uppercase font-bold mb-2 block tracking-wider">Filtrar por</label>
+                                        <select value={insightFilterTarget} onChange={(e) => { setInsightFilterTarget(e.target.value); setInsightFilterValue(''); }} className="w-full neo-inset p-3 text-white outline-none text-sm">
+                                            <option value="all">Todo</option>
+                                            <option value="category">Categoría</option>
+                                            <option value="group">Grupo</option>
+                                        </select>
+                                    </div>
+                                    {insightFilterTarget !== 'all' && (
+                                        <div className="flex-1 w-full animate-in">
+                                            <label className="text-xs text-white/50 uppercase font-bold mb-2 block tracking-wider">Elegir {insightFilterTarget === 'category' ? 'Categoría' : 'Grupo'}</label>
+                                            <select value={insightFilterValue} onChange={(e) => setInsightFilterValue(e.target.value)} className="w-full neo-inset p-3 text-white outline-none text-sm">
+                                                <option value="">Seleccionar...</option>
+                                                {insightFilterTarget === 'category' 
+                                                    ? availableCategories.map(c => <option key={c} value={c}>{c}</option>)
+                                                    : availableGroups.map(g => <option key={g} value={g}>{g}</option>)
+                                                }
+                                            </select>
+                                        </div>
+                                    )}
+                                </NeoCard>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Pie Chart Distribution */}
+                                    <NeoCard className="flex flex-col h-80 md:col-span-2">
+                                        <h3 className="font-bold text-white mb-2 uppercase tracking-wider flex items-center gap-2"><Icons.PieChart size={18}/> Distribución de Gastos</h3>
+                                        <div className="flex-1 w-full h-full relative min-h-[200px]">
+                                            {insights.distribution.length > 0 ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <PieChart>
+                                                        <Pie data={insights.distribution} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                                                            {insights.distribution.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                            ))}
+                                                        </Pie>
+                                                        <RechartsTooltip contentStyle={{backgroundColor:'#1e293b', border:'none', borderRadius:'8px'}} itemStyle={{color:'#fff'}} formatter={(v)=>`$${v.toLocaleString('es-AR')}`} />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="absolute inset-0 flex items-center justify-center text-white/50 text-sm">No hay datos para graficar.</div>
+                                            )}
+                                        </div>
+                                    </NeoCard>
+
+                                    {/* Category Check */}
+                                    <NeoCard className="flex flex-col h-40 md:col-span-2">
+                                        <h3 className="font-bold text-blue-300 mb-2 uppercase tracking-wider flex items-center gap-2"><Icons.Search size={18}/> Gasto por Categoría</h3>
+                                        <div className="flex gap-4 items-center h-full">
+                                            <select value={selectedCatToCheck} onChange={(e) => setSelectedCatToCheck(e.target.value)} className="flex-1 neo-inset p-3 text-white outline-none text-sm">
+                                                <option value="">Selecciona Categoría...</option>
+                                                {availableCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                                            </select>
+                                            <div className="text-right w-1/3">
+                                                <p className="text-xs text-white/50 uppercase tracking-widest font-bold">Total Mensual</p>
+                                                <p className="text-2xl font-bold text-white">${catCheckTotal.toLocaleString('es-AR')}</p>
+                                            </div>
+                                        </div>
+                                    </NeoCard>
+
                                     <NeoCard className="flex flex-col h-80">
                                         <h3 className="font-bold text-rose-300 mb-6 uppercase tracking-wider flex items-center gap-2"><Icons.TrendingUp size={18}/> Gastos Más Caros</h3>
                                         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                                             {insights.mostExpensive.length === 0 ? <p className="text-white/50 text-sm">No hay gastos activos.</p> : insights.mostExpensive.map(t => (
-                                                <div key={t.id} className="flex justify-between items-center neo-inset p-4">
-                                                    <span className="text-sm font-medium text-white">{t.description}</span>
-                                                    <span className="text-sm font-bold text-rose-300">${(t.amount/(t.installments||1)).toLocaleString('es-AR')}</span>
+                                                <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4" style={{borderLeftColor: t.color || '#ef4444'}}>
+                                                    <span className="text-sm font-medium text-white truncate max-w-[60%]">{t.description}</span>
+                                                    <span className="text-sm font-bold text-rose-300 whitespace-nowrap">${(t.amount/(t.installments||1)).toLocaleString('es-AR')}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -985,11 +1098,11 @@
                                         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                                             {insights.closestToFinish.length === 0 ? <p className="text-white/50 text-sm">No hay cuotas por terminar.</p> : insights.closestToFinish.map(t => (
                                                 <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4 border-emerald-400">
-                                                    <div>
-                                                        <div className="text-sm font-medium text-white">{t.description}</div>
+                                                    <div className="truncate pr-2">
+                                                        <div className="text-sm font-medium text-white truncate">{t.description}</div>
                                                         <div className="text-xs text-emerald-200 mt-1 font-mono">Faltan {t.remaining} cuotas</div>
                                                     </div>
-                                                    <span className="text-sm font-bold text-emerald-300">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
+                                                    <span className="text-sm font-bold text-emerald-300 whitespace-nowrap">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -999,11 +1112,11 @@
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-2">
                                             {insights.longestRemaining.length === 0 ? <p className="text-white/50 text-sm">Todo libre por ahora.</p> : insights.longestRemaining.map(t => (
                                                 <div key={t.id} className="flex justify-between items-center neo-inset p-4 border-l-4 border-amber-400">
-                                                     <div>
-                                                        <div className="text-sm font-medium text-white">{t.description}</div>
+                                                     <div className="truncate pr-2">
+                                                        <div className="text-sm font-medium text-white truncate">{t.description}</div>
                                                         <div className="text-xs text-amber-200 mt-1 font-mono">Faltan {t.remaining} cuotas</div>
                                                     </div>
-                                                    <span className="text-sm font-bold text-amber-300">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
+                                                    <span className="text-sm font-bold text-amber-300 whitespace-nowrap">${(t.amount/t.installments).toLocaleString('es-AR')}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -1012,23 +1125,6 @@
                             </div>
                         )}
                     </main>
-
-                    {/* IMPORT MODAL */}
-                    {showImportModal && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4">
-                            <div className="neo-page-panel w-full max-w-lg p-6 animate-in flex flex-col h-[80vh]">
-                                <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white text-lg">Importar Datos</h3><button onClick={() => setShowImportModal(false)}><Icons.X className="text-slate-400 hover:text-white"/></button></div>
-                                <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-                                    <p className="text-xs text-slate-400 font-medium">Pega aquí tu lista de gastos.</p>
-                                    <textarea className="w-full flex-1 neo-page-inset p-4 text-xs font-mono text-white outline-none resize-none" value={importText} onChange={e => setImportText(e.target.value)}></textarea>
-                                </div>
-                                <div className="flex gap-3 mt-6">
-                                    <button onClick={() => setShowImportModal(false)} className="flex-1 py-3 neo-page-button text-slate-400 font-bold">Cancelar</button>
-                                    <button onClick={parseAndImport} disabled={isSaving || !importText} className="flex-1 py-3 neo-panel font-bold flex items-center justify-center gap-2">{isSaving ? 'Procesando...' : <><Icons.Check size={18}/> Procesar</>}</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {/* RECEIPT MODAL */}
                     <ReceiptModal tx={showReceipt} onClose={() => setShowReceipt(null)} onEdit={openEdit} />
@@ -1044,7 +1140,7 @@
                                 <div className="p-4 md:p-8 overflow-y-auto flex-1 space-y-6 max-w-4xl mx-auto w-full">
                                     {/* Type Toggle */}
                                     <div className="flex neo-inset p-1">
-                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'expense' ? 'neo-panel text-white' : 'text-blue-300'}`}>Egreso</button>
+                                        <button onClick={() => setFormData({...formData, type: 'expense'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'expense' ? 'neo-panel text-white' : 'text-blue-300'}`}>Gasto</button>
                                         <button onClick={() => setFormData({...formData, type: 'income', color: '#10b981'})} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.type === 'income' ? 'bg-emerald-600 text-white shadow-md' : 'text-blue-300'}`}>Ingreso</button>
                                     </div>
 
@@ -1067,9 +1163,21 @@
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             {formData.type === 'expense' ? (
-                                                <div className="neo-inset p-2">
-                                                    <input list="dynamic-groups" type="text" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none text-sm md:text-base placeholder:text-blue-300" placeholder="Grupo (A PAGAR)" />
-                                                    <datalist id="dynamic-groups">{availableGroups.map(g => <option key={g} value={g} />)}</datalist>
+                                                <div className="neo-inset p-2 flex flex-col justify-center">
+                                                    <select 
+                                                        value={isNewGroup ? 'NEW' : formData.groupName} 
+                                                        onChange={e => {
+                                                            if(e.target.value === 'NEW') { setIsNewGroup(true); setFormData({...formData, groupName: ''}); }
+                                                            else { setIsNewGroup(false); setFormData({...formData, groupName: e.target.value}); }
+                                                        }}
+                                                        className="w-full bg-transparent px-2 py-2 text-white outline-none text-sm md:text-base appearance-none font-bold"
+                                                    >
+                                                        {availableGroups.map(g => <option key={g} value={g} className="text-black">{g}</option>)}
+                                                        <option value="NEW" className="text-black">+ Nuevo...</option>
+                                                    </select>
+                                                    {isNewGroup && (
+                                                        <input type="text" placeholder="Escribe el nuevo grupo" value={formData.groupName} onChange={e => setFormData({...formData, groupName: e.target.value})} className="w-full bg-black/20 rounded-lg px-3 py-2 text-white outline-none text-sm mt-2 border border-white/10"/>
+                                                    )}
                                                 </div>
                                             ) : (
                                                 <div className="neo-inset p-2 flex items-center px-4">
@@ -1079,9 +1187,22 @@
                                                 </div>
                                             )}
                                             
-                                            <div className="neo-inset p-2">
-                                                <input list="categoryList" type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none text-sm md:text-base placeholder:text-blue-300" placeholder="Categoría (Varios)" />
-                                                <datalist id="categoryList">{availableCategories.map(c => <option key={c} value={c} />)}</datalist>
+                                            <div className="neo-inset p-2 flex flex-col justify-center">
+                                                <select 
+                                                    value={isNewCategory ? 'NEW' : formData.category} 
+                                                    onChange={e => {
+                                                        if(e.target.value === 'NEW') { setIsNewCategory(true); setFormData({...formData, category: ''}); }
+                                                        else { setIsNewCategory(false); setFormData({...formData, category: e.target.value}); }
+                                                    }}
+                                                    className="w-full bg-transparent px-2 py-2 text-white outline-none text-sm md:text-base appearance-none font-bold"
+                                                >
+                                                    <option value="" disabled className="text-black">Categoría...</option>
+                                                    {availableCategories.map(c => <option key={c} value={c} className="text-black">{c}</option>)}
+                                                    <option value="NEW" className="text-black">+ Nueva...</option>
+                                                </select>
+                                                {isNewCategory && (
+                                                    <input type="text" placeholder="Escribe la categoría" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-black/20 rounded-lg px-3 py-2 text-white outline-none text-sm mt-2 border border-white/10"/>
+                                                )}
                                             </div>
                                         </div>
                                         
@@ -1094,7 +1215,7 @@
                                                 <div>
                                                     <label className="text-xs text-white font-bold uppercase mb-2 block tracking-wider">Cuota Actual</label>
                                                     <select value={formData.currentInstallment || 1} onChange={e => setFormData({...formData, currentInstallment: Number(e.target.value), date: toLocalDateString(new Date(currentDate.getFullYear(), currentDate.getMonth() - (Number(e.target.value) - 1), 1)) })} className="w-full neo-inset p-3 text-white outline-none font-mono appearance-none">
-                                                        {Array.from({length: formData.installments || 1}, (_, i) => i + 1).map(n => <option key={n} value={n}>Nº {n}</option>)}
+                                                        {Array.from({length: formData.installments || 1}, (_, i) => i + 1).map(n => <option key={n} value={n} className="text-black">Nº {n}</option>)}
                                                     </select>
                                                 </div>
                                                 
@@ -1147,7 +1268,7 @@
                                             <div className="flex gap-4 items-start md:items-center flex-col md:flex-row">
                                                 <label className="w-16 h-16 shrink-0 neo-inset flex flex-col items-center justify-center cursor-pointer text-blue-300 hover:text-white rounded-xl overflow-hidden relative group">
                                                     {(formData.image || formData.imageUrl) ? 
-                                                        (formData.imageAsIcon ? <div style={{backgroundColor: 'white', WebkitMaskImage: `url(${formData.image || formData.imageUrl})`, WebkitMaskSize: 'contain', WebkitMaskRepeat: 'no-repeat', WebkitMaskPosition: 'center', width: '60%', height: '60%'}}></div> : <img src={formData.image || formData.imageUrl} className="w-full h-full object-cover" />)
+                                                        (formData.imageAsIcon ? <div style={{backgroundColor: formData.imageColor || '#ffffff', WebkitMaskImage: `url(${formData.image || formData.imageUrl})`, WebkitMaskSize: 'contain', WebkitMaskRepeat: 'no-repeat', WebkitMaskPosition: 'center', width: '60%', height: '60%'}}></div> : <img src={formData.image || formData.imageUrl} className="w-full h-full object-cover" />)
                                                         : <Icons.Image size={24}/>
                                                     }
                                                     {(formData.image || formData.imageUrl) && (
@@ -1187,10 +1308,15 @@
                                                         Convertir en silueta
                                                     </label>
                                                     {formData.imageAsIcon && (
-                                                        <select value={formData.imageColor || 'white'} onChange={e => setFormData({...formData, imageColor: e.target.value})} className="bg-white/10 border border-white/20 rounded-lg p-1.5 text-sm text-white outline-none">
-                                                            <option value="white" className="text-black">Blanco</option>
-                                                            <option value="custom" className="text-black">Color de Etiqueta</option>
-                                                        </select>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-white/70">Color silueta:</span>
+                                                            <input 
+                                                                type="color" 
+                                                                value={formData.imageColor || '#ffffff'} 
+                                                                onChange={e => setFormData({...formData, imageColor: e.target.value})} 
+                                                                className="bg-transparent border border-white/20 rounded p-0 w-6 h-6 outline-none cursor-pointer"
+                                                            />
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}
@@ -1198,7 +1324,7 @@
                                     </div>
                                 </div>
                                 <div className="p-5 flex gap-4 bg-[#0b1120] border-t border-white/5 shrink-0 max-w-4xl mx-auto w-full">
-                                    {editingId && <button onClick={deleteTx} className="neo-panel w-14 h-14 flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"><Icons.Trash2 size={24} /></button>}
+                                    {editingId && <button onClick={deleteTx} className="neo-panel w-14 h-14 flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors" title="Eliminar"><Icons.Trash2 size={24} /></button>}
                                     <button onClick={saveTx} className="flex-1 bg-blue-600 text-white font-bold rounded-xl py-4 flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase tracking-widest shadow-[0_0_20px_rgba(37,99,235,0.4)]"><Icons.Check size={20} /> Guardar</button>
                                 </div>
                             </div>
@@ -1231,7 +1357,7 @@
                                     <div className="flex gap-4 items-center">
                                         <label className="w-14 h-14 shrink-0 neo-page-inset flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-white rounded-xl overflow-hidden relative group">
                                             {(groupEditData.image || groupEditData.imageUrl) ? 
-                                                (groupEditData.imageAsIcon ? <div style={{backgroundColor: 'white', WebkitMaskImage: `url(${groupEditData.image || groupEditData.imageUrl})`, WebkitMaskSize: 'contain', WebkitMaskRepeat: 'no-repeat', WebkitMaskPosition: 'center', width: '60%', height: '60%'}}></div> : <img src={groupEditData.image || groupEditData.imageUrl} className="w-full h-full object-cover" />)
+                                                (groupEditData.imageAsIcon ? <div style={{backgroundColor: groupEditData.imageColor || '#ffffff', WebkitMaskImage: `url(${groupEditData.image || groupEditData.imageUrl})`, WebkitMaskSize: 'contain', WebkitMaskRepeat: 'no-repeat', WebkitMaskPosition: 'center', width: '60%', height: '60%'}}></div> : <img src={groupEditData.image || groupEditData.imageUrl} className="w-full h-full object-cover" />)
                                                 : <Icons.Image size={20}/>
                                             }
                                             {(groupEditData.image || groupEditData.imageUrl) && (
@@ -1268,10 +1394,15 @@
                                                 Silueta
                                             </label>
                                             {groupEditData.imageAsIcon && (
-                                                <select value={groupEditData.imageColor || 'white'} onChange={e => setGroupEditData({...groupEditData, imageColor: e.target.value})} className="bg-transparent border border-white/20 rounded p-1 text-xs text-white outline-none">
-                                                    <option value="white" className="text-black">Blanco</option>
-                                                    <option value="custom" className="text-black">Color Grupo</option>
-                                                </select>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-white/70">Color silueta:</span>
+                                                    <input 
+                                                        type="color" 
+                                                        value={groupEditData.imageColor || '#ffffff'} 
+                                                        onChange={e => setGroupEditData({...groupEditData, imageColor: e.target.value})} 
+                                                        className="bg-transparent border border-white/20 rounded p-0 w-6 h-6 outline-none cursor-pointer"
+                                                    />
+                                                </div>
                                             )}
                                         </div>
                                     )}
