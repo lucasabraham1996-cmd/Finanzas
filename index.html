@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,7 +16,7 @@
     <link id="manifest-placeholder" rel="manifest">
 
     <!-- Dependencies -->
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=JXK5NCHIuA_Oh3sGkfwgNTdCE99L3A89J65N0SHTn_yFNJ9eXbwkyI-cels-n9Mvme-hkhv5YsIdmo4D2Dr3_ylpvYzOHRSYS_bqcbR9fGo" charset="UTF-8"></script><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
@@ -543,6 +545,10 @@
             const [groupMeta, setGroupMeta] = useState([]); 
             const [view, setView] = useState('dashboard');
             const [selectedFutureMonth, setSelectedFutureMonth] = useState(null);
+            const [finishMonthStr, setFinishMonthStr] = useState(() => {
+                const d = getBillingMonth();
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            });
             const [installPrompt, setInstallPrompt] = useState(null); 
             const [checklistMode, setChecklistMode] = useState(false); 
             const [searchQuery, setSearchQuery] = useState("");
@@ -722,6 +728,40 @@
                 }
                 return data;
             }, [transactions, currentDate]);
+
+            const finishingPayments = useMemo(() => {
+                if (!finishMonthStr) return { items: [], total: 0 };
+                const [targetYear, targetMonthNumber] = finishMonthStr.split('-').map(Number);
+                const targetMonth = targetMonthNumber - 1;
+
+                const items = transactions
+                    .filter(t => t.type === 'expense' && Number(t.installments || 1) > 1)
+                    .map(t => {
+                        let startDate = parseDate(t.date);
+                        if (t.subtype === 'credit' && startDate.getDate() >= 15) {
+                            startDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+                        }
+
+                        const installments = Number(t.installments || 1);
+                        const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + installments - 1, 1);
+                        const endsThisMonth = endDate.getFullYear() === targetYear && endDate.getMonth() === targetMonth;
+                        if (!endsThisMonth) return null;
+
+                        const monthlyAmount = t.amount / installments;
+                        return {
+                            ...t,
+                            monthlyAmount,
+                            endDate,
+                            startDate,
+                            quotaInfo: { current: installments, total: installments }
+                        };
+                    })
+                    .filter(Boolean)
+                    .sort((a, b) => b.monthlyAmount - a.monthlyAmount);
+
+                const total = items.reduce((acc, t) => acc + t.monthlyAmount, 0);
+                return { items, total };
+            }, [transactions, finishMonthStr]);
 
             const exportToExcel = () => {
                 const data = transactions.map(tx => ({ Fecha: tx.date, Descripción: tx.description, Grupo: tx.groupName, Categoría: tx.category, Monto_Total: tx.amount, Cuotas_Totales: tx.installments || 1, Tipo: tx.type === 'income' ? 'Ingreso' : 'Gasto' }));
@@ -944,6 +984,7 @@
                     <div className="hidden md:flex gap-4 mb-8">
                         <button onClick={() => setView('dashboard')} className={`px-6 py-3 font-bold transition-all ${view === 'dashboard' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Resumen</button>
                         <button onClick={() => setView('future')} className={`px-6 py-3 font-bold transition-all ${view === 'future' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Futuro</button>
+                        <button onClick={() => setView('finishing')} className={`px-6 py-3 font-bold transition-all ${view === 'finishing' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>COSAS QUE TERMINO DE PAGAR</button>
                         <button onClick={() => setView('insights')} className={`px-6 py-3 font-bold transition-all ${view === 'insights' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}`}>Análisis</button>
                     </div>
 
@@ -1020,6 +1061,64 @@
                             </div>
                         )}
                         
+                        {/* Cosas que termino de pagar */}
+                        {view === 'finishing' && (
+                            <div className="animate-in space-y-6">
+                                <NeoCard className="flex flex-col md:flex-row gap-4 items-end">
+                                    <div className="flex-1 w-full">
+                                        <label className="text-xs text-white/50 uppercase font-bold mb-2 block tracking-wider">Elegí el mes</label>
+                                        <input
+                                            type="month"
+                                            value={finishMonthStr}
+                                            onChange={(e) => setFinishMonthStr(e.target.value)}
+                                            className="w-full neo-inset p-3 text-white outline-none text-sm"
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-auto neo-page-inset px-5 py-3 text-center">
+                                        <p className="text-[10px] text-white/50 uppercase font-bold tracking-widest">Total que se libera</p>
+                                        <p className="text-2xl font-extrabold text-emerald-300">${finishingPayments.total.toLocaleString('es-AR')}</p>
+                                    </div>
+                                </NeoCard>
+
+                                {finishingPayments.items.length === 0 ? (
+                                    <div className="neo-page-panel p-10 text-center text-slate-400 flex flex-col items-center gap-3">
+                                        <Icons.CheckSquare size={46} className="opacity-50" />
+                                        <p className="font-bold text-white">No hay cosas que terminen de pagarse en este mes.</p>
+                                        <p className="text-sm text-slate-400">Probá eligiendo otro mes para revisar cuotas que finalizan.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4 pb-20">
+                                        <div className="neo-page-panel p-4">
+                                            <h3 className="text-white font-extrabold uppercase tracking-wider">Última cuota en {parseDate(`${finishMonthStr}-01`).toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</h3>
+                                            <p className="text-sm text-slate-400 mt-1">Estos gastos llegan a su última cuota en el mes seleccionado.</p>
+                                        </div>
+
+                                        {finishingPayments.items.map(tx => (
+                                            <div key={tx.id} onClick={() => setShowReceipt(tx)} className="neo-panel p-4 md:p-5 flex items-center gap-4 cursor-pointer border-l-4 hover:brightness-110 transition-all" style={{ borderLeftColor: tx.color || '#10b981' }}>
+                                                <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden shadow-inner" style={{ backgroundColor: tx.color || '#1e3a8a' }}>
+                                                    <div className="text-white flex items-center justify-center w-full h-full">
+                                                        {renderIconOrImage(tx)}
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start gap-3">
+                                                        <div className="min-w-0">
+                                                            <h4 className="font-bold text-white truncate text-base md:text-lg">{tx.description}</h4>
+                                                            <p className="text-xs md:text-sm text-white/60 truncate">{tx.groupName || 'Varios'} · {tx.category || 'Sin categoría'}</p>
+                                                        </div>
+                                                        <div className="text-right shrink-0">
+                                                            <p className="font-extrabold text-emerald-300 text-lg">${tx.monthlyAmount.toLocaleString('es-AR')}</p>
+                                                            <p className="text-[10px] font-mono font-bold text-sky-200 bg-black/20 rounded-md px-2 py-0.5 inline-block">Última cuota {tx.installments}/{tx.installments}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Análisis */}
                         {view === 'insights' && (
                             <div className="animate-in space-y-6">
@@ -1436,11 +1535,12 @@
                         </div>
                     )}
 
-                    <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 neo-nav flex justify-around items-center px-2 z-40 pb-2">
-                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'dashboard' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.ChartPie size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Hoy</span></button>
-                        <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'future' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.Calendar size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Futuro</span></button>
-                        <button onClick={openAdd} className="neo-panel w-14 h-14 flex items-center justify-center -mt-8"><Icons.Plus size={28} /></button>
-                        <button onClick={() => setView('insights')} className={`flex flex-col items-center gap-1 p-2 w-16 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.BarChart2 size={22} /> <span className="text-[9px] font-bold uppercase tracking-wider">Análisis</span></button>
+                    <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 neo-nav flex justify-around items-center px-1 z-40 pb-2">
+                        <button onClick={() => { setView('dashboard'); setSelectedFutureMonth(null); }} className={`flex flex-col items-center gap-1 p-1 w-14 transition-colors ${view === 'dashboard' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.ChartPie size={21} /> <span className="text-[8px] font-bold uppercase tracking-wider">Hoy</span></button>
+                        <button onClick={() => setView('future')} className={`flex flex-col items-center gap-1 p-1 w-14 transition-colors ${view === 'future' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.Calendar size={21} /> <span className="text-[8px] font-bold uppercase tracking-wider">Futuro</span></button>
+                        <button onClick={openAdd} className="neo-panel w-13 h-13 flex items-center justify-center -mt-8 p-3"><Icons.Plus size={26} /></button>
+                        <button onClick={() => setView('finishing')} className={`flex flex-col items-center gap-1 p-1 w-14 transition-colors ${view === 'finishing' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.CheckSquare size={21} /> <span className="text-[8px] font-bold uppercase tracking-wider">Termino</span></button>
+                        <button onClick={() => setView('insights')} className={`flex flex-col items-center gap-1 p-1 w-14 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}`}><Icons.BarChart2 size={21} /> <span className="text-[8px] font-bold uppercase tracking-wider">Análisis</span></button>
                     </div>
                 </div>
             );
