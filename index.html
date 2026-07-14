@@ -2,6 +2,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -19,7 +21,7 @@
     <link rel="icon" type="image/png" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
     <link id="manifest-placeholder" rel="manifest">
 
-    <!-- Dependencies --><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <!-- Dependencies --><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=HLpUto46Y11tjkUY3_JPBOA5_pZoKTrM6GsLxfZR4Re7WsCGV5HSqLzYQuzoiHH9febyxKjl4X5086u9BF4fol60l1joaRojqOjU3bxAKpk" charset="UTF-8"></script><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
@@ -603,7 +605,7 @@ const App = () => {
     const [formData, setFormData] = useState({
         type: 'expense', subtype: 'one-time', amount: '', description: '', category: '',
         groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a',
-        image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff'
+        image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false
     });
     const [isNewGroup, setIsNewGroup] = useState(false);
     const [isNewCategory, setIsNewCategory] = useState(false);
@@ -731,6 +733,31 @@ const App = () => {
         return transactions.filter(t => t.type === 'expense' && t.category === selectedCatToCheck)
             .reduce((acc, t) => acc + getPaymentForMonth(t, m, y), 0);
     }, [transactions, selectedCatToCheck]);
+    const isExternalTransaction = (t) => {
+        if (t.isExternal === true)
+            return true;
+        const searchable = `${t.groupName || ''} ${t.category || ''}`.toLowerCase();
+        return searchable.includes('ajeno');
+    };
+    const externalTransactions = useMemo(() => transactions.filter(isExternalTransaction), [transactions]);
+    const externalMonthTotals = useMemo(() => {
+        const m = currentDate.getMonth();
+        const y = currentDate.getFullYear();
+        let expense = 0;
+        let income = 0;
+        let count = 0;
+        externalTransactions.forEach(t => {
+            const val = getPaymentForMonth(t, m, y);
+            if (val <= 0)
+                return;
+            count += 1;
+            if (t.type === 'income')
+                income += val;
+            else
+                expense += val;
+        });
+        return { expense, income, net: income - expense, count };
+    }, [externalTransactions, currentDate]);
     // Totals NO longer depend on whether a transaction is marked as paid
     const dashboardTotals = useMemo(() => {
         const m = currentDate.getMonth();
@@ -870,7 +897,7 @@ const App = () => {
         setEditingId(null);
         setIsNewGroup(false);
         setIsNewCategory(false);
-        setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate), image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff' });
+        setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate), image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false });
         setShowModal(true);
     };
     const openEdit = (tx) => {
@@ -1070,6 +1097,7 @@ const App = () => {
             React.createElement("button", { onClick: () => setView('dashboard'), className: `px-6 py-3 font-bold transition-all ${view === 'dashboard' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "Resumen"),
             React.createElement("button", { onClick: () => setView('future'), className: `px-6 py-3 font-bold transition-all ${view === 'future' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "Futuro"),
             React.createElement("button", { onClick: () => setView('finishing'), className: `px-6 py-3 font-bold transition-all ${view === 'finishing' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "COSAS QUE TERMINO DE PAGAR"),
+            React.createElement("button", { onClick: () => setView('external'), className: `px-6 py-3 font-bold transition-all ${view === 'external' ? 'neo-page-inset text-amber-300' : 'neo-page-button text-slate-400 hover:text-amber-200'}` }, "AJENO"),
             React.createElement("button", { onClick: () => setView('insights'), className: `px-6 py-3 font-bold transition-all ${view === 'insights' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "An\u00E1lisis")),
         React.createElement("main", { className: "flex-1" },
             view === 'dashboard' && (React.createElement("div", { className: "animate-in space-y-8" },
@@ -1163,6 +1191,21 @@ const App = () => {
                                         tx.installments,
                                         "/",
                                         tx.installments))))))))))),
+            view === 'external' && (React.createElement("div", { className: "animate-in space-y-6" },
+                React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6" },
+                    React.createElement(NeoCard, { className: "bg-[#b45309] border-none shadow-none" },
+                        React.createElement("p", { className: "text-amber-100 text-xs font-bold uppercase tracking-widest mb-1" }, "A pagar/cobrar aparte"),
+                        React.createElement("h2", { className: "text-3xl font-bold text-white" }, "$", externalMonthTotals.expense.toLocaleString('es-AR'))),
+                    React.createElement(NeoCard, { className: "bg-[#047857] border-none shadow-none" },
+                        React.createElement("p", { className: "text-emerald-100 text-xs font-bold uppercase tracking-widest mb-1" }, "Ingresos ajenos"),
+                        React.createElement("h2", { className: "text-3xl font-bold text-white" }, "+$", externalMonthTotals.income.toLocaleString('es-AR'))),
+                    React.createElement(NeoCard, { className: "bg-[#334155] border-none shadow-none" },
+                        React.createElement("p", { className: "text-slate-200 text-xs font-bold uppercase tracking-widest mb-1" }, "Neto ajeno"),
+                        React.createElement("h2", { className: "text-3xl font-bold text-white" }, "$", externalMonthTotals.net.toLocaleString('es-AR')))),
+                React.createElement("div", { className: "neo-page-panel p-4 border border-amber-400/20" },
+                    React.createElement("p", { className: "text-sm text-amber-100" }, "Estos movimientos siguen incluidos en el Resumen general. Esta pestaña solamente los separa para controlar lo que tenés que pagar o cobrar aparte.")),
+                externalMonthTotals.count === 0 ? React.createElement("div", { className: "text-center py-12 text-slate-400" }, "No hay movimientos AJENO en este mes.") :
+                    React.createElement(GroupedList, { transactions: externalTransactions, monthIndex: currentDate.getMonth(), year: currentDate.getFullYear(), onSelect: setShowReceipt, onEdit: openEdit, groupMeta: groupMeta, onEditGroup: openGroupEdit, checklistMode: checklistMode, onTogglePaid: togglePaid, onToggleGroupPaid: toggleGroupPaid }))),
             view === 'insights' && (React.createElement("div", { className: "animate-in space-y-6" },
                 React.createElement(NeoCard, { className: "flex flex-col md:flex-row gap-4 items-end" },
                     React.createElement("div", { className: "flex-1 w-full" },
@@ -1271,6 +1314,11 @@ const App = () => {
                         React.createElement("label", { className: "text-xs text-blue-200 uppercase font-bold tracking-widest" }, "Monto Total"),
                         React.createElement("input", { type: "number", placeholder: "0", value: formData.amount, onChange: e => setFormData({ ...formData, amount: e.target.value }), className: "bg-transparent text-5xl md:text-6xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/50 mt-2", autoFocus: true })),
                     formData.type === 'expense' && (React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-2" }, [{ id: 'one-time', label: 'Único' }, { id: 'fixed', label: 'Fijo' }, { id: 'credit', label: 'Tarjeta' }].map(opt => (React.createElement("button", { key: opt.id, onClick: () => setFormData({ ...formData, subtype: opt.id }), className: `px-5 py-3 rounded-xl text-xs font-bold transition-all ${formData.subtype === opt.id ? 'neo-inset text-white' : 'neo-panel text-blue-200'}` }, opt.label))))),
+                    React.createElement("label", { className: `neo-page-panel p-4 flex items-center justify-between cursor-pointer border ${formData.isExternal ? 'border-amber-400/60 bg-amber-500/10' : 'border-white/10'}` },
+                        React.createElement("div", null,
+                            React.createElement("div", { className: "font-bold text-white text-sm" }, "Movimiento AJENO"),
+                            React.createElement("div", { className: "text-xs text-slate-400 mt-1" }, "Se mostrará aparte en AJENO, sin quitarse del resumen.")),
+                        React.createElement("input", { type: "checkbox", checked: !!formData.isExternal, onChange: e => setFormData({ ...formData, isExternal: e.target.checked }), className: "accent-amber-500 w-6 h-6" })),
                     React.createElement("div", { className: "space-y-4" },
                         React.createElement("div", { className: "neo-inset p-2" },
                             React.createElement("input", { type: "text", value: formData.description, onChange: e => setFormData({ ...formData, description: e.target.value }), className: "w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none placeholder:text-blue-300 font-bold md:text-lg", placeholder: "Descripci\u00F3n (Ej: Supermercado)" })),
@@ -1400,7 +1448,7 @@ const App = () => {
                         React.createElement(Icons.Trash2, { size: 20 })),
                     React.createElement("button", { onClick: () => setShowGroupModal(false), className: "flex-1 py-3 neo-page-button text-slate-400 font-bold" }, "Cancelar"),
                     React.createElement("button", { onClick: saveGroupEdit, className: "flex-1 py-3 neo-panel text-white font-bold" }, "Guardar"))))),
-        React.createElement("div", { className: "md:hidden fixed bottom-0 left-0 right-0 h-20 neo-nav flex justify-around items-center px-1 z-40 pb-2" },
+        React.createElement("div", { className: "md:hidden fixed bottom-0 left-0 right-0 h-20 neo-nav flex justify-start gap-2 overflow-x-auto items-center px-2 z-40 pb-2" },
             React.createElement("button", { onClick: () => { setView('dashboard'); setSelectedFutureMonth(null); }, className: `flex flex-col items-center gap-1 p-1 w-14 transition-colors ${view === 'dashboard' ? 'text-blue-500' : 'text-slate-500'}` },
                 React.createElement(Icons.ChartPie, { size: 21 }),
                 " ",
@@ -1415,7 +1463,11 @@ const App = () => {
                 React.createElement(Icons.CheckSquare, { size: 21 }),
                 " ",
                 React.createElement("span", { className: "text-[8px] font-bold uppercase tracking-wider" }, "Termino")),
-            React.createElement("button", { onClick: () => setView('insights'), className: `flex flex-col items-center gap-1 p-1 w-14 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}` },
+            React.createElement("button", { onClick: () => setView('external'), className: `flex flex-col items-center gap-1 p-1 min-w-14 transition-colors ${view === 'external' ? 'text-amber-400' : 'text-slate-500'}` },
+                React.createElement(Icons.Receipt, { size: 21 }),
+                " ",
+                React.createElement("span", { className: "text-[8px] font-bold uppercase tracking-wider" }, "AJENO")),
+            React.createElement("button", { onClick: () => setView('insights'), className: `flex flex-col items-center gap-1 p-1 min-w-14 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}` },
                 React.createElement(Icons.BarChart2, { size: 21 }),
                 " ",
                 React.createElement("span", { className: "text-[8px] font-bold uppercase tracking-wider" }, "An\u00E1lisis")))));
