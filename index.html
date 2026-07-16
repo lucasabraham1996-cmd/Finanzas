@@ -5,6 +5,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,7 +23,7 @@
     <link rel="icon" type="image/png" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
     <link id="manifest-placeholder" rel="manifest">
 
-    <!-- Dependencies --><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=4wzvkF5F_MdTVm2VM1-HHvCeoy90-dp2bQzRHdcHMrNuUnxUhDn4DHHGmgViZhRBGHvR29UW2YzZmPRte7C4QgOgabPApH-kgSRfzjKE6RM" charset="UTF-8"></script><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=HLpUto46Y11tjkUY3_JPBOA5_pZoKTrM6GsLxfZR4Re7WsCGV5HSqLzYQuzoiHH9febyxKjl4X5086u9BF4fol60l1joaRojqOjU3bxAKpk" charset="UTF-8"></script><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <!-- Dependencies --><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=dPv5tn0Z09e-djZemhy5zdiu4Vw4NRtXOMxz26DNTBSR_NzwHuELRgFISwQGr7EQSCoXw45y69C89B2M1v1lknTNaqZ_rBuSSr53vsvj3io" charset="UTF-8"></script><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=4wzvkF5F_MdTVm2VM1-HHvCeoy90-dp2bQzRHdcHMrNuUnxUhDn4DHHGmgViZhRBGHvR29UW2YzZmPRte7C4QgOgabPApH-kgSRfzjKE6RM" charset="UTF-8"></script><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=HLpUto46Y11tjkUY3_JPBOA5_pZoKTrM6GsLxfZR4Re7WsCGV5HSqLzYQuzoiHH9febyxKjl4X5086u9BF4fol60l1joaRojqOjU3bxAKpk" charset="UTF-8"></script><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
@@ -620,7 +621,7 @@ const App = () => {
             return ['Pa', 'Ma', 'Joaquin', 'Mateo'];
         }
     });
-    const [selectedExternalPerson, setSelectedExternalPerson] = useState(() => localStorage.getItem('selectedExternalPerson') || 'Pa');
+    const [selectedExternalPerson, setSelectedExternalPerson] = useState('__ALL__');
     const [showExternalOffsets, setShowExternalOffsets] = useState(false);
     const [dbReady, setDbReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -769,7 +770,7 @@ const App = () => {
         return searchable.includes('ajeno');
     };
     const externalTransactions = useMemo(() => transactions.filter(isExternalTransaction), [transactions]);
-    const externalPersonTransactions = useMemo(() => externalTransactions.filter(t => (t.externalPerson || 'Sin asignar') === selectedExternalPerson), [externalTransactions, selectedExternalPerson]);
+    const externalPersonTransactions = useMemo(() => selectedExternalPerson === '__ALL__' ? externalTransactions : externalTransactions.filter(t => (t.externalPerson || 'Sin asignar') === selectedExternalPerson), [externalTransactions, selectedExternalPerson]);
     const externalMonthTotals = useMemo(() => {
         const m = currentDate.getMonth();
         const y = currentDate.getFullYear();
@@ -792,7 +793,9 @@ const App = () => {
             .map(t => {
                 const assignedPerson = t.externalOffsetPeople && t.externalOffsetPeople[monthKey];
                 const legacySelected = Array.isArray(t.externalOffsetMonths) && t.externalOffsetMonths.includes(monthKey);
-                return { ...t, currentAmt: getPaymentForMonth(t, m, y), isExternalOffset: assignedPerson === selectedExternalPerson || (!assignedPerson && legacySelected && selectedExternalPerson === 'Sin asignar') };
+                const normalizedAssignedPerson = assignedPerson || (legacySelected ? 'Sin asignar' : '');
+                const isExternalOffset = selectedExternalPerson === '__ALL__' ? !!normalizedAssignedPerson : normalizedAssignedPerson === selectedExternalPerson;
+                return { ...t, currentAmt: getPaymentForMonth(t, m, y), isExternalOffset, assignedExternalPerson: normalizedAssignedPerson };
             });
         const offsetTotal = offsetItems.filter(t => t.isExternalOffset).reduce((acc, t) => acc + t.currentAmt, 0);
         const difference = expense - income - offsetTotal;
@@ -809,24 +812,106 @@ const App = () => {
         transactions.forEach(t => {
             const peopleMap = t.externalOffsetPeople || {};
             Object.entries(peopleMap).forEach(([monthKey, person]) => {
-                if (person !== selectedExternalPerson) return;
+                if (selectedExternalPerson !== '__ALL__' && person !== selectedExternalPerson) return;
                 const [year, month] = monthKey.split('-').map(Number);
                 offsets += getPaymentForMonth(t, month, year);
             });
         });
         return { expense, income, offsets, difference: expense - income - offsets };
     }, [externalPersonTransactions, transactions, selectedExternalPerson]);
-    const shareExternalReceipt = (scope) => {
+    const shareExternalReceipt = async (scope) => {
         const isAll = scope === 'all';
-        const total = isAll ? externalAllTimeTotals.difference : externalMonthTotals.difference;
-        const period = isAll ? 'Deuda total acumulada' : currentDate.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
-        const movements = isAll ? externalPersonTransactions : externalPersonTransactions.filter(t => getPaymentForMonth(t, currentDate.getMonth(), currentDate.getFullYear()) > 0);
-        const details = movements.map(t => {
-            const amount = isAll ? Number(t.amount || 0) : getPaymentForMonth(t, currentDate.getMonth(), currentDate.getFullYear());
-            return `• ${t.description}: $${amount.toLocaleString('es-AR')}`;
-        }).join('\n');
-        const text = `*Comprobante de cuenta - ${selectedExternalPerson}*\n\n📅 ${period}\n${details ? `\n${details}\n` : ''}\n💰 *Saldo: $${Math.abs(total).toLocaleString('es-AR')}*\n${total >= 0 ? 'Saldo a cobrar.' : 'Saldo a pagar.'}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        const personLabel = selectedExternalPerson === '__ALL__' ? 'Todas las personas' : selectedExternalPerson;
+        const monthBalance = externalMonthTotals.difference;
+        const totalBalance = externalAllTimeTotals.difference;
+        const period = currentDate.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1350;
+        const ctx = canvas.getContext('2d');
+        const money = value => `$${Math.abs(value).toLocaleString('es-AR')}`;
+        const roundRect = (x, y, w, h, r, fill) => {
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            ctx.fillStyle = fill;
+            ctx.fill();
+        };
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createLinearGradient(0, 0, 1080, 1350);
+        gradient.addColorStop(0, '#1e3a8a');
+        gradient.addColorStop(1, '#0f172a');
+        roundRect(55, 55, 970, 1240, 42, gradient);
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = '700 34px Inter, Arial';
+        ctx.fillText('COMPROBANTE DE CUENTA', 105, 145);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 62px Inter, Arial';
+        ctx.fillText(personLabel, 105, 225);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '600 30px Inter, Arial';
+        ctx.fillText(period.charAt(0).toUpperCase() + period.slice(1), 105, 278);
+        roundRect(105, 340, 870, 230, 30, '#172554');
+        ctx.fillStyle = '#bfdbfe';
+        ctx.font = '700 28px Inter, Arial';
+        ctx.fillText('IMPORTE DE ESTE MES', 150, 405);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 78px Inter, Arial';
+        ctx.fillText(money(monthBalance), 150, 500);
+        ctx.fillStyle = monthBalance >= 0 ? '#6ee7b7' : '#fda4af';
+        ctx.font = '700 28px Inter, Arial';
+        ctx.fillText(monthBalance >= 0 ? 'A cobrar este mes' : 'A pagar este mes', 150, 545);
+        roundRect(105, 610, 870, 230, 30, '#111827');
+        ctx.fillStyle = '#c4b5fd';
+        ctx.font = '700 28px Inter, Arial';
+        ctx.fillText('SALDO TOTAL RESTANTE', 150, 675);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 78px Inter, Arial';
+        ctx.fillText(money(totalBalance), 150, 770);
+        ctx.fillStyle = totalBalance >= 0 ? '#6ee7b7' : '#fda4af';
+        ctx.font = '700 28px Inter, Arial';
+        ctx.fillText(totalBalance >= 0 ? 'Saldo total a cobrar' : 'Saldo total a pagar', 150, 815);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '700 27px Inter, Arial';
+        ctx.fillText('Detalle del mes', 105, 915);
+        ctx.font = '500 24px Inter, Arial';
+        const rows = [
+            ['Movimientos ajenos', externalMonthTotals.expense],
+            ['Pagos / ingresos registrados', externalMonthTotals.income],
+            ['Lo que yo debo', externalMonthTotals.offsetTotal]
+        ];
+        rows.forEach(([label, amount], index) => {
+            const y = 975 + index * 70;
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillText(label, 120, y);
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'right';
+            ctx.fillText(`$${Number(amount).toLocaleString('es-AR')}`, 950, y);
+            ctx.textAlign = 'left';
+        });
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '500 22px Inter, Arial';
+        ctx.fillText('Generado desde Finanzas Familiares', 105, 1240);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
+        if (!blob) return alert('No se pudo generar el comprobante.');
+        const safeName = personLabel.replace(/[^a-z0-9áéíóúñ]+/gi, '_');
+        const file = new File([blob], `Comprobante_${safeName}_${isAll ? 'total' : 'mes'}.png`, { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ title: `Comprobante de ${personLabel}`, text: 'Comprobante de deuda', files: [file] });
+                return;
+            } catch (e) {
+                if (e && e.name === 'AbortError') return;
+            }
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
     };
     // Totals NO longer depend on whether a transaction is marked as paid
     const dashboardTotals = useMemo(() => {
@@ -937,24 +1022,24 @@ const App = () => {
             alert("Error al actualizar pago.");
         }
     };
-    const toggleExternalOffset = async (tx) => {
+    const assignExternalOffset = async (tx, person) => {
         if (!dbReady)
             return;
         try {
             const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
             const currentMap = { ...(tx.externalOffsetPeople || {}) };
-            if (currentMap[monthKey] === selectedExternalPerson)
-                delete currentMap[monthKey];
+            if (person)
+                currentMap[monthKey] = person;
             else
-                currentMap[monthKey] = selectedExternalPerson;
+                delete currentMap[monthKey];
             const currentMonths = Array.isArray(tx.externalOffsetMonths) ? tx.externalOffsetMonths : [];
-            const updatedMonths = currentMap[monthKey] ? (currentMonths.includes(monthKey) ? currentMonths : [...currentMonths, monthKey]) : currentMonths.filter(m => m !== monthKey);
+            const updatedMonths = person ? (currentMonths.includes(monthKey) ? currentMonths : [...currentMonths, monthKey]) : currentMonths.filter(m => m !== monthKey);
             const { doc, updateDoc } = window.fb;
             await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, tx.id), { externalOffsetPeople: currentMap, externalOffsetMonths: updatedMonths });
         }
         catch (e) {
             console.error(e);
-            alert("No se pudo actualizar la compensación de Ajeno.");
+            alert("No se pudo asignar a quién le debés.");
         }
     };
     const toggleGroupPaid = async (groupItems, monthIndex, year) => {
@@ -1009,8 +1094,8 @@ const App = () => {
             return alert("Por favor ingresa una descripción.");
         if (!formData.amount || Number(formData.amount) <= 0)
             return alert("Por favor ingresa un monto válido mayor a 0.");
-        if (formData.isExternal && !formData.externalPerson)
-            return alert("Seleccioná a quién corresponde este movimiento ajeno.");
+        if (formData.isExternal && !formData.externalPerson && selectedExternalPerson !== '__ALL__')
+            formData.externalPerson = selectedExternalPerson;
         try {
             let finalDate = editingId ? formData.date : formData.date || toLocalDateString(currentDate);
             if (formData.subtype === 'credit' && formData.currentInstallment > 1) {
@@ -1021,6 +1106,10 @@ const App = () => {
             if (formData.date && formData.date !== finalDate && editingId)
                 finalDate = formData.date;
             let txData = { ...formData, amount: Number(formData.amount), date: finalDate };
+            if (txData.isExternal) {
+                const fallbackPerson = selectedExternalPerson === '__ALL__' ? externalPeople[0] : selectedExternalPerson;
+                txData.externalPerson = txData.externalPerson || fallbackPerson || 'Sin asignar';
+            }
             delete txData.currentInstallment;
             if (txData.type === 'income') {
                 if (!txData.groupName || txData.groupName === 'A PAGAR')
@@ -1289,9 +1378,10 @@ const App = () => {
                 React.createElement("div", { className: "neo-page-panel p-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between" },
                     React.createElement("div", null,
                         React.createElement("p", { className: "text-xs uppercase tracking-widest text-amber-200 font-bold" }, "Cuenta de Ajeno"),
-                        React.createElement("h2", { className: "text-xl font-extrabold text-white" }, selectedExternalPerson)),
+                        React.createElement("h2", { className: "text-xl font-extrabold text-white" }, selectedExternalPerson === '__ALL__' ? 'Todo' : selectedExternalPerson)),
                     React.createElement("div", { className: "flex gap-2" },
                         React.createElement("select", { value: selectedExternalPerson, onChange: e => setSelectedExternalPerson(e.target.value), className: "flex-1 md:min-w-48 neo-page-inset px-4 py-3 text-white outline-none font-bold" },
+                            React.createElement("option", { value: "__ALL__", className: "text-black" }, "Todo"),
                             externalPeople.map(person => React.createElement("option", { key: person, value: person, className: "text-black" }, person)),
                             externalTransactions.some(t => !t.externalPerson) && React.createElement("option", { value: "Sin asignar", className: "text-black" }, "Sin asignar")),
                         React.createElement("button", { onClick: addExternalPerson, className: "neo-page-button px-4 py-3 text-amber-300 font-bold" }, "+ Persona"))),
@@ -1311,19 +1401,23 @@ const App = () => {
                 React.createElement("div", { className: "neo-page-panel overflow-hidden border border-violet-400/20" },
                     React.createElement("button", { onClick: () => setShowExternalOffsets(v => !v), className: "w-full p-4 flex items-center justify-between text-left" },
                         React.createElement("div", null,
-                            React.createElement("h3", { className: "text-lg font-extrabold text-white" }, "Lo que yo le debo a ", selectedExternalPerson),
+                            React.createElement("h3", { className: "text-lg font-extrabold text-white" }, "Lo que yo debo", selectedExternalPerson !== '__ALL__' ? ` a ${selectedExternalPerson}` : ''),
                             React.createElement("p", { className: "text-sm text-slate-400" }, "Seleccionado: $", externalMonthTotals.offsetTotal.toLocaleString('es-AR'))),
                         React.createElement(Icons.ChevronDown, { size: 20, className: `transition-transform ${showExternalOffsets ? 'rotate-180' : ''}` })),
                     showExternalOffsets && React.createElement("div", { className: "p-4 pt-0 border-t border-white/10" },
                         externalMonthTotals.offsetItems.length === 0 ? React.createElement("div", { className: "py-6 text-center text-slate-400" }, "No hay gastos disponibles en este mes.") :
-                            React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3 mt-4" }, externalMonthTotals.offsetItems.map(tx => React.createElement("label", { key: tx.id, className: `neo-page-panel p-4 flex items-center gap-3 cursor-pointer border transition-all ${tx.isExternalOffset ? 'border-violet-400 bg-violet-500/10' : 'border-white/10 hover:border-white/20'}` },
-                                React.createElement("input", { type: "checkbox", checked: tx.isExternalOffset, onChange: () => toggleExternalOffset(tx), className: "accent-violet-500 w-5 h-5 shrink-0" }),
-                                React.createElement("div", { className: "flex-1 min-w-0" },
-                                    React.createElement("p", { className: "font-bold text-white truncate" }, tx.description),
-                                    React.createElement("p", { className: "text-xs text-slate-400 truncate" }, `${tx.groupName || 'Varios'} · ${tx.category || 'Sin categoría'}`)),
-                                React.createElement("p", { className: "font-extrabold text-violet-300 whitespace-nowrap" }, "$", tx.currentAmt.toLocaleString('es-AR'))))))),
+                            React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3 mt-4" }, externalMonthTotals.offsetItems.map(tx => React.createElement("div", { key: tx.id, className: `neo-page-panel p-4 border transition-all ${tx.assignedExternalPerson ? 'border-violet-400 bg-violet-500/10' : 'border-white/10'}` },
+                                React.createElement("div", { className: "flex items-start justify-between gap-3 mb-3" },
+                                    React.createElement("div", { className: "flex-1 min-w-0" },
+                                        React.createElement("p", { className: "font-bold text-white truncate" }, tx.description),
+                                        React.createElement("p", { className: "text-xs text-slate-400 truncate" }, `${tx.groupName || 'Varios'} · ${tx.category || 'Sin categoría'}`)),
+                                    React.createElement("p", { className: "font-extrabold text-violet-300 whitespace-nowrap" }, "$", tx.currentAmt.toLocaleString('es-AR'))),
+                                React.createElement("label", { className: "text-xs font-bold text-violet-200 block mb-2" }, "¿A quién le debés?"),
+                                React.createElement("select", { value: tx.assignedExternalPerson || '', onChange: e => assignExternalOffset(tx, e.target.value), className: "w-full neo-page-inset px-3 py-3 text-white outline-none font-bold" },
+                                    React.createElement("option", { value: "", className: "text-black" }, "Sin asignar"),
+                                    externalPeople.map(person => React.createElement("option", { key: person, value: person, className: "text-black" }, person)))))))),
                 React.createElement("div", { className: "pt-2" },
-                    React.createElement("h3", { className: "text-lg font-extrabold text-white mb-3" }, "Movimientos de ", selectedExternalPerson),
+                    React.createElement("h3", { className: "text-lg font-extrabold text-white mb-3" }, selectedExternalPerson === '__ALL__' ? "Todos los movimientos ajenos" : `Movimientos de ${selectedExternalPerson}`),
                     externalMonthTotals.count === 0 ? React.createElement("div", { className: "text-center py-12 text-slate-400" }, "No hay movimientos de Ajeno para esta persona en este mes.") :
                         React.createElement(GroupedList, { transactions: externalPersonTransactions, monthIndex: currentDate.getMonth(), year: currentDate.getFullYear(), onSelect: setShowReceipt, onEdit: openEdit, groupMeta: groupMeta, onEditGroup: openGroupEdit, checklistMode: checklistMode, onTogglePaid: togglePaid, onToggleGroupPaid: toggleGroupPaid })))),
             view === 'insights' && (React.createElement("div", { className: "animate-in space-y-6" },
@@ -1439,9 +1533,9 @@ const App = () => {
                             React.createElement("div", null,
                                 React.createElement("div", { className: "font-bold text-white text-sm" }, "Movimiento ajeno"),
                                 React.createElement("div", { className: "text-xs text-slate-400 mt-1" }, "Se mostrará aparte en Ajeno, sin quitarse del resumen.")),
-                            React.createElement("input", { type: "checkbox", checked: !!formData.isExternal, onChange: e => setFormData({ ...formData, isExternal: e.target.checked, externalPerson: e.target.checked ? (formData.externalPerson || selectedExternalPerson) : '' }), className: "accent-amber-500 w-6 h-6" })),
+                            React.createElement("input", { type: "checkbox", checked: !!formData.isExternal, onChange: e => setFormData({ ...formData, isExternal: e.target.checked, externalPerson: e.target.checked ? (formData.externalPerson || (selectedExternalPerson === '__ALL__' ? externalPeople[0] : selectedExternalPerson)) : '' }), className: "accent-amber-500 w-6 h-6" })),
                         formData.isExternal && React.createElement("div", { className: "mt-4 flex gap-2" },
-                            React.createElement("select", { value: formData.externalPerson || selectedExternalPerson, onChange: e => setFormData({ ...formData, externalPerson: e.target.value }), className: "flex-1 neo-page-inset px-4 py-3 text-white outline-none font-bold" },
+                            React.createElement("select", { value: formData.externalPerson || (selectedExternalPerson === '__ALL__' ? (externalPeople[0] || '') : selectedExternalPerson), onChange: e => setFormData({ ...formData, externalPerson: e.target.value }), className: "flex-1 neo-page-inset px-4 py-3 text-white outline-none font-bold" },
                                 externalPeople.map(person => React.createElement("option", { key: person, value: person, className: "text-black" }, person))),
                             React.createElement("button", { type: "button", onClick: addExternalPerson, className: "neo-page-button px-4 py-3 text-amber-300 font-bold", title: "Agregar persona" }, "+ Persona"))),
                     React.createElement("div", { className: "space-y-4" },
