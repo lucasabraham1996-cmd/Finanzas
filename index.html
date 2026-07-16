@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,7 +22,7 @@
     <link rel="icon" type="image/png" href="https://images.icon-icons.com/3989/PNG/512/financial_business_finance_money_bag_icon_253839.png">
     <link id="manifest-placeholder" rel="manifest">
 
-    <!-- Dependencies --><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=HLpUto46Y11tjkUY3_JPBOA5_pZoKTrM6GsLxfZR4Re7WsCGV5HSqLzYQuzoiHH9febyxKjl4X5086u9BF4fol60l1joaRojqOjU3bxAKpk" charset="UTF-8"></script><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <!-- Dependencies --><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=4wzvkF5F_MdTVm2VM1-HHvCeoy90-dp2bQzRHdcHMrNuUnxUhDn4DHHGmgViZhRBGHvR29UW2YzZmPRte7C4QgOgabPApH-kgSRfzjKE6RM" charset="UTF-8"></script><script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=HLpUto46Y11tjkUY3_JPBOA5_pZoKTrM6GsLxfZR4Re7WsCGV5HSqLzYQuzoiHH9febyxKjl4X5086u9BF4fol60l1joaRojqOjU3bxAKpk" charset="UTF-8"></script><script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
@@ -606,10 +607,21 @@ const App = () => {
     const [formData, setFormData] = useState({
         type: 'expense', subtype: 'one-time', amount: '', description: '', category: '',
         groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a',
-        image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false
+        image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: ''
     });
     const [isNewGroup, setIsNewGroup] = useState(false);
     const [isNewCategory, setIsNewCategory] = useState(false);
+    const [externalPeople, setExternalPeople] = useState(() => {
+        try {
+            const saved = JSON.parse(localStorage.getItem('externalPeople') || '[]');
+            return saved.length ? saved : ['Pa', 'Ma', 'Joaquin', 'Mateo'];
+        }
+        catch (_e) {
+            return ['Pa', 'Ma', 'Joaquin', 'Mateo'];
+        }
+    });
+    const [selectedExternalPerson, setSelectedExternalPerson] = useState(() => localStorage.getItem('selectedExternalPerson') || 'Pa');
+    const [showExternalOffsets, setShowExternalOffsets] = useState(false);
     const [dbReady, setDbReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     // Filters
@@ -649,6 +661,22 @@ const App = () => {
             groupSet.add(g.name); });
         return Array.from(groupSet).sort();
     }, [transactions, groupMeta]);
+    useEffect(() => {
+        localStorage.setItem('externalPeople', JSON.stringify(externalPeople));
+    }, [externalPeople]);
+    useEffect(() => {
+        localStorage.setItem('selectedExternalPerson', selectedExternalPerson);
+    }, [selectedExternalPerson]);
+    const addExternalPerson = () => {
+        const name = prompt('Nombre de la persona:');
+        if (!name || !name.trim())
+            return;
+        const cleanName = name.trim();
+        if (!externalPeople.some(p => p.toLowerCase() === cleanName.toLowerCase()))
+            setExternalPeople(prev => [...prev, cleanName]);
+        setSelectedExternalPerson(cleanName);
+        setFormData(prev => ({ ...prev, externalPerson: cleanName }));
+    };
     useEffect(() => {
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setInstallPrompt(e); });
     }, []);
@@ -741,6 +769,7 @@ const App = () => {
         return searchable.includes('ajeno');
     };
     const externalTransactions = useMemo(() => transactions.filter(isExternalTransaction), [transactions]);
+    const externalPersonTransactions = useMemo(() => externalTransactions.filter(t => (t.externalPerson || 'Sin asignar') === selectedExternalPerson), [externalTransactions, selectedExternalPerson]);
     const externalMonthTotals = useMemo(() => {
         const m = currentDate.getMonth();
         const y = currentDate.getFullYear();
@@ -748,7 +777,7 @@ const App = () => {
         let expense = 0;
         let income = 0;
         let count = 0;
-        externalTransactions.forEach(t => {
+        externalPersonTransactions.forEach(t => {
             const val = getPaymentForMonth(t, m, y);
             if (val <= 0)
                 return;
@@ -760,11 +789,45 @@ const App = () => {
         });
         const offsetItems = transactions
             .filter(t => !isExternalTransaction(t) && t.type === 'expense' && getPaymentForMonth(t, m, y) > 0)
-            .map(t => ({ ...t, currentAmt: getPaymentForMonth(t, m, y), isExternalOffset: Array.isArray(t.externalOffsetMonths) && t.externalOffsetMonths.includes(monthKey) }));
+            .map(t => {
+                const assignedPerson = t.externalOffsetPeople && t.externalOffsetPeople[monthKey];
+                const legacySelected = Array.isArray(t.externalOffsetMonths) && t.externalOffsetMonths.includes(monthKey);
+                return { ...t, currentAmt: getPaymentForMonth(t, m, y), isExternalOffset: assignedPerson === selectedExternalPerson || (!assignedPerson && legacySelected && selectedExternalPerson === 'Sin asignar') };
+            });
         const offsetTotal = offsetItems.filter(t => t.isExternalOffset).reduce((acc, t) => acc + t.currentAmt, 0);
-        const difference = expense - offsetTotal;
+        const difference = expense - income - offsetTotal;
         return { expense, income, net: income - expense, count, offsetItems, offsetTotal, difference };
-    }, [externalTransactions, transactions, currentDate]);
+    }, [externalPersonTransactions, transactions, currentDate, selectedExternalPerson]);
+    const externalAllTimeTotals = useMemo(() => {
+        let expense = 0;
+        let income = 0;
+        externalPersonTransactions.forEach(t => {
+            if (t.type === 'income') income += Number(t.amount || 0);
+            else expense += Number(t.amount || 0);
+        });
+        let offsets = 0;
+        transactions.forEach(t => {
+            const peopleMap = t.externalOffsetPeople || {};
+            Object.entries(peopleMap).forEach(([monthKey, person]) => {
+                if (person !== selectedExternalPerson) return;
+                const [year, month] = monthKey.split('-').map(Number);
+                offsets += getPaymentForMonth(t, month, year);
+            });
+        });
+        return { expense, income, offsets, difference: expense - income - offsets };
+    }, [externalPersonTransactions, transactions, selectedExternalPerson]);
+    const shareExternalReceipt = (scope) => {
+        const isAll = scope === 'all';
+        const total = isAll ? externalAllTimeTotals.difference : externalMonthTotals.difference;
+        const period = isAll ? 'Deuda total acumulada' : currentDate.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
+        const movements = isAll ? externalPersonTransactions : externalPersonTransactions.filter(t => getPaymentForMonth(t, currentDate.getMonth(), currentDate.getFullYear()) > 0);
+        const details = movements.map(t => {
+            const amount = isAll ? Number(t.amount || 0) : getPaymentForMonth(t, currentDate.getMonth(), currentDate.getFullYear());
+            return `• ${t.description}: $${amount.toLocaleString('es-AR')}`;
+        }).join('\n');
+        const text = `*Comprobante de cuenta - ${selectedExternalPerson}*\n\n📅 ${period}\n${details ? `\n${details}\n` : ''}\n💰 *Saldo: $${Math.abs(total).toLocaleString('es-AR')}*\n${total >= 0 ? 'Saldo a cobrar.' : 'Saldo a pagar.'}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    };
     // Totals NO longer depend on whether a transaction is marked as paid
     const dashboardTotals = useMemo(() => {
         const m = currentDate.getMonth();
@@ -879,14 +942,19 @@ const App = () => {
             return;
         try {
             const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
-            const current = Array.isArray(tx.externalOffsetMonths) ? tx.externalOffsetMonths : [];
-            const updated = current.includes(monthKey) ? current.filter(m => m !== monthKey) : [...current, monthKey];
+            const currentMap = { ...(tx.externalOffsetPeople || {}) };
+            if (currentMap[monthKey] === selectedExternalPerson)
+                delete currentMap[monthKey];
+            else
+                currentMap[monthKey] = selectedExternalPerson;
+            const currentMonths = Array.isArray(tx.externalOffsetMonths) ? tx.externalOffsetMonths : [];
+            const updatedMonths = currentMap[monthKey] ? (currentMonths.includes(monthKey) ? currentMonths : [...currentMonths, monthKey]) : currentMonths.filter(m => m !== monthKey);
             const { doc, updateDoc } = window.fb;
-            await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, tx.id), { externalOffsetMonths: updated });
+            await updateDoc(doc(window.firebaseDB, TRANSACTIONS_COL, tx.id), { externalOffsetPeople: currentMap, externalOffsetMonths: updatedMonths });
         }
         catch (e) {
             console.error(e);
-            alert("No se pudo actualizar la compensación de AJENO.");
+            alert("No se pudo actualizar la compensación de Ajeno.");
         }
     };
     const toggleGroupPaid = async (groupItems, monthIndex, year) => {
@@ -919,7 +987,7 @@ const App = () => {
         setEditingId(null);
         setIsNewGroup(false);
         setIsNewCategory(false);
-        setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate), image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false });
+        setFormData({ type: 'expense', subtype: 'one-time', amount: '', description: '', category: '', groupName: 'A PAGAR', installments: 1, currentInstallment: 1, icon: 'shopping-bag', color: '#1e3a8a', date: toLocalDateString(currentDate), image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: selectedExternalPerson });
         setShowModal(true);
     };
     const openEdit = (tx) => {
@@ -941,6 +1009,8 @@ const App = () => {
             return alert("Por favor ingresa una descripción.");
         if (!formData.amount || Number(formData.amount) <= 0)
             return alert("Por favor ingresa un monto válido mayor a 0.");
+        if (formData.isExternal && !formData.externalPerson)
+            return alert("Seleccioná a quién corresponde este movimiento ajeno.");
         try {
             let finalDate = editingId ? formData.date : formData.date || toLocalDateString(currentDate);
             if (formData.subtype === 'credit' && formData.currentInstallment > 1) {
@@ -1121,7 +1191,7 @@ const App = () => {
             React.createElement("button", { onClick: () => setView('dashboard'), className: `px-6 py-3 font-bold transition-all ${view === 'dashboard' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "Resumen"),
             React.createElement("button", { onClick: () => setView('future'), className: `px-6 py-3 font-bold transition-all ${view === 'future' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "Futuro"),
             React.createElement("button", { onClick: () => setView('finishing'), className: `px-6 py-3 font-bold transition-all ${view === 'finishing' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "Cosas que termino de pagar"),
-            React.createElement("button", { onClick: () => setView('external'), className: `px-6 py-3 font-bold transition-all ${view === 'external' ? 'neo-page-inset text-amber-300' : 'neo-page-button text-slate-400 hover:text-amber-200'}` }, "AJENO"),
+            React.createElement("button", { onClick: () => setView('external'), className: `px-6 py-3 font-bold transition-all ${view === 'external' ? 'neo-page-inset text-amber-300' : 'neo-page-button text-slate-400 hover:text-amber-200'}` }, "Ajeno"),
             React.createElement("button", { onClick: () => setView('insights'), className: `px-6 py-3 font-bold transition-all ${view === 'insights' ? 'neo-page-inset text-blue-400' : 'neo-page-button text-slate-400 hover:text-blue-300'}` }, "An\u00E1lisis")),
         React.createElement("main", { className: "flex-1" },
             view === 'dashboard' && (React.createElement("div", { className: "animate-in space-y-8" },
@@ -1216,37 +1286,46 @@ const App = () => {
                                         "/",
                                         tx.installments))))))))))),
             view === 'external' && (React.createElement("div", { className: "animate-in space-y-6" },
+                React.createElement("div", { className: "neo-page-panel p-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between" },
+                    React.createElement("div", null,
+                        React.createElement("p", { className: "text-xs uppercase tracking-widest text-amber-200 font-bold" }, "Cuenta de Ajeno"),
+                        React.createElement("h2", { className: "text-xl font-extrabold text-white" }, selectedExternalPerson)),
+                    React.createElement("div", { className: "flex gap-2" },
+                        React.createElement("select", { value: selectedExternalPerson, onChange: e => setSelectedExternalPerson(e.target.value), className: "flex-1 md:min-w-48 neo-page-inset px-4 py-3 text-white outline-none font-bold" },
+                            externalPeople.map(person => React.createElement("option", { key: person, value: person, className: "text-black" }, person)),
+                            externalTransactions.some(t => !t.externalPerson) && React.createElement("option", { value: "Sin asignar", className: "text-black" }, "Sin asignar")),
+                        React.createElement("button", { onClick: addExternalPerson, className: "neo-page-button px-4 py-3 text-amber-300 font-bold" }, "+ Persona"))),
                 React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6" },
                     React.createElement(NeoCard, { className: "bg-[#b45309] border-none shadow-none" },
-                        React.createElement("p", { className: "text-amber-100 text-xs font-bold uppercase tracking-widest mb-1" }, "Me deben por lo ajeno"),
+                        React.createElement("p", { className: "text-amber-100 text-xs font-bold uppercase tracking-widest mb-1" }, "Me debe este mes"),
                         React.createElement("h2", { className: "text-3xl font-bold text-white" }, "$", externalMonthTotals.expense.toLocaleString('es-AR'))),
                     React.createElement(NeoCard, { className: "bg-[#7c3aed] border-none shadow-none" },
-                        React.createElement("p", { className: "text-violet-100 text-xs font-bold uppercase tracking-widest mb-1" }, "Yo le debo al ajeno"),
+                        React.createElement("p", { className: "text-violet-100 text-xs font-bold uppercase tracking-widest mb-1" }, "Yo le debo este mes"),
                         React.createElement("h2", { className: "text-3xl font-bold text-white" }, "-$", externalMonthTotals.offsetTotal.toLocaleString('es-AR'))),
                     React.createElement(NeoCard, { className: externalMonthTotals.difference >= 0 ? "bg-[#047857] border-none shadow-none" : "bg-[#be123c] border-none shadow-none" },
-                        React.createElement("p", { className: "text-white/80 text-xs font-bold uppercase tracking-widest mb-1" }, externalMonthTotals.difference >= 0 ? "Me tienen que dar" : "Tengo que dar"),
+                        React.createElement("p", { className: "text-white/80 text-xs font-bold uppercase tracking-widest mb-1" }, externalMonthTotals.difference >= 0 ? "Saldo a cobrar" : "Saldo a pagar"),
                         React.createElement("h2", { className: "text-3xl font-bold text-white" }, "$", Math.abs(externalMonthTotals.difference).toLocaleString('es-AR')))),
-                React.createElement("div", { className: "neo-page-panel p-4 border border-amber-400/20" },
-                    React.createElement("p", { className: "text-sm text-amber-100" }, "Los movimientos AJENO siguen incluidos en el Resumen. Abajo podés tildar gastos normales que vos le debés a esa persona; se descuentan para mostrar la diferencia final.")),
-                React.createElement("div", { className: "space-y-3" },
-                    React.createElement("div", { className: "flex items-end justify-between gap-4" },
+                React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3" },
+                    React.createElement("button", { onClick: () => shareExternalReceipt('month'), className: "neo-page-button p-4 text-sky-200 font-bold flex gap-2 items-center justify-center" }, React.createElement(Icons.Share, { size: 18 }), " Comprobante del mes actual"),
+                    React.createElement("button", { onClick: () => shareExternalReceipt('all'), className: "neo-page-button p-4 text-emerald-300 font-bold flex gap-2 items-center justify-center" }, React.createElement(Icons.Receipt, { size: 18 }), " Comprobante de deuda total")),
+                React.createElement("div", { className: "neo-page-panel overflow-hidden border border-violet-400/20" },
+                    React.createElement("button", { onClick: () => setShowExternalOffsets(v => !v), className: "w-full p-4 flex items-center justify-between text-left" },
                         React.createElement("div", null,
-                            React.createElement("h3", { className: "text-lg font-extrabold text-white" }, "Lo que yo le debo al ajeno"),
-                            React.createElement("p", { className: "text-sm text-slate-400" }, "Tildá movimientos del Resumen para compensar la cuenta.")),
-                        React.createElement("div", { className: "text-right" },
-                            React.createElement("p", { className: "text-[10px] uppercase tracking-widest text-white/50 font-bold" }, "Seleccionado"),
-                            React.createElement("p", { className: "text-xl font-extrabold text-violet-300" }, "$", externalMonthTotals.offsetTotal.toLocaleString('es-AR')))),
-                    externalMonthTotals.offsetItems.length === 0 ? React.createElement("div", { className: "neo-page-panel p-6 text-center text-slate-400" }, "No hay gastos del Resumen disponibles en este mes.") :
-                        React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3" }, externalMonthTotals.offsetItems.map(tx => React.createElement("label", { key: tx.id, className: `neo-page-panel p-4 flex items-center gap-3 cursor-pointer border transition-all ${tx.isExternalOffset ? 'border-violet-400 bg-violet-500/10' : 'border-white/10 hover:border-white/20'}` },
-                            React.createElement("input", { type: "checkbox", checked: tx.isExternalOffset, onChange: () => toggleExternalOffset(tx), className: "accent-violet-500 w-5 h-5 shrink-0" }),
-                            React.createElement("div", { className: "flex-1 min-w-0" },
-                                React.createElement("p", { className: "font-bold text-white truncate" }, tx.description),
-                                React.createElement("p", { className: "text-xs text-slate-400 truncate" }, `${tx.groupName || 'Varios'} · ${tx.category || 'Sin categoría'}`)),
-                            React.createElement("p", { className: "font-extrabold text-violet-300 whitespace-nowrap" }, "$", tx.currentAmt.toLocaleString('es-AR')))))),
+                            React.createElement("h3", { className: "text-lg font-extrabold text-white" }, "Lo que yo le debo a ", selectedExternalPerson),
+                            React.createElement("p", { className: "text-sm text-slate-400" }, "Seleccionado: $", externalMonthTotals.offsetTotal.toLocaleString('es-AR'))),
+                        React.createElement(Icons.ChevronDown, { size: 20, className: `transition-transform ${showExternalOffsets ? 'rotate-180' : ''}` })),
+                    showExternalOffsets && React.createElement("div", { className: "p-4 pt-0 border-t border-white/10" },
+                        externalMonthTotals.offsetItems.length === 0 ? React.createElement("div", { className: "py-6 text-center text-slate-400" }, "No hay gastos disponibles en este mes.") :
+                            React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3 mt-4" }, externalMonthTotals.offsetItems.map(tx => React.createElement("label", { key: tx.id, className: `neo-page-panel p-4 flex items-center gap-3 cursor-pointer border transition-all ${tx.isExternalOffset ? 'border-violet-400 bg-violet-500/10' : 'border-white/10 hover:border-white/20'}` },
+                                React.createElement("input", { type: "checkbox", checked: tx.isExternalOffset, onChange: () => toggleExternalOffset(tx), className: "accent-violet-500 w-5 h-5 shrink-0" }),
+                                React.createElement("div", { className: "flex-1 min-w-0" },
+                                    React.createElement("p", { className: "font-bold text-white truncate" }, tx.description),
+                                    React.createElement("p", { className: "text-xs text-slate-400 truncate" }, `${tx.groupName || 'Varios'} · ${tx.category || 'Sin categoría'}`)),
+                                React.createElement("p", { className: "font-extrabold text-violet-300 whitespace-nowrap" }, "$", tx.currentAmt.toLocaleString('es-AR'))))))),
                 React.createElement("div", { className: "pt-2" },
-                    React.createElement("h3", { className: "text-lg font-extrabold text-white mb-3" }, "Detalle de movimientos ajenos"),
-                    externalMonthTotals.count === 0 ? React.createElement("div", { className: "text-center py-12 text-slate-400" }, "No hay movimientos AJENO en este mes.") :
-                        React.createElement(GroupedList, { transactions: externalTransactions, monthIndex: currentDate.getMonth(), year: currentDate.getFullYear(), onSelect: setShowReceipt, onEdit: openEdit, groupMeta: groupMeta, onEditGroup: openGroupEdit, checklistMode: checklistMode, onTogglePaid: togglePaid, onToggleGroupPaid: toggleGroupPaid })))),
+                    React.createElement("h3", { className: "text-lg font-extrabold text-white mb-3" }, "Movimientos de ", selectedExternalPerson),
+                    externalMonthTotals.count === 0 ? React.createElement("div", { className: "text-center py-12 text-slate-400" }, "No hay movimientos de Ajeno para esta persona en este mes.") :
+                        React.createElement(GroupedList, { transactions: externalPersonTransactions, monthIndex: currentDate.getMonth(), year: currentDate.getFullYear(), onSelect: setShowReceipt, onEdit: openEdit, groupMeta: groupMeta, onEditGroup: openGroupEdit, checklistMode: checklistMode, onTogglePaid: togglePaid, onToggleGroupPaid: toggleGroupPaid })))),
             view === 'insights' && (React.createElement("div", { className: "animate-in space-y-6" },
                 React.createElement(NeoCard, { className: "flex flex-col md:flex-row gap-4 items-end" },
                     React.createElement("div", { className: "flex-1 w-full" },
@@ -1355,11 +1434,16 @@ const App = () => {
                         React.createElement("label", { className: "text-xs text-blue-200 uppercase font-bold tracking-widest" }, "Monto Total"),
                         React.createElement("input", { type: "number", placeholder: "0", value: formData.amount, onChange: e => setFormData({ ...formData, amount: e.target.value }), className: "bg-transparent text-5xl md:text-6xl font-bold text-center text-white w-full focus:outline-none placeholder:text-white/50 mt-2", autoFocus: true })),
                     formData.type === 'expense' && (React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-2" }, [{ id: 'one-time', label: 'Único' }, { id: 'fixed', label: 'Fijo' }, { id: 'credit', label: 'Tarjeta' }].map(opt => (React.createElement("button", { key: opt.id, onClick: () => setFormData({ ...formData, subtype: opt.id }), className: `px-5 py-3 rounded-xl text-xs font-bold transition-all ${formData.subtype === opt.id ? 'neo-inset text-white' : 'neo-panel text-blue-200'}` }, opt.label))))),
-                    React.createElement("label", { className: `neo-page-panel p-4 flex items-center justify-between cursor-pointer border ${formData.isExternal ? 'border-amber-400/60 bg-amber-500/10' : 'border-white/10'}` },
-                        React.createElement("div", null,
-                            React.createElement("div", { className: "font-bold text-white text-sm" }, "Movimiento AJENO"),
-                            React.createElement("div", { className: "text-xs text-slate-400 mt-1" }, "Se mostrará aparte en AJENO, sin quitarse del resumen.")),
-                        React.createElement("input", { type: "checkbox", checked: !!formData.isExternal, onChange: e => setFormData({ ...formData, isExternal: e.target.checked }), className: "accent-amber-500 w-6 h-6" })),
+                    React.createElement("div", { className: `neo-page-panel p-4 border ${formData.isExternal ? 'border-amber-400/60 bg-amber-500/10' : 'border-white/10'}` },
+                        React.createElement("label", { className: "flex items-center justify-between cursor-pointer" },
+                            React.createElement("div", null,
+                                React.createElement("div", { className: "font-bold text-white text-sm" }, "Movimiento ajeno"),
+                                React.createElement("div", { className: "text-xs text-slate-400 mt-1" }, "Se mostrará aparte en Ajeno, sin quitarse del resumen.")),
+                            React.createElement("input", { type: "checkbox", checked: !!formData.isExternal, onChange: e => setFormData({ ...formData, isExternal: e.target.checked, externalPerson: e.target.checked ? (formData.externalPerson || selectedExternalPerson) : '' }), className: "accent-amber-500 w-6 h-6" })),
+                        formData.isExternal && React.createElement("div", { className: "mt-4 flex gap-2" },
+                            React.createElement("select", { value: formData.externalPerson || selectedExternalPerson, onChange: e => setFormData({ ...formData, externalPerson: e.target.value }), className: "flex-1 neo-page-inset px-4 py-3 text-white outline-none font-bold" },
+                                externalPeople.map(person => React.createElement("option", { key: person, value: person, className: "text-black" }, person))),
+                            React.createElement("button", { type: "button", onClick: addExternalPerson, className: "neo-page-button px-4 py-3 text-amber-300 font-bold", title: "Agregar persona" }, "+ Persona"))),
                     React.createElement("div", { className: "space-y-4" },
                         React.createElement("div", { className: "neo-inset p-2" },
                             React.createElement("input", { type: "text", value: formData.description, onChange: e => setFormData({ ...formData, description: e.target.value }), className: "w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none placeholder:text-blue-300 font-bold md:text-lg", placeholder: "Descripci\u00F3n (Ej: Supermercado)" })),
@@ -1507,7 +1591,7 @@ const App = () => {
             React.createElement("button", { onClick: () => setView('external'), className: `flex flex-col items-center gap-1 p-1 min-w-14 transition-colors ${view === 'external' ? 'text-amber-400' : 'text-slate-500'}` },
                 React.createElement(Icons.Receipt, { size: 21 }),
                 " ",
-                React.createElement("span", { className: "text-[8px] font-bold uppercase tracking-wider" }, "AJENO")),
+                React.createElement("span", { className: "text-[8px] font-bold uppercase tracking-wider" }, "Ajeno")),
             React.createElement("button", { onClick: () => setView('insights'), className: `flex flex-col items-center gap-1 p-1 min-w-14 transition-colors ${view === 'insights' ? 'text-blue-500' : 'text-slate-500'}` },
                 React.createElement(Icons.BarChart2, { size: 21 }),
                 " ",
