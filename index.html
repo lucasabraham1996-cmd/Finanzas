@@ -14,7 +14,7 @@ html,body{margin:0;width:100%;height:100%;background:#0b1120;overflow:hidden}#ap
 (async function () {
   const frame = document.getElementById('app-frame');
   try {
-    const response = await fetch('./app-base.html?v=20260903-paylinks-v3', { cache: 'no-store' });
+    const response = await fetch('./app-base.html?v=20260903-paylinks-alias-v1', { cache: 'no-store' });
     if (!response.ok) throw new Error('No se pudo cargar la app base');
     let html = await response.text();
 
@@ -24,27 +24,27 @@ html,body{margin:0;width:100%;height:100%;background:#0b1120;overflow:hidden}#ap
 
     replaceIfFound(
       "image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: ''",
-      "image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: '', paymentUrl: ''"
+      "image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: '', paymentUrl: '', paymentAlias: ''"
     );
 
     replaceIfFound(
       "image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: selectedExternalPerson });",
-      "image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: selectedExternalPerson, paymentUrl: '' });"
+      "image: '', imageUrl: '', imageAsIcon: false, imageColor: '#ffffff', isExternal: false, externalPerson: selectedExternalPerson, paymentUrl: '', paymentAlias: '' });"
     );
 
     replaceIfFound(
       "setFormData({ ...tx, amount: tx.amount, currentInstallment: currentQuota, imageUrl: tx.imageUrl || '', imageAsIcon: tx.imageAsIcon || false, imageColor: tx.imageColor || '#ffffff' });",
-      "setFormData({ ...tx, amount: tx.amount, currentInstallment: currentQuota, imageUrl: tx.imageUrl || '', imageAsIcon: tx.imageAsIcon || false, imageColor: tx.imageColor || '#ffffff', paymentUrl: tx.paymentUrl || '' });"
+      "setFormData({ ...tx, amount: tx.amount, currentInstallment: currentQuota, imageUrl: tx.imageUrl || '', imageAsIcon: tx.imageAsIcon || false, imageColor: tx.imageColor || '#ffffff', paymentUrl: tx.paymentUrl || '', paymentAlias: tx.paymentAlias || '' });"
     );
 
     replaceIfFound(
       "React.createElement(\"input\", { type: \"text\", value: formData.description, onChange: e => setFormData({ ...formData, description: e.target.value }), className: \"w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none placeholder:text-blue-300 font-bold md:text-lg\", placeholder: \"Descripci\\u00F3n (Ej: Supermercado)\" })),\n                        React.createElement(\"div\", { className: \"grid grid-cols-2 gap-4\" },",
-      "React.createElement(\"input\", { type: \"text\", value: formData.description, onChange: e => setFormData({ ...formData, description: e.target.value }), className: \"w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none placeholder:text-blue-300 font-bold md:text-lg\", placeholder: \"Descripci\\u00F3n (Ej: Supermercado)\" })),\n                        formData.type === 'expense' && React.createElement(\"div\", { className: \"neo-inset p-2\" }, React.createElement(\"input\", { type: \"text\", value: formData.paymentUrl || '', onChange: e => setFormData({ ...formData, paymentUrl: e.target.value }), className: \"w-full bg-transparent px-4 py-3 text-white outline-none placeholder:text-blue-300 text-sm\", placeholder: \"Enlace para pagar (opcional)\" })),\n                        React.createElement(\"div\", { className: \"grid grid-cols-2 gap-4\" },"
+      "React.createElement(\"input\", { type: \"text\", value: formData.description, onChange: e => setFormData({ ...formData, description: e.target.value }), className: \"w-full bg-transparent px-4 py-3 md:py-4 text-white outline-none placeholder:text-blue-300 font-bold md:text-lg\", placeholder: \"Descripci\\u00F3n (Ej: Supermercado)\" })),\n                        formData.type === 'expense' && React.createElement(\"div\", { className: \"grid grid-cols-1 md:grid-cols-2 gap-3\" },\n                            React.createElement(\"div\", { className: \"neo-inset p-2\" }, React.createElement(\"input\", { type: \"text\", value: formData.paymentAlias || '', onChange: e => setFormData({ ...formData, paymentAlias: e.target.value }), className: \"w-full bg-transparent px-4 py-3 text-white outline-none placeholder:text-blue-300 text-sm\", placeholder: \"Alias para pagar (opcional)\" })),\n                            React.createElement(\"div\", { className: \"neo-inset p-2\" }, React.createElement(\"input\", { type: \"text\", value: formData.paymentUrl || '', onChange: e => setFormData({ ...formData, paymentUrl: e.target.value }), className: \"w-full bg-transparent px-4 py-3 text-white outline-none placeholder:text-blue-300 text-sm\", placeholder: \"Enlace para pagar (opcional)\" }))),\n                        React.createElement(\"div\", { className: \"grid grid-cols-2 gap-4\" },"
     );
 
     replaceIfFound(
       "React.createElement(\"h4\", { className: `font-bold truncate pr-2 text-sm md:text-lg ${tx.isPaidForMonth ? 'line-through text-emerald-200' : 'text-white'}` }, tx.description),",
-      "React.createElement(\"div\", { className: \"flex items-center gap-2 min-w-0 pr-2\" }, React.createElement(\"h4\", { className: `font-bold truncate text-sm md:text-lg ${tx.isPaidForMonth ? 'line-through text-emerald-200' : 'text-white'}` }, tx.description), tx.type === 'expense' && tx.paymentUrl && React.createElement(\"a\", { href: /^(https?:)?\\/\\//i.test(tx.paymentUrl) ? tx.paymentUrl : ('https://' + tx.paymentUrl), target: \"_blank\", rel: \"noopener noreferrer\", onClick: e => e.stopPropagation(), className: \"shrink-0 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-[10px] md:text-xs font-extrabold uppercase tracking-wide\" }, \"Pagar\")),"
+      "React.createElement(\"div\", { className: \"flex items-center gap-2 min-w-0 pr-2 flex-wrap\" },\n                            React.createElement(\"h4\", { className: `font-bold truncate text-sm md:text-lg ${tx.isPaidForMonth ? 'line-through text-emerald-200' : 'text-white'}` }, tx.description),\n                            tx.type === 'expense' && tx.paymentAlias && React.createElement(\"button\", { type: \"button\", onClick: e => { e.stopPropagation(); const alias = tx.paymentAlias; if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(alias).then(() => alert('Alias copiado: ' + alias)).catch(() => window.prompt('Copiá el alias:', alias)); } else { window.prompt('Copiá el alias:', alias); } }, className: \"shrink-0 px-2.5 py-1 rounded-full bg-sky-500/20 border border-sky-400/40 text-sky-200 text-[10px] md:text-xs font-extrabold uppercase tracking-wide\", title: tx.paymentAlias }, \"Copiar alias\"),\n                            tx.type === 'expense' && tx.paymentUrl && React.createElement(\"a\", { href: /^(https?:)?\\/\\//i.test(tx.paymentUrl) ? tx.paymentUrl : ('https://' + tx.paymentUrl), target: \"_blank\", rel: \"noopener noreferrer\", onClick: e => e.stopPropagation(), className: \"shrink-0 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-[10px] md:text-xs font-extrabold uppercase tracking-wide\" }, \"Pagar\")),"
     );
 
     frame.srcdoc = html;
